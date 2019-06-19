@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <div>
-      <logo />
+      <logo :init="'收费多少地方是'" />
       <h1 class="title">
         aliyin-mobile
       </h1>
@@ -9,13 +9,12 @@
         My super-duper Nuxt.js project
       </h2>
       <div class="links">
-		  <a target="_blank" href="/about">about</a>
+		  <nuxt-link to="/about/1231?v=safsd">about</nuxt-link>
         <a
           href="http://www.aliyin.com"
           target="_blank"
           class="button--grey"
         >阿里印</a>
-		<div @click="handleClick">{{host}}</div>
       </div>
     </div>
   </div>
@@ -29,24 +28,8 @@ export default {
   components: {
     Logo
   },
-  async asyncData({
-    isDev,
-    route,
-    store,
-    env,
-    params,
-    query,
-    req,
-    res,
-    redirect,
-    error
-  }) {
-    // console.log(window)
-    return new Promise(resolve => {
-      setTimeout(function() {
-        resolve({ host: req.headers.host });
-      }, 1000);
-    });
+  async asyncData({router}) {
+    
   },
   fetch({ store, params }) {
     // console.log(store)

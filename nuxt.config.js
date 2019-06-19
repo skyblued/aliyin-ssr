@@ -1,10 +1,6 @@
 
 module.exports = {
   mode: 'universal',
-  loading: {
-    color: 'blue',
-    height: '5px'
-  },
   /*
   ** Headers of the page
   */
@@ -22,13 +18,14 @@ module.exports = {
   /*
   ** Customize the progress-bar color
   */
-  loading: { color: '#fff' },
+  loading: { color: '#17b6ff' },
   /*
   ** Global CSS
   */
   css: [
 	'element-ui/lib/theme-chalk/index.css',
-	{ src: '@/assets/css/init.scss', lang: 'scss'}
+	{ src: '@/assets/css/init.scss', lang: 'scss'},
+	'@/assets/css/animation.css'
   ],
   /*
   ** Plugins to load before mounting the App

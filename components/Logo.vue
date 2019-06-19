@@ -1,11 +1,26 @@
 <template>
   <div class="VueToNuxtLogo">
+	  <div>{{init}}</div>
     <div class="Triangle Triangle--two" />
     <div class="Triangle Triangle--one" />
     <div class="Triangle Triangle--three" />
     <div class="Triangle Triangle--four" />
   </div>
 </template>
+
+<script>
+export default {
+	props: {
+		init: {
+			type: String
+		}
+	},
+	mounted() {
+		console.log(this.init)
+	}
+}
+</script>
+
 
 <style>
 .VueToNuxtLogo {
