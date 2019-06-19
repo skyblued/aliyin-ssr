@@ -14,7 +14,8 @@
           href="http://www.aliyin.com"
           target="_blank"
           class="button--grey"
-        >阿里印</a>
+        >阿里印第三方</a>
+		<!-- <div @click="handleClick">{{host}}</div> -->
       </div>
     </div>
   </div>
