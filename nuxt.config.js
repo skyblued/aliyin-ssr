@@ -41,6 +41,7 @@ module.exports = {
   modules: [
     // Doc: https://axios.nuxtjs.org/usage
 	'@nuxtjs/axios',
+	'@nuxtjs/proxy',
 	'@nuxtjs/style-resources'
   ],
   /*
@@ -49,10 +50,16 @@ module.exports = {
   */
   axios: {
 	proxy: true, // Can be also an object with default options
-	credentials: true, // 凭证携带cookie
+	// credentials: true, // 凭证携带cookie
+	// withCredentials: false,
   },
   proxy: {
-		'/api': { target: 'http://api.aliyin.com/api', pathRewrite: {'^/api': '',changeOrigin: true}  }
+	'/api': {
+		target: 'http://api.aliyin.com/',
+		pathRewrite: {
+		  '^/api' : '/'
+		}
+	  }
 	},
   /*
   ** Build configuration
