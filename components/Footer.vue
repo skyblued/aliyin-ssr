@@ -31,13 +31,13 @@
                         <span class="link">ICP备案号: 鄂 ICP备 16021980号-3：</span>
                     </a> &nbsp;
                     <a  target="_blank"  href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=42011202001340"  style="display:inline-block;text-decoration:none;color: rgba(153,153,153,1);">
-                        <img  src="/img/home/footer_icon.png" />
+                        <img  :src="$store.state.port.staticPath + '/img/home/footer_icon.png'" />
                         <span class="link">鄂公网安备  42011202001340号 </span>
                     </a> 
                     <br> 
                     座机：027-59760849  客服热线：4000-975-123   地址：湖北省武汉市东湖高新区武汉大学科技园武大航域A3栋
                     <a target="_blank" href="http://www.gsxt.gov.cn/%7B61A4CE9206C23F1FEAB664A055B183174B0431C4004FABF59F5BCF93DC3D9FC3115EBAE48E4A7F5FC85C7CEBDE0C39FD4DDBA1F35012533E7C067D1052341B24FD28FD28FDC2FD24F1A772A772A772A7729A1E6D3B4891D6487A9B15D722C6F4E436A2579DCB9DEE3BC8FDDD4A7F3002F73D6BBE6BBE6BBE-1559177601655%7D">
-                        <img style="width: 20px;height: 20px;display: inline-block;vertical-align: middle;" src="/img/home/govIcon.gif" >
+                        <img style="width: 20px;height: 20px;display: inline-block;vertical-align: middle;" :src="$store.state.port.staticPath + '/img/home/govIcon.gif'" >
                     </a>
                 </p>
             </div>
@@ -54,10 +54,11 @@ export default {
         }
     },
     mounted() {
+        console.log(this)
         var url = "/Advertise?ID="+136;
-        this.$axios.get(url).then(res => {
+        this.$axios.$get(url).then(res => {
             if(res.data == undefined) return console.log('没有数据')
-            // console.log(res.data)
+            console.log(res.data)
             var data = res.data.Advertisements
             this.qrcode = data[0].FileUrl
         })
