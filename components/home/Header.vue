@@ -1,374 +1,238 @@
 <template>
     <div id="header">
-        <div class="header-search">
-        <div class="logo">
-            <nuxt-link class="link" to="/"><img :src="$store.state.port.staticPath + '/img/home/logo.svg'" alt=""></nuxt-link>
-        </div>
-        <div class="search-input">
-            <div class="input-select">
-                <el-input v-model="search" placeholder="请输入模板关键字" class="input-with-select" @keyup.native="getSearch($event)">
-                </el-input>
-                <span class="search-btn" @click="handleSearch(search)">搜索</span>
+        <div  class="header">
+            <div class="header-left">
+                <img class="logo" :src="$store.state.port.staticPath + '/img/home/logo.svg'" alt="" v-if="!isFixed" @click="handleClick">
+                <div v-if="isFixed" class="bar-menu-wrap">
+                    <div class="bar-menu">
+                        <img class="bar-img" src="/img/home/classify_icon.png" alt="">
+                        <span class="bar-title">海量模板，每天更新</span>
+                    </div>
+                    <div class="bar-menu-list">
+                        <!-- <TemplateClass></TemplateClass> -->
+                    </div>
+                </div>
+                <ul>
+                    <li :class="{'menu-list': true, active: path == '/'}" @click="handleJump('/')">首页</li>
+                    <li :class="{'menu-list': true, active: path == '/templatelist' || path == '/templatecenter'}" @click="handleJump('/createdesign')">在线设计</li>
+                    <li :class="{'menu-list': true, active: path == '/print' || path == '/printdetail'}" @click="handleJump('/print')">在线印刷</li>
+                </ul>
             </div>
-            <div class="hot-search">
-                <p>
-                    <span>热门搜索：</span>
-                    <span class="search-item" v-for="(tmp,i) in hotSearchList" :key="i">{{tmp.Word}}</span>
-                </p>
+            <div class="header-right">
+                <div class="search-input">
+                    <div class="input-select">
+                        <input v-model="keywords" placeholder="请输入模板关键字" @focus="show = true" @blur="show = false" class="input-with-select" @keydown.enter="handleSearch(keywords)">
+                        <span class="search-btn" @click="handleSearch(keywords)">搜索</span>
+                    </div>
+                    <div v-if="show" class="hot-search">
+                        <p>
+                            <span>热门搜索：</span>
+                            <span class="search-item" v-for="(tmp,i) in hotSearchList" :key="i">{{tmp.Word}}</span>
+                        </p>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-		
     </div>
 </template>
 
 <script>
+// import TemplateClass from '@/components/home/TemplateClass.vue'
 export default {
     data () {
         return {
-			isShow: '',
-			SecondList: [],
-			barList: [],
-            ClassName: '',
-			activeIndex: 0,
-			search: '',
-            hotSearchList: []
+            keywords: '',
+            hotSearchList: [],
+            show: false
         }
-	},
-	methods: {
-		handleOver(i) {
-            this.isShow = 'ok'
-            this.ClassName = this.barList[i].ClassName
-            this.SecondList = this.barList[i].ProductTypeList
-            this.activeIndex = i
-        },
-        handleOut() {
-            this.isShow = ''
-        },
-        handleClick(tmp) {
-            let num = tmp.FromClass
-            let title = this.ClassName
-            let subtitle = tmp.TypeName
-            let typeId = tmp.TypeId
-            this.$router.push({path: '/tempcenter', query: {title, subtitle, typeId,num}})
-		},
-		handleSelect(key, keyPath) {
-            this.activeIndex = key
-            // console.log(key, keyPath);
-        },
-        getDate() {
-            this.$axios.get(this.$store.state.port.AllTemplate).then((res) => {
-                //console.log(res.data)
-                this.barList = res.data
-            })
-		},
-		getSearch(e) {
-            if(e.keyCode == 13) {
-                this.$router.push({path: '/templatecenter', query: {k: this.search}})
-                // console.log(this.search)
-                this.search = ''
+    },
+    props: ['isFixed'],
+    methods: {
+        handleClick() {
+            if(this.$route.path == '/') {
+                history.go(0)
+            }else{
+                this.$router.push('/')
             }
         },
-        handleSearch(keywords) {
-            // console.log(keywords) templatecenter
-            this.$router.push({path: '/templatecenter', query: {k: keywords}})
-            this.search = ''
+        handleJump(url) {
+            this.$router.push(url)
+        },
+         handleSearch(keywords) {
+            console.log(13)
+            let n, id,subtitle,title;
+            if(this.$route.query.id && this.$route.query.n && this.$route.query.subtitle && this.$route.query.title) {
+                n = this.$route.query.n
+                id = this.$route.query.id   
+                subtitle = this.$route.query.subtitle
+                title = this.$route.query.title
+            }
+            this.$router.push({path: '/templatecenter', query: {k: keywords, n: n, id: id,subtitle: subtitle,title: title}})
+            if(this.$route.path == '/templatecenter'){
+                this.$bus.$emit('setKeyword', this.keywords)
+            }
         }
-	},
-    mounted () {
-        this.$axios.get('/SearchKeyWords').then((res) => {
-            //console.log(res.data)
-            this.hotSearchList = res.data
-        })
     },
+    computed: {
+        path() {
+            return this.$route.path
+        }
+    },
+    components: {
+        // TemplateClass
+    }
 }
 </script>
 
 <style lang="scss" scoped>
 #header{
-    height:149px;
     background:rgba(255,255,255,1);
     box-shadow:0px 0px 44px 20px rgba(203,211,217,0.4);
 }
-.header-bar{
+.header{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     width: 1200px;
-    height: 38px;
+    height: 70px;
     margin: 0 auto;
-}
-.header-bar .bar-list{
-    height: 100%;
-    display: flex;
-    justify-content: space-between;
-    a{
-        text-decoration: none;
+    .header-left{
+        display: flex;
+        align-items: center;
+        .logo{
+            height: 55px;
+            width: 176px;
+            margin-right: 79px;
+            cursor: pointer;
+        }
+        ul{
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 38px;
+            margin-top: 4px;
+            margin-left: 15px;
+            .menu-list{
+                display: inline-block;
+                width: 110px;
+                height: 38px;
+                line-height: 38px;
+                text-align: center;
+                // background:rgba(225,227,232,1);
+                border-radius: 19px;
+                color:rgba(51,51,51,1);
+                font-size: 16px;
+                cursor: pointer;
+                margin-right: 21px;
+                &:hover{
+                    background:rgba(116,91,255,1);
+                    color: rgba(255,255,255,1);
+                    font-weight: bold;
+                }
+            }
+            .active{
+                background:rgba(116,91,255,1);
+                color: rgba(255,255,255,1);
+                font-weight: bold;
+            }
+        }
+        .bar-menu-wrap{
+            position: relative;
+            width: 255px;
+            &:hover .bar-menu-list{
+                display: block;
+            }
+            .bar-menu-list{
+                position: absolute;
+                top: 44px;
+                left: 0;
+                display: none;
+                padding-top: 28px;
+            }
+        }
+        .bar-menu{
+            display: inline-block;
+            width: 100%;
+            height: 45px;
+            line-height: 45px;
+            background: $gradient;
+            font-size: 16px;
+            color: rgba(255,255,255,1);
+            padding: 0 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            .bar-img{
+                width: 21px;
+                height: 21px;
+                display: inline-block;
+                vertical-align: middle;
+                margin-right: 15px;
+            }
+        }
     }
-}
-.bar-list .bar-list-left{
-    display: flex;
-    justify-content: space-between;
-}
-.bar-list-left .bar-item-temp{
-    position: relative;
-    height: 38px;
-}
-.bar-class{
-    display: none;
-    padding-top: 20px;
-}
-.bar-active:hover .bar-class{
-    display: block;
-}
-.bar-list .bar-item{
-    cursor: pointer;
-}
-.bar-list .bar-item span{
-    height: 16px; 
-    cursor: pointer;
-}
-.bar-list .bar-item:first-child{
-    height:100%;
-    line-height: 38px;
-    padding: 0 50px 0 16px;
-    background:$color;
-    border-radius: 5px 5px 0 0;
-}
-.bar-list .bar-item:nth-child(2), .bar-item:nth-child(3){
-    //width:67px;
-    height:16px;
-    line-height: 16px;
-    font-size:16px;
-    font-family:MicrosoftYaHei-Bold;
-    font-weight:bold;
-    margin: 11px 23px 11px 38px;
-    a{
-        color: $color;
-        &:hover{
-            color: #0893ff;
+    .header-right{
+        .search-input{
+            margin: 20px 18px 21px 0;
+            position: relative;
+            .input-select{
+                width:375px;
+                height:42px;
+                position: relative;
+                input{
+                    border:2px solid #745bff;
+                    border-radius: 22px 0 0 22px;
+                    height: 42px;
+                    width: 100%;
+                    outline: none;
+                    padding-left: 20px;
+                }
+                .search-btn{
+                    display: inline-block;
+                    width:96px;
+                    height:42px;
+                    line-height: 42px;
+                    background:$color;
+                    border-radius: 0 22px 22px 0;
+                    position: absolute;
+                    top: 0;
+                    right: -18px;
+                    font-size:16px;
+                    text-align: center;
+                    font-family:MicrosoftYaHei;
+                    font-weight:400;
+                    color:rgba(255,255,255,1);
+                    cursor: pointer;
+                }
+            }
+            .hot-search{
+                position: absolute;
+                top: 42px;
+                left: 18px;
+                background: #fff;
+                right: 91px;
+                -webkit-box-shadow: 0 18px 20px 0 rgba(20,33,65,.14);
+                box-shadow: 0 18px 20px 0 rgba(20,33,65,.14);
+                border-radius: 0 0 6px 6px;
+                min-width: 160px;
+                p{
+                    height: 36px;
+                    line-height: 36px;
+                    padding: 0 20px;
+                    span:first-child{
+                        color: rgba(205,205,205,1);
+                    }
+                }
+                .search-item{
+                    margin: 0 10px;
+                    cursor: pointer;
+                    color: rgba(51,51,51,1);
+                    &:hover{
+                        color: #745bff;
+                    }
+                }
+            }
         }
     }
 }
-.bar-list .bar-item:nth-child(5), .bar-list .bar-item:nth-child(6){
-    //width:68px;
-    height:15px;
-    line-height: 15px;
-    font-size:16px;
-    font-family:MicrosoftYaHei;
-    font-weight:400;
-    margin: 11px 37px 11px 11px;
-    color:rgba(51,51,51,1);
-    a{
-        color: rgba(51,51,51,1);
-        &:hover{
-            color: $color;
-        }
-    }
-}
-.bar-list .bar-item:nth-child(4){
-    //width: 100px;
-    height: 15px;
-    line-height: 15px;
-    font-size: 16px;
-    font-family:MicrosoftYaHei;
-    font-weight:400;
-    margin: 11px 17px 11px 23px;
-    a{
-        color: rgba(51,51,51,1);
-        &:hover{
-            color: $color;
-        }
-    }
-}
-.bar-list .bar-item img.hot-img{
-    width: 20px;
-    height: 14px;
-    display: inline-block;
-    margin-left: 6px;
-}
-.bar-list .bar-item .temp-class-img{
-    display: inline-block;
-    width: 21px;
-    height: 15px;
-    margin-right: 15px;
-}
-.bar-list .bar-item span.temp-class{
-    display: inline-block;
-    //width:153px;
-    height: 15px;
-    font-size: 16px;
-    font-family:MicrosoftYaHei;
-    font-weight:400;
-    color:rgba(255,255,255,1);
-    position: relative;
-    top: -2px;
-}
-.template-class{
-    position: absolute;
-    left: 0;
-    top: 58px;
-    z-index: 100;
-    width:255px;
-    height:528px;
-    background:rgba(255,255,255,1);
-    box-shadow:0px 1px 27px 2px rgba(203,211,217,0.4);
-    .active{
-        box-shadow: -1px 0px 27px 2px rgba(203,211,217,.5);
-    }
-}
-.template-class .class-item{
-    width: 100%;
-    height: 73px;
-    padding: 13px 10px 13px 20px;
-    cursor: pointer;
-}
-.template-class .class-item .class-item-block{
-    height: 47px;
-    line-height: 47px;
-    display: flex;
-}
-.template-class .class-item .class-item-img{
-    vertical-align: middle;
-    margin-right: 10px;
-    img{
-        width: 47px;
-        height: 100%;
-    }
-}
-.template-class .class-item .class-item-label{
-    margin: 5px 0;
-}
-.template-class .class-item .class-item-label p{
-    font-family:MicrosoftYaHei;
-    font-weight:400;
-}
-.template-class .class-item .class-item-label p:first-child{
-    line-height: 15px;
-    font-size:16px;  
-    color:rgba(51,51,51,1);
-    margin-bottom: 10px;
-}
-.template-class .class-item .class-item-label p:last-child{
-    height:12px;
-    line-height: 12px;
-    font-size:12px;
-    color:rgba(153,153,153,1);  
-    display: flex;
-    span{
-        margin: 0 2px;
-    }
-}
-.template-class .class-level-item{
-    width:946px;
-    height:528px;
-    background:rgba(255,255,255,1);
-    box-shadow:0px 1px 27px 10px rgba(203,211,217,0.4);
-    position: absolute;
-    top: 0;
-    left: 255px;
-    user-select: none; 
-}
-.template-class .class-level-item .class-level-item-label{
-    width: 878px;
-    height: auto;
-    margin: 26px 37px 40px 30px;
-}
-.template-class .class-level-item .class-level-item-label:last-child{
-    margin-bottom: 0;
-}
-.template-class .class-level-item .class-level-item-label .level-title{
-    height:15px;
-    line-height: 15px;
-    font-size:16px;
-    font-family:MicrosoftYaHei;
-    font-weight:400;
-    color:rgba(51,51,51,1);
-    margin-bottom: 20px;
-}
-.template-class .class-level-item .class-level-item-label .level-tips{
-    display: flex;
-    flex-wrap: wrap;
-    width: 100%;
-    height: 54px;
-    font-size:14px;
-    font-family:MicrosoftYaHei;
-    font-weight:400;
-    color:rgba(153,153,153,1);
-    .level-tips-item{
-        text-align: center;
-        height: 100px;
-        cursor: pointer;
-        span{
-            display: block;
-            height: 12px;
-            width: 109px;
-            line-height: 12px;
-            margin-bottom: 15px;
-        }
-        &:hover span{
-            color: $color;
-        }
-    }
-}
-.header-search /deep/ .el-input__inner{
-    border:2px solid $color;
-    border-radius: 22px 0 0 22px;
-    height: 42px;
 
-}
-.header-search{
-    width: 1200px;
-    height: 111px;
-    display: flex;
-    margin: 0 auto;
-}
-.header-search .logo{
-    padding: 13px 123px 29px 0;
-    .link{
-        display: inline-block;
-        height: 70px;
-    }
-    img{
-        height: 70px;
-    }
-}
-.header-search .search-input{
-    margin: 26px 0 22px;
-}
-.search-input .input-select{
-    width:561px;
-    height:42px;
-    position: relative;
-}
-.search-input .input-select .search-btn{
-    display: inline-block;
-    width:96px;
-    height:42px;
-    line-height: 42px;
-    background:$color;
-    border-radius: 0 22px 22px 0;
-    position: absolute;
-    top: 0;
-    right: -18px;
-    font-size:16px;
-    text-align: center;
-    font-family:MicrosoftYaHei;
-    font-weight:400;
-    color:rgba(255,255,255,1);
-    cursor: pointer;
-}
-.header-search .search-input .hot-search{
-    //width: 557px;
-    height: 11px;
-    font-size:12px;
-    font-family:MicrosoftYaHei;
-    font-weight:400;
-    color:rgba(153,153,153,1);
-    margin-top: 10px;
-}
-.header-search .search-input .hot-search .search-item{
-    margin: 0 10px;
-    cursor: pointer;
-    &:hover{
-        color: $color
-    }
-}
 </style>

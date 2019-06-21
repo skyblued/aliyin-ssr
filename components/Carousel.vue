@@ -1,5 +1,8 @@
 <template>
     <div class="carousel">
+        <div class="temp-class">
+            <TemplateClass></TemplateClass>
+        </div>
         <el-carousel trigger="click">
             <el-carousel-item v-for="(item,i) in banner" :key="i">
                 <img :src="$store.state.port.imgBaseUrl+item.FileUrl" alt="">
@@ -9,6 +12,7 @@
 </template>
 
 <script>
+import TemplateClass from '@/components/home/TemplateClass.vue'
 export default {
     data() {
         return {
@@ -26,11 +30,24 @@ export default {
     },
     mounted() {
         this.getData();
+    },
+    components: {
+        TemplateClass
     }
 }
 </script>
 
 <style lang="scss" scoped>
+.carousel{
+    width: 1200px;
+    margin: 30px auto 0;
+    display: flex;
+    .temp-class{
+        width: 255px;
+        height: 375px;
+        margin-right: 15px;
+    }
+}
     .carousel /deep/ .el-carousel__container{
         height: 100%;
     }

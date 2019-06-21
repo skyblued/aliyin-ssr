@@ -1,95 +1,45 @@
 <template>
-    <div class="footer active" v-if="path == '/recruit'">
+    <div class="footer">
         <div class="footer-content">
-            <div class="footer-top">
-                <span>关于我们</span>
-                <span>商务合作</span>
-                <span>免责声明</span>
-                <span>隐私协议</span>
-                <span>使用条款</span>
-                <span>服务协议</span>
-                <span>联系我们</span>
-                <span>版权说明</span>
-                <span>设计师招募</span>
-                <span>帮助与支持</span>
+            <div class="content-left" v-if="ArticlesList.length">
+                <ul v-for="(item,i) in ArticlesList" :key="i">
+                    <li>{{item.ClassName}}</li>
+                    <li v-for="(items,index) in item.Content" :key="index" @click="handleJump(items)">{{items.Title}}</li>
+                </ul>
             </div>
-            <div class="footer-title">
-                <p>友情链接: </p>
-                <span>百度</span>
-                <span>阿里巴巴</span>
-                <span>腾讯</span>
-                <span>支付宝</span>
-                <span>微信</span>
-                <span>花瓣</span>
-                <span>千图网</span>
-                <span>我图网</span>
-                <span>阿里印</span>
-                <span>我图网</span>
-                <span>千图网</span>
-                <span>包图网</span>
-                <span>4K壁纸</span>
-                <span>视达网</span>
-                <span>摄图网</span>
-            </div>
-            <div class="footer-tips">
-                <span>中国设计网导航</span>
-                <span>软件下载</span>
-                <span>PPT模板下载</span>
-                <span>易图网</span>
-                <span>壁纸win10系统下载</span>
-                <span>雨林木风</span>
-                <span>小程序</span>
-                <span>员工福利</span>
-            </div>
-            <div class="footer-bottom">
-                <span>copyright © 阿里印（武汉）科技有限公司 ICP备案号：鄂ICP备100000000号</span>
+            <div class="content-right">
+                <div class="contact">
+                    <p>400-097-5123</p>
+                    <p>周一至周五 9:00-18:00</p>
+                    <div class="customer-service">
+                        <a href="http://wpa.qq.com/msgrd?v=3&uin=1415538799&site=qq&menu=yes" target="_blank">
+                            <span>在线客服</span>
+                        </a>
+                    </div>
+                </div>
+                <div class="public-code">
+                    <img :src="qrcode && $store.state.port.imgBaseUrl + qrcode" alt="">
+                    <p>微信公众号</p>
+                </div>
             </div>
         </div>
-    </div>
-    <div class="footer" v-else>
-        <div class="footer-content">
-            <div class="footer-top">
-                <span>关于我们</span>
-                <span>商务合作</span>
-                <span>免责声明</span>
-                <span>隐私协议</span>
-                <span>使用条款</span>
-                <span>服务协议</span>
-                <span>联系我们</span>
-                <span>版权说明</span>
-                <span>设计师招募</span>
-                <span>帮助与支持</span>
-            </div>
-            <div class="footer-title">
-                <p>友情链接: </p>
-                <span>百度</span>
-                <span>阿里巴巴</span>
-                <span>腾讯</span>
-                <span>支付宝</span>
-                <span>微信</span>
-                <span>花瓣</span>
-                <span>千图网</span>
-                <span>我图网</span>
-                <span>阿里印</span>
-                <span>我图网</span>
-                <span>千图网</span>
-                <span>包图网</span>
-                <span>4K壁纸</span>
-                <span>视达网</span>
-                <span>摄图网</span>
-            </div>
-            <div class="footer-tips">
-                <span>中国设计网导航</span>
-                <span>软件下载</span>
-                <span>PPT模板下载</span>
-                <span>易图网</span>
-                <span>壁纸win10系统下载</span>
-                <span>雨林木风</span>
-                <span>小程序</span>
-                <span>员工福利</span>
-            </div>
-            <div class="footer-bottom">
-                <span>copyright © 阿里印（武汉）科技有限公司 ICP备案号：鄂ICP备100000000号</span>
+        <div class="footer-bottom">
+            <div style="margin:0  auto;  padding:20px  0;">
+                <p  style="margin: 0 auto;  color:#939393;line-height:23px;">
+                    Copyright © 阿里印（武汉）科技有限公司&nbsp; 
+                    <a target="_blank" href="http://www.beian.miit.gov.cn" style="color: rgba(153,153,153,1);"> 
+                        <span class="link">ICP备案号: 鄂 ICP备 16021980号-3：</span>
+                    </a> &nbsp;
+                    <a  target="_blank"  href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=42011202001340"  style="display:inline-block;text-decoration:none;color: rgba(153,153,153,1);">
+                        <img  src="/img/home/footer_icon.png" />
+                        <span class="link">鄂公网安备  42011202001340号 </span>
+                    </a> 
+                    <br> 
+                    座机：027-59760849  客服热线：4000-975-123   地址：湖北省武汉市东湖高新区武汉大学科技园武大航域A3栋
+                    <a target="_blank" href="http://www.gsxt.gov.cn/%7B61A4CE9206C23F1FEAB664A055B183174B0431C4004FABF59F5BCF93DC3D9FC3115EBAE48E4A7F5FC85C7CEBDE0C39FD4DDBA1F35012533E7C067D1052341B24FD28FD28FDC2FD24F1A772A772A772A7729A1E6D3B4891D6487A9B15D722C6F4E436A2579DCB9DEE3BC8FDDD4A7F3002F73D6BBE6BBE6BBE-1559177601655%7D">
+                        <img style="width: 20px;height: 20px;display: inline-block;vertical-align: middle;" src="/img/home/govIcon.gif" >
+                    </a>
+                </p>
             </div>
         </div>
     </div>
@@ -97,6 +47,40 @@
 
 <script>
 export default {
+    data () {
+        return {
+            qrcode: '',
+            ArticlesList: []
+        }
+    },
+    async asyncData ({$asiox}) {
+        let data = await $asiox.get('/Advertise?ID=' + 136)
+        
+        console.log(data)
+    },
+    mounted() {
+        // var url = "/Advertise?ID="+136;
+        // this.$asiox.get(url).then(res => {
+        //     if(res.data == undefined) return console.log('没有数据')
+        //     // console.log(res.data)
+        //     var data = res.data.Advertisements
+        //     this.qrcode = data[0].FileUrl
+        // })
+        // this.getArticles()
+    },
+    methods: {
+        getArticles() {
+            this.$http.get('/Articles').then(res => {
+                // console.log(res.data)
+                this.ArticlesList = res.data
+            })
+        },
+        handleJump(items) {
+            let id = items.ClassID
+            let contentId = items.ContentID
+            this.$router.push({path: '/content', query: {id: id,contentId: contentId}})
+        }
+    },
     computed: {
         path() {
             return this.$route.fullPath
@@ -111,81 +95,109 @@ export default {
     background:rgba(255,255,255,1);
     box-shadow:0px 0px 44px 10px rgba(203,211,217,0.4);
     margin-top: 0;
-}
-.active{
-    height: 364px;
-    background-image: url(/img/home/recruit/bottom_bg.png);
-    background-repeat: no-repeat;
-    background-position: 100%;
     .footer-content{
-        padding-top: 120px;
-        .footer-top, .footer-title, .footer-tips{
-            color: rgba(255,255,255,1);
-            &:hover span{
-                color: rgba(255,255,255,1);
+        width: 1200px;
+        margin: 0 auto;
+        padding-top: 43px;
+        display: flex;
+        justify-content: space-between;
+        user-select: none;
+        .content-left{
+            width: 540px;
+            display: flex;
+            justify-content: space-between;
+            ul{
+                display: flex;
+                flex-direction: column;
+                li{
+                    font-size: 14px;
+                    color: rgba(153,153,153,1);
+                    line-height: 28px;
+                    text-align: left;
+                    cursor: pointer;
+                    &:hover{
+                        color: $color;
+                    }
+                    a{
+                        color: rgba(153,153,153,1);
+                        &:hover{
+                            color: $color; 
+                        }
+                    }
+                }
+                li:first-child{
+                    color: rgba(51,51,51,1);
+                    margin-bottom: 10px;
+                }
             }
-        } 
-        .footer-bottom{
-            color: rgba(255,255,255,.6);
-            &:hover span{
-                color: rgba(255,255,255,.6);
+        }
+        .content-right{
+            display: flex;
+            align-items: center;
+            .contact{
+                color: rgba(153,153,153,1);
+                p:first-child{
+                    font-size: 24px;
+                    font-weight: bold;
+                    color: rgba(51,51,51,1);
+                }
+                p:nth-child(2){
+                    margin: 24px 0 15px;
+                }
+                .customer-service{
+                    height: 42px;
+                    line-height: 42px;
+                    padding: 0 12px;
+                    text-align: center;  
+                    border: 1px transparent solid;
+                    position: relative;
+                    cursor: pointer;
+                    a{
+                        color: rgba(51,51,51,1);
+                    }
+                    span{
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        display: block;
+                        width: 100%;
+                        height: 100%;
+                        background: #fff;
+                        border-radius: 23px;
+                        z-index: 1;
+                    }
+                    &::after{
+                        content: '';
+                        position: absolute;
+                        top: -1px;left: -1px;right: -1px;bottom: -1px;
+                        background: linear-gradient(to right, #17b6ff, #6094e9, #9c36ff);
+                        border-radius: 23px;
+                        z-index: 0;
+                    }
+                }
+            }
+            .public-code{
+                margin-left: 46px;
+                text-align: center;
+                img{
+                    width: 121px;
+                    height: 121px;
+                }
             }
         }
     }
-}
-.footer-content{
-    width: 1200px;
-    margin: 0 auto;
-    padding-top: 43px;
-}
-.footer-content .footer-top{
-    width:942px;
-    height:17px;
-    line-height: 17px;
-    font-size:16px;
-    font-family:MicrosoftYaHei;
-    font-weight:400;
-    color:rgba(51,51,51,1);
-    display: flex;
-    justify-content: space-between;
-    margin: 0 auto;
-}
-.footer-content span{
-    cursor: pointer;
-}
-.footer-content span:hover{
-    color: #0083E9;
-}
-.footer-content .footer-title, .footer-tips{
-    height:13px;
-    line-height: 13px;
-    font-size:14px;
-    font-family:MicrosoftYaHei;
-    font-weight:400;
-    color:rgba(153,153,153,1);
-    display: flex;
-    justify-content: space-between;
-    margin: 24px auto 0;
-}
-.footer-content .footer-title{
-    width: 996px;
-    margin: 24px auto 0;
-}
-.footer-content .footer-tips{
-    width: 730px;
-    margin: 25px auto 0;
-}
-.footer-content .footer-title p{
-    display: inline-block;
-}
-.footer-content .footer-bottom{
-    width:493px;
-    height:14px;
-    line-height: 14px;
-    font-size:14px;
-    font-family:MicrosoftYaHei;
-    font-weight:400;
-    color:rgba(153,153,153,.6);
-    margin: 44px auto 33px;
+    .footer-bottom{
+        width: 100%;
+        background: rgba(236,236,236,1);
+        text-align: center;
+        color: rgba(153,153,153,1);
+        margin-top: 40px;
+        .link{
+            color: rgba(153,153,153,1);
+            &:hover{
+                color: $color;
+            }
+        }
+    }
 }
 </style>
