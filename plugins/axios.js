@@ -2,6 +2,7 @@ export default function (app) {
 	let axios = app.$axios; 
    // 基本配置
 	axios.defaults.timeout = 1000*60*60
+	axios.defaults.baseURL = 'http://api.aliyin.com/api'; //配置接口地址
 	// axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded'
   
 	// 请求回调

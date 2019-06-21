@@ -33,10 +33,7 @@ module.exports = {
 	
   plugins: [
 	'@/plugins/element-ui',
-	{
-		src: "@/plugins/axios",
-		ssr: false
-	},
+	'@/plugins/axios',
   ],
   /*
   ** Nuxt.js modules
