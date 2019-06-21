@@ -49,9 +49,7 @@ module.exports = {
   ** See https://axios.nuxtjs.org/options
   */
   axios: {
-	proxy: true, // Can be also an object with default options
-	// credentials: true, // 凭证携带cookie
-	// withCredentials: false,
+	proxy: true, // 
   },
   proxy: {
 	'/api': {
