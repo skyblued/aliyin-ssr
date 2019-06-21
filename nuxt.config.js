@@ -48,9 +48,12 @@ module.exports = {
   ** See https://axios.nuxtjs.org/options
   */
   axios: {
-	baseURL: 'http://api.aliyin.com/api', //配置后台接口地址
+	proxy: true, // Can be also an object with default options
 	credentials: true, // 凭证携带cookie
   },
+  proxy: {
+		'/api': { target: 'http://api.aliyin.com/api', pathRewrite: {'^/api': '',changeOrigin: true}  }
+	},
   /*
   ** Build configuration
   */
