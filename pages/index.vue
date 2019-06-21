@@ -1,15 +1,18 @@
 <template>
 	<div class="container">
-		<headerTop></headerTop>
+		<HeaderTop></HeaderTop>
+		<Header></Header>
 	</div>
 </template>
 
 <script>
-import headerTop from '@/components/headerTop'
+import HeaderTop from '@/components/HeaderTop'
+import Header from '@/components/home/Header'
 export default {
 	name: 'home',
 	components: {
-		headerTop
+		HeaderTop,
+		Header
 	}
 }
 </script>

@@ -30,13 +30,13 @@ export default {
             form: {
                 name: ''
             },
-            isDesigner: localStorage.getItem('isDesigner'),
+            isDesigner: '',
             options: [],
-            teamName: '' || localStorage['teamName'],
+            teamName: '',
             // dialogVisible: false,
             dialogVisibleImg: false,
             dialogImageUrl: '',
-            teamNum: '' || localStorage['teamNum'],  // 团队编号
+            teamNum: '',  // 团队编号
             userType: 0,
             image: '/img/personal/n_choose_icon.png',
             src: '/img/personal/choose_icon.png',
@@ -115,8 +115,8 @@ export default {
         }
     },
     components: {
-        ApplyDesigner,
-        CreateTeam
+        // ApplyDesigner,
+        // CreateTeam
     }
 }
 </script>
