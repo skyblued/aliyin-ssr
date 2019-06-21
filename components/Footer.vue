@@ -25,7 +25,7 @@
         </div>
         <div class="footer-bottom">
             <div style="margin:0  auto;  padding:20px  0;">
-                <p  style="margin: 0 auto;  color:#939393;line-height:23px;">
+                <p  style="margin: 0 auto;  color:#939393;line-height:23px;font-size:14px;">
                     Copyright © 阿里印（武汉）科技有限公司&nbsp; 
                     <a target="_blank" href="http://www.beian.miit.gov.cn" style="color: rgba(153,153,153,1);"> 
                         <span class="link">ICP备案号: 鄂 ICP备 16021980号-3：</span>
