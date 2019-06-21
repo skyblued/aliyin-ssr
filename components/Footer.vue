@@ -53,19 +53,14 @@ export default {
             ArticlesList: []
         }
     },
-    async asyncData ({$asiox}) {
-        let data = await $asiox.get('/Advertise?ID=' + 136)
-        
-        console.log(data)
-    },
     mounted() {
-        // var url = "/Advertise?ID="+136;
-        // this.$asiox.get(url).then(res => {
-        //     if(res.data == undefined) return console.log('没有数据')
-        //     // console.log(res.data)
-        //     var data = res.data.Advertisements
-        //     this.qrcode = data[0].FileUrl
-        // })
+        var url = "/Advertise?ID="+136;
+        this.$axios.get(url).then(res => {
+            if(res.data == undefined) return console.log('没有数据')
+            // console.log(res.data)
+            var data = res.data.Advertisements
+            this.qrcode = data[0].FileUrl
+        })
         // this.getArticles()
     },
     methods: {
