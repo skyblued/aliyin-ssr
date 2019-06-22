@@ -70,7 +70,7 @@ export default {
             this.$router.push({path: '/templatecenter', query: {k: keywords, n: n, id: id,subtitle: subtitle,title: title}})
             if(this.$route.path == '/templatecenter'){
                 this.$bus.$emit('setKeyword', this.keywords)
-            }
+            } 
         }
     },
     computed: {
