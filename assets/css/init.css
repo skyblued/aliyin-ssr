@@ -156,3 +156,28 @@ sub {
 .put-template .template-content .el-select {
   width: 100%;
 }
+
+.close-btn {
+  position: absolute;
+  right: 20px;
+  top: 20px;
+  width: 30px;
+  height: 30px;
+  transform: rotate(45deg);
+  cursor: pointer;
+  z-index: 2019;
+}
+
+.close-btn::before, .close-btn::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 30px;
+  height: 3px;
+  border-radius: 3px;
+  background: #745bff;
+}
+
+.close-btn::before {
+  transform: rotate(90deg);
+}
