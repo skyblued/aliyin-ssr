@@ -53,7 +53,7 @@ export default {
         },
         handleToDesigner() {
             if(this.$store.state.isLogin){
-                this.$http.get('/ApplyDesigner').then(res => {
+                this.$axios.get('/ApplyDesigner').then(res => {
                     // console.log(res.data)
                     if(res.data.code == '1'){
                         this.$router.push('/designcenter')

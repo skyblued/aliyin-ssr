@@ -1,24 +1,29 @@
 <template>
 	<div>
-		
 	</div>
 </template>
 
 <script>
+
 export default {
 	name: 'design',
-	async asyncData({$axios, isDev, route, store, env, params, query, req, res, redirect, error}) {
-		console.log($axios)
-		// let {data} = await $axios.get("/Fonts");
+	components: {
+	},
+	async asyncData({store}) {
+		// console.log(context)
+		// let {data} = await context.$axios.get("/Fonts");
 		return {
 			// fontList: data
 		}
 		
 	},
-	async fetch({store, req, isClient}) {
-		console.log(req.headers.cookie,isClient)
+	async fetch({store, req, res}) {
+		let cookie = store.$cookiz.getAll();
+		// console.log(cookie, req.headers.cookie)
 	},
 	mounted() {
+		console.log(this)
+		this.$axios.get("/Fonts");
 		// console.log(this.fontList)
 		
 		

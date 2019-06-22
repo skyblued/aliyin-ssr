@@ -1,6 +1,52 @@
+.model-mask {
+	position: fixed;
+	left: 0;
+	right: 0;
+	top: 0;
+	bottom: 0;
+	background: rgba(0, 0, 0, .4);
+	z-index: 2019;
+}
+.model-dialog {
+	position: fixed;
+	left: 0;
+	right: 0;
+	top: 0;
+	bottom: 0;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	z-index: 2019;
+}
+.model-hidden {
+	display: none !important;
+}
+
 .page-enter-active, .page-leave-active {
 	transition: opacity .3s;
 }
 .page-enter, .page-leave-active {
 	opacity: 0;
 }
+
+.animation-scale-enter,
+.animation-scale-leave-to{
+	  opacity: 0;
+	  transform:  scale3d(0.9, 0.9, .9);
+	}
+  /* */
+.animation-scale-enter-active,
+.animation-scale-leave-active {
+	transition: all .3s;
+}
+  
+  
+  .burstout-enter,
+  .burstout-leave-to{
+	  opacity: 0;
+	  transform: translate(55%, -55%) scale3d(0.1, 0.1, .1);
+	}
+  .burstout-enter-active,
+  .burstout-leave-active {
+	  transition: all .3s;
+  }

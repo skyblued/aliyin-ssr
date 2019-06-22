@@ -94,29 +94,6 @@ sub {
   animation-delay: 0.35s !important;
 }
 
-.scale-enter,
-.scale-leave-to {
-  opacity: 0;
-  transform: scale3d(0.9, 0.9, 0.9);
-}
-
-/* */
-.scale-enter-active,
-.scale-leave-active {
-  transition: all .3s;
-}
-
-.burstout-enter,
-.burstout-leave-to {
-  opacity: 0;
-  transform: translate(55%, -55%) scale3d(0.1, 0.1, 0.1);
-}
-
-.burstout-enter-active,
-.burstout-leave-active {
-  transition: all .3s;
-}
-
 .temp-replace {
   width: 50% !important;
   padding: 50px;
