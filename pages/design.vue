@@ -8,6 +8,7 @@
 export default {
 	name: 'design',
 	async asyncData({$axios, isDev, route, store, env, params, query, req, res, redirect, error}) {
+		console.log($axios)
 		// let {data} = await $axios.get("/Fonts");
 		return {
 			// fontList: data

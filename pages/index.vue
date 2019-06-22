@@ -35,12 +35,14 @@ export default {
 		Footer
 	},
 	async asyncData({$axios, route, store, env, params, query, req, res, redirect, error}) {
-		let AllTemplate = await $axios.get(store.state.port.AllTemplate);
-		let Carousel = await $axios.get(store.state.port.Advertise + '?ID=131');
-		let Steps = await $axios.get(store.state.port.Advertise + '?ID=138');
-		let TempCommend = await $axios.get('/RecommendTemplaleClass?TeamNum=' + '19');
-		let FooterCode = await $axios.get(store.state.port.Advertise + '?ID=136');
-		let FooterArticle = await $axios.get('/Articles');
+		let [AllTemplate, Carousel, Steps, TempCommend, FooterCode, FooterArticle] = await Promise.all([
+			$axios.get(store.state.port.AllTemplate),
+			$axios.get(store.state.port.Advertise + '?ID=131'),
+			$axios.get(store.state.port.Advertise + '?ID=138'),
+			$axios.get('/RecommendTemplaleClass?TeamNum=' + '19'),
+			$axios.get(store.state.port.Advertise + '?ID=136'),
+			$axios.get('/Articles')
+		])
 		return {
 			barList: AllTemplate.data,
 			banner: Carousel.data.Advertisements,
