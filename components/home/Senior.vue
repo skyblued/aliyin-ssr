@@ -128,9 +128,6 @@ export default {
     img:nth-child(11),img:nth-child(12),img:nth-child(13),img:nth-child(14),img:nth-child(15) {
         margin-bottom: 10px;
     }
-    .sprite{
-        background-image: url(/img/home/senior-icon.png);
-    }
     .senior-item{
         width: 229px;
         height: 119px;

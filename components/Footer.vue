@@ -1,10 +1,15 @@
 <template>
     <div class="footer">
         <div class="footer-content">
-            <div class="content-left" v-if="ArticlesList.length">
-                <ul v-for="(item,i) in ArticlesList" :key="i">
+            <div class="content-left" v-if="articleList.length">
+                <ul v-for="(item,i) in articleList" :key="i">
                     <li>{{item.ClassName}}</li>
-                    <li v-for="(items,index) in item.Content" :key="index" @click="handleJump(items)">{{items.Title}}</li>
+                    <nuxt-link v-for="(items,index) in item.Content" :key="index"
+                        :to="`/content?id=${items.ClassID}&contentId=${items.ContentID}`"
+                    >
+                    <!-- @click="handleJump(items)" -->
+                        <li style="color: rgba(153,153,153,1);">{{items.Title}}</li>
+                    </nuxt-link>
                 </ul>
             </div>
             <div class="content-right">
@@ -47,40 +52,19 @@
 
 <script>
 export default {
+    props: ['qrcode','articleList'],
     data () {
         return {
-            qrcode: '',
-            ArticlesList: []
+            
         }
-    },
-    mounted() {
-        var url = "/Advertise?ID="+136;
-        this.$axios.get(url).then(res => {
-            if(res.data == undefined) return console.log('没有数据')
-            // console.log(res.data)
-            var data = res.data.Advertisements
-            this.qrcode = data[0].FileUrl
-        })
-        this.getArticles()
     },
     methods: {
-        getArticles() {
-            this.$axios.get('/Articles').then(res => {
-                // console.log(res.data)
-                this.ArticlesList = res.data
-            })
-        },
-        handleJump(items) {
-            let id = items.ClassID
-            let contentId = items.ContentID
-            this.$router.push({path: '/content', query: {id: id,contentId: contentId}})
-        }
+        // handleJump(items) {
+        //     let id = items.ClassID
+        //     let contentId = items.ContentID
+        //     this.$router.push({path: '/content', query: {id: id,contentId: contentId}})
+        // }
     },
-    computed: {
-        path() {
-            return this.$route.fullPath
-        }
-    }
 }
 </script>
 

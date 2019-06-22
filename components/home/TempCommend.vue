@@ -43,27 +43,26 @@
 
 <script>
 export default {
+    props: ['label'],
     data() {
         return {
-            label: [],
+            // label: [],
             image: '/img/home/collect-icon.png',
             collectImage: '/img/home/collect_s_icon_hl.png',
             secondList: [],
             typeName: []
         }
     },
+    created() {
+        this.getData()
+    },
     methods: {
         getData() {
-            var url = '/RecommendTemplaleClass?TeamNum=' + localStorage['teamNum']
-            this.$axios.get(url).then(res => {
-                console.log(res.data)
-                this.label = res.data
-                for(var i=0;i<res.data.length;i++) {
-                    this.secondList.push(res.data[i].ProductTypeList[0].Templatelist)
-                    res.data[i].ProductTypeList[0].Enable = false
-                    this.typeName.push(res.data[i].ProductTypeList[0].TypeName)
-                }
-            })
+            for(var i=0;i<this.label.length;i++) {
+                this.secondList.push(this.label[i].ProductTypeList[0].Templatelist)
+                this.label[i].ProductTypeList[0].Enable = false
+                this.typeName.push(this.label[i].ProductTypeList[0].TypeName)
+            }
         },
         handleChooseMenu(tmp,id,i) {
             this.label[i].ProductTypeList.Enable = false
@@ -141,7 +140,7 @@ export default {
         }
     },
     mounted() {
-        this.getData();
+        // this.getData();
     },
 }
 </script>
@@ -186,6 +185,7 @@ export default {
                 margin-right: 15px;
                 padding: 0 15px;
                 color:rgba(51,51,51,1);
+                font-size: 14px;
                 background-color: #fff;
                 border-radius: 14px;
                 cursor: pointer;
