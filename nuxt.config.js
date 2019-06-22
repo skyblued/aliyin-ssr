@@ -25,6 +25,7 @@ module.exports = {
 	*/
 	css: [
 		// 'element-ui/lib/theme-chalk/index.css',
+		{src: '', ssr: false},
 		'@/assets/css/init.scss',
 		'@/assets/css/animation.css'
 	],
