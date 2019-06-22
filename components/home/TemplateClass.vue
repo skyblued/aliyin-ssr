@@ -41,7 +41,7 @@ export default {
     },
     methods: {
         getData() {
-            this.$http.get(this.$store.state.port.AllTemplate).then((res) => {
+            this.$axios.get(this.$store.state.port.AllTemplate).then((res) => {
                 //console.log(res.data)
                 this.barList = res.data
             })
