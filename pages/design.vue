@@ -16,10 +16,7 @@ export default {
 	},
 	mounted() {
 		// console.log(this.fontList)
-		this.$axios.get("/Fonts")
-		.then(data => {
-			console.log(data)
-		})
+		
 		
 	}
 }
