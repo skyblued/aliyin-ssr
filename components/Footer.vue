@@ -54,19 +54,18 @@ export default {
         }
     },
     mounted() {
-        console.log(this)
         var url = "/Advertise?ID="+136;
-        this.$axios.$get(url).then(res => {
+        this.$axios.get(url).then(res => {
             if(res.data == undefined) return console.log('没有数据')
-            console.log(res.data)
+            // console.log(res.data)
             var data = res.data.Advertisements
             this.qrcode = data[0].FileUrl
         })
-        // this.getArticles()
+        this.getArticles()
     },
     methods: {
         getArticles() {
-            this.$http.get('/Articles').then(res => {
+            this.$axios.get('/Articles').then(res => {
                 // console.log(res.data)
                 this.ArticlesList = res.data
             })

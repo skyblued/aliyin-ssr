@@ -7,14 +7,10 @@
         <div class="senior-tips">
             <p>数万家优质店铺与企业选择我们</p>
         </div>
-        <div class="senior-img">
-            <!-- <img :src="$store.state.port.staticPath + '/img/home/senior-icon.png'" alt=""> -->
-            <div class="senior-item sprite" :style="{backgroundPosition: item.position}" v-for="(item,i) in imgList" :key="i"></div>
+        <div class="senior-img" :style="{'background-image': `url(${$store.state.port.staticPath + '/img/home/line.png'})`}">
+            <img v-for="(item,i) in imgList" :key="i" :src="$store.state.port.staticPath + item.url" alt="">
         </div>
-        <div class="senior-btn"  @click="handleClick">
-            <img :src="$store.state.port.staticPath + '/img/home/cjsj_icon.png'" alt="">
-            <span>创建设计</span>
-        </div>
+        <div class="senior-btn"  @click="handleClick">选择模板</div>
     </div>
 </template>
 
@@ -22,36 +18,52 @@
 export default {
     data() {
         return {
+            active: null,
             imgList: [{
-                position: '0 0'
+                value: 0,
+                url: '/img/home/logo/1.png'
             },{
-                position: '229px 0'
+                value: 1,
+                url: '/img/home/logo/2.png'
             },{
-                position: '480px 0'
+                value: 2,
+                url: '/img/home/logo/3.png'
             },{
-                position: '731px 0'
+                value: 3,
+                url: '/img/home/logo/4.png'
             },{
-                position: '981px 0'
+                value: 4,
+                url: '/img/home/logo/5.png'
             },{
-                position: '0 133px'
+                value: 5,
+                url: '/img/home/logo/6.png'
             },{
-                position: '229px 133px'
+                value: 6,
+                url: '/img/home/logo/7.png'
             },{
-                position: '480px 133px'
+                value: 7,
+                url: '/img/home/logo/8.png'
             },{
-                position: '731px 133px'
+                value: 8,
+                url: '/img/home/logo/9.png'
             },{
-                position: '981px 133px'
+                value: 9,
+                url: '/img/home/logo/10.png'
             },{
-                position: '0 297px'
+                value: 10,
+                url: '/img/home/logo/11.png'
             },{
-                position: '229px 297px'
+                value: 11,
+                url: '/img/home/logo/12.png'
             },{
-                position: '480px 297px'
+                value: 12,
+                url: '/img/home/logo/13.png'
             },{
-                position: '731px 297px'
+                value: 13,
+                url: '/img/home/logo/14.png'
             },{
-                position: '981px 297px'
+                value: 14,
+                url: '/img/home/logo/15.png'
             },]
         }
     },
@@ -64,7 +76,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-
 .senior{
     width: 1200px;
     height: 783px;
@@ -95,43 +106,52 @@ export default {
     font-family:MicrosoftYaHei;
     font-weight:400;
     color:rgba(153,153,153,1);
-    margin: 10px auto; 
+    margin: 10px auto 38px; 
 }
 .senior .senior-img{
     height: 483px;
     display: flex;
     justify-content: space-between;
+    align-items: center;
     flex-wrap: wrap;
+    position: relative;
+    // background-image: url(/img/home/line.png);
+    img{
+        width: 209px;
+        height: 97px;
+        margin-bottom: 30px;
+    }
+    img:nth-child(6),img:nth-child(7),img:nth-child(8),img:nth-child(9),img:nth-child(10) {
+        position: relative;
+        bottom: 5px;
+    }
+    img:nth-child(11),img:nth-child(12),img:nth-child(13),img:nth-child(14),img:nth-child(15) {
+        margin-bottom: 10px;
+    }
     .sprite{
         background-image: url(/img/home/senior-icon.png);
     }
     .senior-item{
         width: 229px;
+        height: 119px;
         cursor: pointer;
     }
 }
-// .senior .senior-img img{
-//     width: 100%;
-//     height: 100%;
-// }
 
 .senior-btn{
     display: inline-block;
-    background:rgba(243,152,0,1);
-    border-radius:5px;
-    width: 212px;
-    height: 75px;
-    line-height: 75px;
+    background: linear-gradient(112deg,rgba(23,182,255,1) 0%,rgba(96,148,233,1) 40%,rgba(156,54,255,1) 150%);
+    border-radius: 31px;
+    width: 394px;
+    height: 62px;
+    line-height: 62px;
     text-align: center;
+    font-family:MicrosoftYaHei-Bold;
+    font-weight:bold;
     font-size:22px;
     color:rgba(255,255,255,1);
     margin-top: 85px;
     cursor: pointer;
     user-select: none;
-    img{
-        display: inline-block;
-        vertical-align: middle;
-        margin-right: 28px;
-    }
 }
 </style>
