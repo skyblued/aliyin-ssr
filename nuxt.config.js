@@ -13,7 +13,7 @@ module.exports = {
 		],
 		link: [
 			{ rel: 'icon', type: 'image/x-icon', href: '//static.aliyin.com/favicon.ico' },
-			{ rel: 'stylesheet', href: '//static.aliyin.com/service/css/element.css' }
+			{ rel: 'stylesheet', href: '//static.aliyin.com/service/css/element.css?v=123' }
 		]
 	},
 	/*

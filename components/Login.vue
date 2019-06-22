@@ -1,14 +1,14 @@
 <template>
-    <div >
+    <div>
 		<transition name="el-fade-in-linear">
-			<div class="model-mask" v-show="$store.state.animation.loginShow"></div>
+			<div class="model-mask" v-show="$store.state.login.loginShow"></div>
 		</transition>
-		<div :class="['model-dialog', $store.state.animation.loginShow ? '' : 'model-hidden']">
+		<div class="model-dialog" v-show="$store.state.login.loginShow">
 			<transition name="animation-scale">
-				<div class="logreg-wrapper" v-if="$store.state.animation.loginShow">
-                    <div class="close-btn"></div>
+				<div class="logreg-wrapper" v-if="$store.state.login.loginShow">
 					<div class="comp">
 						<div class="sign-page-wrapper">
+                            <div class="close-btn" style="top: 0px;right: -50px;" @click="$store.commit('login/toggleShow', false)"></div>
 							<div class="toggle-sign-way">
 								<div class="sign-way" title="切换登录方式" @click="handleToggleSign">
 									<img :src="$store.state.port.staticPath + ($store.state.login.signType == 'wxpage' ? image : src)" alt="">
@@ -106,6 +106,9 @@ export default {
         
     },
     methods: {
+        handleClose() {
+            this.$store.commit('login/toggleShow', false)
+        },
         handleToggleSign() {  // 切换登录方式
             if(this.$store.state.login.signType == 'signpage'){
                 this.$store.commit('login/toggleSign', 'wxpage')
@@ -165,7 +168,7 @@ export default {
                         var formData = new FormData
                         formData.append('sceneId', sceneId)
                         this.$axios.post('/WeChatQR',formData).then(result => {
-                            console.log(result)
+                            // console.log(result)
                             if(result.data.status == 'ok') {
                                 this.getTeamInfo(result.data.token).then(() => {
                                     let name = result.data.nickName || result.data.userName 
@@ -180,13 +183,14 @@ export default {
                                     localStorage.setItem('userType', result.data.UserType)
                                     localStorage.setItem('times', result.data.logintimes)
                                     //localStorage.setItem('isLogin', true)
-                                    this.$store.commit('setToken', result.data.token)
-                                    this.$store.commit('setUserName', name)
-                                    this.$store.commit('setIsDesigner', result.data.IsDesigner)
-                                    this.$message({type: 'success', message: '登录成功'})
+                                    this.$store.commit('login/addToKen', result.data.token)
+                                    this.$store.commit('login/setUserName', name)
+                                    this.$store.commit('login/changeLogin', true)
+                                    this.$message.success('登录成功')
+                                    this.$store.commit('login/toggleShow', false)
+                                    this.$store.$cookiz.set('token', result.data.token, {maxAge: 604800}) 
                                     clearInterval(this.timer)
-                                    this.$store.commit('setDialogType', '') 
-                                    history.go(0)
+                                    // history.go(0)
                                 })
                             }else{
                                 // this.$message('登录失败')  
@@ -231,20 +235,17 @@ export default {
                         localStorage.setItem('userName', name)
                         localStorage.setItem('isDesigner', data.IsDesigner)
                         localStorage.setItem('avatar', data.Headimgurl)
-                        // let phone = data.Phone;
-                        // if(data.Phone !== null || data.Phone !== undefined){
-                        //     phone = phone.toString().replace(/^(\d{3})\d{4}(\d{4})$/, '$1****$2')
-                        // }
                         localStorage.setItem('phone', data.Phone)
                         localStorage.setItem('loginType', data.LoginType)
                         localStorage.setItem('userType', data.UserType)
                         localStorage.setItem('times', data.LoginTimes)
                         // 将用户token保存到vuex中
-                        this.$store.commit('setToken', data.Token)
-                        this.$store.commit('setUserName', name)
-                        this.$store.commit('setIsDesigner', data.IsDesigner)
-                        this.$store.commit('setDialogType', '')
+                        this.$store.commit('login/addToKen', data.Token)
+                        this.$store.commit('login/setUserName', name)
+                        this.$store.commit('login/changeLogin', true)
                         this.$message.success(res.data.Message)
+                        this.$store.commit('login/toggleShow', false)
+                        this.$store.$cookiz.set('token', data.Token,{maxAge: 604800}) 
                         history.go(0)
                     })
                 }else{

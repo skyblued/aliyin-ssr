@@ -3,12 +3,12 @@
         <div id="header-top">
             <div class="headerTop-left">海量模板免费使用，印刷订单全国包邮</div>
             <div class="login-btn" v-if="!userName">
-                <div class="label">
-                    <span class="label-item" @click="handleLogin">登录/注册</span>
+                <div class="label"  @click="$store.commit('login/toggleShow', true)">
+                    <span class="label-item">登录/注册</span>
                 </div>
             </div>
             <div class="loginout-btn" v-if="userName">
-                <nuxt-link to="/account/center"><span class="label-item-name">嗨，{{123}}</span></nuxt-link>
+                <nuxt-link to="/account/center"><span class="label-item-name">嗨，{{userName}}</span></nuxt-link>
                 <i class="label-line"></i>
                 <span class="item" @click="handleClick">会员中心</span>
                 <i class="label-line"></i>
@@ -45,9 +45,6 @@ export default {
     },
     methods: {
         // 打开登录弹出框
-        handleLogin() {
-            this.$store.commit('setDialogType', 'login')
-        },
         handleClick() {  // 进入会员中心
             this.$router.push('/personal/create')
         },
@@ -79,8 +76,8 @@ export default {
 
         // 注销登录
         loginOut() {
-            this.$store.commit('setToken', '')
-            this.$store.commit('setUserName', '')
+            this.$store.commit('login/addToKen', '')
+            this.$store.commit('login/setUserName', '')
             localStorage.removeItem('userName')
             localStorage.removeItem('token')
             localStorage.removeItem('isDesigner')
@@ -94,6 +91,7 @@ export default {
             localStorage.removeItem('isBindWx')
             localStorage.removeItem('isBindQQ')
             localStorage.removeItem('times')
+            this.$store.$cookiz.remove('token')
             history.go(0)
         },
         // 个人中心
@@ -102,11 +100,15 @@ export default {
         }
     },
     mounted () {
+        if(localStorage['token']) {
+            this.$store.commit('login/setUserName', localStorage['userName'])
+            this.$store.commit('login/changeLogin', true)
+        }
     },
     computed:{
         userName() {
             // console.log(this.$store.state.port.userName)
-            return this.$store.state.port.userName
+            return this.$store.state.login.userName
         },
         myHeader() {
             return {
