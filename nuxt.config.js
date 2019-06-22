@@ -13,19 +13,19 @@ module.exports = {
 		],
 		link: [
 			{ rel: 'icon', type: 'image/x-icon', href: '//static.aliyin.com/favicon.ico' },
-			{ rel: 'stylesheet', href: '//static.aliyin.com/service/css/element.css?v=123' }
+			// { rel: 'stylesheet', href: '//static.aliyin.com/service/css/element.css?v=123' }
 		]
 	},
 	/*
 	** Customize the progress-bar color
 	*/
-	loading: { color: '#17b6ff' },
+	loading: false,
 	/*
 	** Global CSS
 	*/
 	css: [
 		// 'element-ui/lib/theme-chalk/index.css',
-		{src: '', ssr: false},
+		'element-ui/lib/theme-chalk/index.css',
 		'@/assets/css/init.scss',
 		'@/assets/css/animation.css'
 	],
@@ -70,7 +70,7 @@ module.exports = {
 	*/
 	build: {
 		transpile: [/^element-ui/],
-		
+		extractCSS: { allChunks: true },
 		/*
 		** You can extend webpack config here
 		*/

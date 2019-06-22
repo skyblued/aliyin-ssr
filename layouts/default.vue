@@ -1,7 +1,8 @@
 <template>
   <div>
     <nuxt />
-	<Login v-if="$store.state.login.loginShow"></Login>
+	<!--  v-if="$store.state.login.loginShow" -->
+	<Login></Login>
   </div>
 </template>
 <script>
