@@ -1,6 +1,6 @@
 export default function ({$axios, store, req}) {
 	let axios = $axios;
-	if (!store.state.login.token) store.commit('login/addToKen', store.$cookiz.getAll().token || '');
+	if (!store.state.login.token && store.$cookiz) store.commit('login/addToKen', store.$cookiz.getAll().token || '');
 	if (store.state.login.token) axios.defaults.withCredentials = false;
    // 基本配置
 	axios.defaults.timeout = 1000*60*60
