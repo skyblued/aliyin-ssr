@@ -3,7 +3,7 @@
 		<HeaderTop></HeaderTop>
 		<Header></Header>
 		<div class="carousel-content">
-			<TemplateClass></TemplateClass>
+			<TemplateClass :barList="barList"></TemplateClass>
 			<Carousel></Carousel>
 		</div>
 		<Steps></Steps>
@@ -33,7 +33,13 @@ export default {
 		TempCommend,
 		Senior,
 		Footer
-	}
+	},
+	async asyncData({$axios, route, store, env, params, query, req, res, redirect, error}) {
+		let {data} = await $axios.get(store.state.port.AllTemplate)
+		return {
+			barList: data
+		}
+	},
 }
 </script>
 

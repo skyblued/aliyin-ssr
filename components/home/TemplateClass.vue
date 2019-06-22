@@ -16,12 +16,16 @@
         <div class="class-level-item" v-if="isShow" @mouseleave="handleOut" @mouseenter="enter">
             <div class="class-level-item-label">
                 <div class="level-tips">
-                    <div class="level-tips-item" v-for="(tmp,id) in SecondList" :key="id" @click="handleClick(tmp)">
-                        <div class="tips-icon-wrap">
-                            <div class="tips-icon" :style="{'background-image': `url(${$store.state.port.imgBaseUrl + tmp.Icon})`}"></div>
-                        </div>
-                        <span>{{tmp.TypeName}}</span>
-                    </div>
+					<nuxt-link v-for="(tmp,id) in SecondList" :key="id"
+						:to="`/templatecenter?id=${tmp.TypeId}&n=${tmp.FromClass}&title=${ClassName}&subtitle=${tmp.TypeName}`"
+					>
+						<div class="level-tips-item" >
+							<div class="tips-icon-wrap">
+								<div class="tips-icon" :style="{'background-image': `url(${$store.state.port.imgBaseUrl + tmp.Icon})`}"></div>
+							</div>
+							<span>{{tmp.TypeName}}</span>
+						</div>
+					</nuxt-link>
                 </div>
             </div>
         </div>
@@ -30,9 +34,12 @@
 
 <script>
 export default {
+	props: {
+		barList: {}
+	},
     data () {
         return {
-            barList: [],
+            // barList: [],
             isShow: '',
             SecondList: [],
             ClassName: '',
@@ -56,20 +63,13 @@ export default {
             this.isShow = ''
             this.activeIndex = null
         },
-        handleClick(tmp) {
-            let num = tmp.FromClass
-            let title = this.ClassName
-            let subtitle = tmp.TypeName
-            let typeId = tmp.TypeId
-			this.$router.push({path: '/templatecenter', query: {id: typeId, n:num, title: title, subtitle: subtitle}})
-        },
         enter() {
             this.isShow = 'ok'
         }
-    },
-    mounted() {
-        this.getData()
-    }
+	},
+	mounted() {
+		console.log(this.barList)
+	}
 }
 </script>
 
@@ -168,7 +168,8 @@ export default {
         text-align: center;
         height: 100px;
         margin-bottom: 30px;
-        cursor: pointer;
+		cursor: pointer;
+		color: rgba(153,153,153,1);
         .tips-icon-wrap{
             display: inline-block;
             width:68px;
