@@ -35,6 +35,7 @@ export default {
 		Footer
 	},
 	async asyncData({$axios, route, store, env, params, query, req, res, redirect, error}) {
+		
 		let {data} = await $axios.get(store.state.port.AllTemplate)
 		return {
 			barList: data

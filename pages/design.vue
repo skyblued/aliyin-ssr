@@ -14,6 +14,9 @@ export default {
 		}
 		
 	},
+	async fetch({store, req, isClient}) {
+		console.log(req.headers.cookie,isClient)
+	},
 	mounted() {
 		// console.log(this.fontList)
 		
