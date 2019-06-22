@@ -34,7 +34,9 @@ export default {
 		Senior,
 		Footer
 	},
-	async asyncData({$axios, route, store, env, params, query, req, res, redirect, error}) {
+	async asyncData({$axios, isDev,route, store, env, params, query, req, res, redirect, error}) {
+		let cookie = store.$cookiz.getAll();
+		if (req) console.log(cookie,isDev, req.headers.cookie);
 		let [AllTemplate, Carousel, Steps, TempCommend, FooterCode, FooterArticle] = await Promise.all([
 			$axios.get(store.state.port.AllTemplate),
 			$axios.get(store.state.port.Advertise + '?ID=131'),
