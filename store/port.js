@@ -18,6 +18,7 @@ export const state = () => ({
 	MaterialCategories: '/MaterialCategories', // 素材分类标签
 	MaterialInfos: '/MaterialInfos', // 素材列表
 	imgBaseUrl: 'http://img.aliyin.com/', // 阿里OS
+	Advertise: '/Advertise', // 获取广告位
 
 	/* 设计器  ↓ */
 	// 团队保存, 更新,创建接口

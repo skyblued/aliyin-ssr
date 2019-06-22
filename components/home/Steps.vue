@@ -1,7 +1,7 @@
 <template>
     <div class="steps">
         <div class="advertising-list">
-            <a target="_blank" :href="item.NavigateUrl" v-for="(item,i) in banner" :key="i">
+            <a target="_blank" :href="item.NavigateUrl" v-for="(item,i) in bannerList" :key="i">
                 <img :src="item.FileUrl && $store.state.port.imgBaseUrl + item.FileUrl" alt="" :title="item.AdvertisementName">
             </a>
         </div>
@@ -10,16 +10,12 @@
 
 <script>
 export default {
+    props: ['bannerList'],
     data () {
         return {
-            banner: []
+            
         }
     },
-    mounted() {
-        this.$axios.get('/Advertise?ID=' + 138).then(res => {
-            this.banner = res.data.Advertisements
-        })
-    }
 }
 </script>
 

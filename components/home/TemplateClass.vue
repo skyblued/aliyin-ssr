@@ -66,9 +66,6 @@ export default {
         enter() {
             this.isShow = 'ok'
         }
-	},
-	mounted() {
-		console.log(this.barList)
 	}
 }
 </script>
