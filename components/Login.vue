@@ -6,26 +6,27 @@
 		<div :class="['model-dialog', $store.state.animation.loginShow ? '' : 'model-hidden']">
 			<transition name="animation-scale">
 				<div class="logreg-wrapper" v-if="$store.state.animation.loginShow">
+                    <div class="close-btn"></div>
 					<div class="comp">
 						<div class="sign-page-wrapper">
 							<div class="toggle-sign-way">
 								<div class="sign-way" title="切换登录方式" @click="handleToggleSign">
-									<img :src="$store.state.port.staticPath + $store.state.signType == 'wxpage' ? image : src" alt="">
+									<img :src="$store.state.port.staticPath + ($store.state.login.signType == 'wxpage' ? image : src)" alt="">
 								</div>
 								<div class="sign-way-tips">
 									<img :src="$store.state.port.staticPath +'/img/home/security_icon.png'" alt="">
-									<p v-if="$store.state.signType == 'signpage'">扫码登录在这里</p>
+									<p v-if="$store.state.login.signType == 'signpage'">扫码登录在这里</p>
 									<p v-else>账号登录在这里</p>
 									<i></i>
 									<i></i>
 								</div>
 							</div>
-							<div class="wx-page" v-if="$store.state.signType == 'wxpage'">
+							<div class="wx-page" v-if="$store.state.login.signType == 'wxpage'">
 								<div class="wx-title">
 									<span>微信登录更安全</span>
 								</div>
 								<div class="qrcode">
-									<img :src="$store.state.port.staticPath + wxqrcode" alt="" style="width:100%;height:100%;">
+									<img :src="wxqrcode" alt="" style="width:100%;height:100%;">
 									<span class="refresh-mask" v-if="showCode" @click="handleRefresh">二维码过期点击刷新</span>
 								</div>
 								<div class="wx-tips">
@@ -37,7 +38,7 @@
 									</p>
 								</div>
 							</div>
-							<div class="sign-page" v-if="$store.state.signType == 'signpage'">
+							<div class="sign-page" v-if="$store.state.login.signType == 'signpage'">
 								<p class="login-pwd-title">手机号码登录</p>
 								<div class="sign-in">
 									<el-form :model="form">
@@ -64,6 +65,9 @@
 									<el-button @click.stop="login">登 录</el-button>
 								</div>
 							</div>
+                            <div class="others">
+                                <span class="sign-qq">QQ登录</span>
+                            </div>
 						</div>
 					</div>
 				</div>
@@ -76,8 +80,6 @@
 export default {
     data () {
         return {
-            //wxpage: true,            // 显示微信登录页
-            //signpage: false,         // 账号密码登录页
             image: '/img/home/computer_icon.png',
             src: '/img/home/Qrcode_icon.png',
             dialogForgetPwd: false,     // 忘记密码弹出框
@@ -105,14 +107,12 @@ export default {
     },
     methods: {
         handleToggleSign() {  // 切换登录方式
-            if(this.$store.state.signType == 'signpage'){
-                this.$store.commit('setSignType', 'wxpage')
-                //.wxpage = true
+            if(this.$store.state.login.signType == 'signpage'){
+                this.$store.commit('login/toggleSign', 'wxpage')
                 this.handleSignIn()
             }else{
-                this.$store.commit('setSignType', 'signpage')
+                this.$store.commit('login/toggleSign', 'signpage')
                 clearInterval(this.timer)
-                //this.wxpage = false
             }
         },
         setDialogType(type) {
@@ -156,7 +156,7 @@ export default {
         handleSignIn() {  // 微信登录
             let source= localStorage['source'] || ''
             this.$axios.get('/WeChatQR?RegistSource=' + source).then(res => {
-                //console.log(res)
+                // console.log(res)
                 if(res.data.status == 'ok'){
                     this.overtime = res.data.expire
                     let sceneId = res.data.sceneId
@@ -329,7 +329,7 @@ export default {
 				body.appendChild(this.$el);
 			}
 		});
-        // this.handleSignIn()
+        this.handleSignIn()
     }
 }
 </script>
@@ -338,10 +338,12 @@ export default {
 
 // 登录样式
 .logreg-wrapper{
-    width: 100%;
-    margin: auto;
+    width: 509px;
+    background: #fff;
+    border-radius: 10px;
     box-shadow: 0 0 2px 0 rgba(0,0,0,.12);
     text-align: center;
+    padding-bottom: 30px;
 }
 .error-tips{
     position: absolute;
@@ -381,6 +383,7 @@ export default {
 .sign-page-wrapper{
     position: relative;
     height: 100%;
+    padding-top: 115px;
 }
 .toggle-sign-way, .toggle-sign-way .sign-way{
     position: absolute;
@@ -408,6 +411,7 @@ export default {
 .toggle-sign-way .sign-way-tips{
     width:157px;
     height:36px;
+    display: flex;
     line-height: 20px;
     background:rgba(255,255,255,1);
     box-shadow:0px 0px 5px 0px rgba(132,139,145,0.3);
@@ -440,6 +444,7 @@ export default {
     display: inline-block;
     position: absolute;
     top: 18px;
+    right: -24px;
     opacity:0.5;
 }
 .toggle-sign-way .sign-way-tips i:last-child{
@@ -458,8 +463,6 @@ export default {
 .wx-page{
     width: 100%;
     height: 300px;
-    position: absolute;
-    top: 115px;
 }
 .wx-page .wx-title{
     width:164px;
@@ -493,10 +496,10 @@ export default {
     background-position: 50%;
 }
 .wx-page .wx-tips{
-    width: 228px;
+    display: inline-block;
     height: 22px;
     line-height: 22px;
-    margin: 31px auto 39px;
+    margin: 20px auto 0;
 }
 .wx-page .wx-tips img{
     width: 27px;
@@ -516,13 +519,25 @@ export default {
     margin-left: 12px;
 }
 
+// qq登录
+.others{
+    font-size:16px;
+    font-family:MicrosoftYaHei;
+    font-weight:400;
+    text-decoration:underline;
+    color:rgba(153,153,153,1);
+    padding: 20px 30px;
+    text-align: right;
+    cursor: pointer;
+    &:hover{
+        color: $color;
+    }
+}
 // 账号登录
 .sign-page{
     width: 356px;
     height: 302px;
-    position: absolute;
-    top: 115px;
-    left: 77px;
+    margin: auto;
 }
 .sign-page .login-pwd-title{
     width:140px;
