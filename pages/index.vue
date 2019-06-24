@@ -53,7 +53,7 @@ export default {
 			qrcode: FooterCode.data.Advertisements[0].FileUrl,
 			articleList: FooterArticle.data
 		}
-	},
+	}
 }
 </script>
 

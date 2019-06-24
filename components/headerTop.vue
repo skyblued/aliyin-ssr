@@ -1,7 +1,7 @@
 <template>
     <div class="header-top">
         <div id="header-top">
-            <div class="headerTop-left">海量模板免费使用，印刷订单全国包邮</div>
+            <div class="headerTop-left" style="font-size: 14px">海量模板免费使用，印刷订单全国包邮</div>
             <div class="login-btn" v-if="!userName">
                 <div class="label"  @click="$store.commit('login/toggleShow', true)">
                     <span class="label-item">登录/注册</span>

@@ -1,8 +1,8 @@
 <template>
     <div class="carousel">
         <el-carousel trigger="click">
-            <el-carousel-item v-for="(item,i) in banner" :key="i">
-                <img :src="$store.state.port.imgBaseUrl+item.FileUrl" alt="">
+            <el-carousel-item v-for="(item,i) in carouselBanner" :key="i">
+                <img :src="$store.state.port.imgBaseUrl + item.FileUrl" alt="">
             </el-carousel-item>
         </el-carousel>
     </div>
@@ -10,23 +10,12 @@
 
 <script>
 export default {
+    props: ['carouselBanner'],
     data() {
         return {
-            banner: []
+            
         }
     },
-    methods: {
-        getData() {
-            var url = "/Advertise?ID="+126;
-            this.$axios.get(url).then(res => {
-                //console.log(res.data)
-                this.banner = res.data.Advertisements
-            })
-        }
-    },
-    mounted() {
-        this.getData();
-    }
 }
 </script>
 

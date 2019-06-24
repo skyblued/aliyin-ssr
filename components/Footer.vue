@@ -170,7 +170,7 @@ export default {
         background: rgba(236,236,236,1);
         text-align: center;
         color: rgba(153,153,153,1);
-        margin-top: 40px;
+        margin-top: 32px;
         .link{
             color: rgba(153,153,153,1);
             &:hover{

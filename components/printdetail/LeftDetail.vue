@@ -2,21 +2,23 @@
     <div id="detail-left"> 
         <div id="detail-block">
             <div id="small" @mouseenter="init" @mouseleave="out" @mousemove="move($event)">
-                <img id="smallimg" :src="$store.state.port.imgBaseUrl+image" alt="">
+                <img id="smallimg" :src="$store.state.port.imgBaseUrl + image" alt="">
                 <div id="move-block"></div>
             </div>
             <div id="big">
-                <img id="bigimg" :src="$store.state.port.imgBaseUrl+image" alt="">
+                <img id="bigimg" :src="$store.state.port.imgBaseUrl + image" alt="">
             </div>        
         </div>
         <div class="thumbnail" v-for="(items,i) in info" :key="i">
             <img @click="handlePrev(items)" class="img-left" :src="$store.state.port.staticPath + '/img/print/xqy_left.png'" alt="">
-            <ul>
-                <li :class="activeIndex == index ? 'active' : ''" v-for="(item,index) in items.Albums" :key="index" @mouseover="handleToggle(index,item)">
-                    <img :src="$store.state.port.imgBaseUrl+item.ImageUrl" alt="">
-                </li>
-            </ul>
-            <img @click="handleNext(items)" class="img-right" :src="$store.state.port.staticPath + '/img/print/xqy_right.png'" alt="">
+            <div id="content">
+                <ul id="container">
+                    <li :class="activeIndex == index ? 'active' : ''" v-for="(item,index) in items.Albums" :key="index" @mouseover="handleToggle(index,item)">
+                        <img :src="$store.state.port.imgBaseUrl + item.ImageUrl" alt="">
+                    </li>
+                </ul>
+            </div>
+            <img @click="handleNext()" class="img-right" :src="$store.state.port.staticPath + '/img/print/xqy_right.png'" alt="">
         </div>
     </div>
 </template>
@@ -28,6 +30,7 @@ export default {
         return {
             image: '',
             activeIndex: 0,
+            timer: null
         }
     },
     props: ['info'],
@@ -56,8 +59,8 @@ export default {
         move.style.height = bigH/bigimgH * smallimgH/3*2 + 'px';
 
         // 遮罩层运动的最大距离
-        move_maxL = block.clientWidth - move.offsetWidth;
-        move_maxT = block.clientHeight - move.offsetHeight;
+        move_maxL = block.offsetWidth - move.offsetWidth;
+        move_maxT = block.offsetHeight - move.offsetHeight;
 
         // 右侧图片运动的最大距离
         bigimg_maxL = bigimg.clientWidth - big.offsetWidth;
@@ -65,13 +68,14 @@ export default {
 
         big.style.display = 'none';
         move.style.visibility = 'hidden';  // 鼠标未移入左侧区域是遮罩层和右侧大图不可见
-    },
-    watch: {
-        info() {
-            if(this.info[0].Albums.length > 0){
-                for(var i=0;i<this.info.length;i++){
-                    this.image = this.info[i].Albums[0].ImageUrl
-                }
+
+        
+        this.timer = setInterval(this.handleNext,2000)
+
+        if(this.info.length == 0) return
+        if(this.info[0].Albums.length > 0){
+            for(var i=0;i<this.info.length;i++){
+                this.image = this.info[i].Albums[0].ImageUrl
             }
         }
     },
@@ -80,23 +84,33 @@ export default {
             this.activeIndex = i
             this.image = item.ImageUrl
         },
-        handleNext(items) {  // 后退
-            let num = items.Albums.length
-            if(this.activeIndex < num-1){
-                this.activeIndex = this.activeIndex + 1
-                this.image = items.Albums[this.activeIndex].ImageUrl
+        handleNext() {  // 后退
+            if(this.info[0].Albums.length < 5) return
+            let num = this.info[0].Albums.length
+            if(this.activeIndex < num - 1){
+                this.activeIndex++
+                this.image = this.info[0].Albums[this.activeIndex].ImageUrl
             }else{
                 this.activeIndex = 0
-                this.image = items.Albums[0].ImageUrl
+                this.image = this.info[0].Albums[0].ImageUrl
+            }
+            var obj = document.getElementById('container')
+            obj.style.marginLeft = 0 + 'px'
+            if(this.activeIndex > 4) {
+                obj.style.marginLeft = '-80px'
+                this.image = this.info[0].Albums[this.activeIndex].ImageUrl
+            }else{
+                obj.style.marginLeft = 0 + 'px'
             }
         },
         handlePrev(items) {  // 前进
+            if(items.Albums.length < 5) return
             let num = items.Albums.length
             if(this.activeIndex <= 0){
                 this.activeIndex = num-1
                 this.image = items.Albums[num-1].ImageUrl
             }else{
-                this.activeIndex = this.activeIndex - 1
+                this.activeIndex--
                 this.image = items.Albums[this.activeIndex].ImageUrl
             }
         },
@@ -107,10 +121,12 @@ export default {
             move.style.visibility = 'visible';
             big.style.visibility = 'visible';
             big.style.display = 'block';
+            clearInterval(this.timer)
         },
         out() {
             big.style.display = 'none';
             move.style.visibility = 'hidden';
+            this.timer = setInterval(this.handleNext, 2000)
         },
         // 鼠标移动时遮罩层随鼠标移动而移动
         move(e) {
@@ -141,6 +157,9 @@ export default {
             bigimg.style.left = -scaleL * bigimg_maxL + 'px';
             bigimg.style.top = -scaleT * bigimg_maxT + 'px';
         }
+    },
+    destroyed() {
+        clearInterval(this.timer)
     }
 }
 </script>
@@ -148,15 +167,15 @@ export default {
 <style lang="scss" scoped>
 
 #detail-left{
-    width: 579px;
+    width: 500px;
     #detail-block{
         width: 100%;
-        height: 579px;
+        height: 500px;
         position: relative;
     }
     #small{
         width: 100%;
-        height: 579px;
+        height: 500px;
         background:rgba(213,221,227,1);
         border-radius:5px;
         position: relative;
@@ -186,20 +205,29 @@ export default {
             display: inline-block;
             cursor: pointer;
         }
+        #content{
+            width: 430px;
+            height: 90px;
+            overflow: hidden;
+            padding-top: 10px;
+        }
         ul{
             display: flex;
-            justify-content: space-around;
+            // justify-content: space-between;
+            width: 600px;
             position: relative;
             li{
-                width: 90px;
-                height: 90px;
+                width: 80px;
+                height: 80px;
                 margin-right: 6px;
                 cursor: pointer;
                 position: relative;
                 border: 2px solid rgba(213,221,227,1);
                 img{
-                    width: 100%;
-                    height: 100%;
+                    display: inline-block;
+                    width: 76px;
+                    height: 76px;
+                    object-fit: contain;
                 }
             }
             .active{
@@ -213,7 +241,7 @@ export default {
                     border-right: 12px solid transparent;
                     position: absolute;
                     top: -12px;
-                    left: 33px;
+                    left: 26px;
                 }
             }
         }
@@ -222,7 +250,7 @@ export default {
 #big{
     position: absolute;
     top: 0;
-    left: 579px;
+    left: 500px;
     width: 350px;
     height: 350px;
     overflow: hidden;
