@@ -1,95 +1,86 @@
 <template>
-    <div>
-		<transition name="el-fade-in-linear">
-			<div class="model-mask" v-show="$store.state.login.loginShow" ></div>
-		</transition>
-		<transition name="animation-scale" @before-enter="beforeEnter">
-			<div class="model-dialog" v-if="$store.state.login.loginShow" @click="$store.commit('login/toggleShow', false)">
-				<div class="logreg-wrapper" @click.stop>
-					<div class="comp">
-						<div class="sign-page-wrapper"  v-if="!qqLogin">
-                            <div class="close-btn" style="top: 0px;right: -50px;" @click="$store.commit('login/toggleShow', false)"></div>
-							<div class="toggle-sign-way">
-								<div class="sign-way" title="切换登录方式" @click="handleToggleSign">
-									<img :src="$store.state.port.staticPath + ($store.state.login.signType == 'wxpage' ? image : src)" alt="">
-								</div>
-								<div class="sign-way-tips">
-									<img :src="$store.state.port.staticPath +'/img/home/security_icon.png'" alt="">
-									<p v-if="$store.state.login.signType == 'signpage'">扫码登录在这里</p>
-									<p v-else>账号登录在这里</p>
-									<i></i>
-									<i></i>
-								</div>
-							</div>
-							<div class="wx-page" v-if="$store.state.login.signType == 'wxpage'">
-								<div class="wx-title">
-									<span>微信登录更安全</span>
-								</div>
-								<div class="qrcode">
-									<img :src="wxqrcode" alt="" style="width:100%;height:100%;">
-									<span class="refresh-mask" v-if="showCode" @click="handleRefresh">二维码过期点击刷新</span>
-								</div>
-								<div class="wx-tips">
-									<img :src="$store.state.port.staticPath +'/img/home/wechat.png'" alt="">
-									<p>
-										打开
-										<span>微信</span>
-										扫描二维码登录
-									</p>
-								</div>
-							</div>
-							<div class="sign-page" v-if="$store.state.login.signType == 'signpage'">
-								<p class="login-pwd-title">手机号码登录</p>
-								<div class="sign-in">
-									<el-form :model="form">
-										<el-form-item>
-											<!-- <el-input type="text" @blur="detection" v-model="phone" placeholder="请输入手机号码"></el-input> -->
-											<el-input type="text" @blur="detection" v-model="form.usernameormobile" placeholder="请输入账号"></el-input>
-											<span class="error-tips">{{error}}</span>
-										</el-form-item>
-										<el-form-item>
-											<!-- <el-input type="password" v-model="password1" placeholder="请输入登录密码" @keyup.native="get($event)" @blur="blurend"></el-input> -->
-											<el-input type="password" v-model="form.password" placeholder="请输入登录密码" @keyup.native="get($event)" @blur="blurend"></el-input>
-											<span class="error-tips">{{pwderr}}</span>
-										</el-form-item>
-									</el-form>
-									<div class="sign-line">
-										<p>
-											<span>没有账号，去<span style="color: #745bff;cursor: pointer;" @click="setDialogType('register')">注册</span></span>
-										</p>
-										<p @click="setDialogType('forget')">
-											<span>忘记密码?</span>
-										</p>
-									</div>
-									<!-- <el-button :disabled="show" @click.stop="login" :style="{background: background}">登 录</el-button> -->
-									<el-button @click.stop="login">登 录</el-button>
-								</div>
-							</div>
-							<div v-if="qqLogin" class="It-modal-content" style="width: 500px;height:520px;marign:-530px;">
-								<iframe id="iframeqq" class="modal-iframe" :src="$store.state.port.qqServer + '/QQLogin.aspx'" frameborder="0"></iframe>
-							</div>
-                            <div class="others">
-                                <span class="sign-qq" @click="handleOpenQQ">QQ登录</span>
-                            </div>
+	<div class="model-dialog"  @click="$store.commit('login/toggleShow', false)">
+		<div class="logreg-wrapper" @click.stop>
+			<div class="close-btn" style="top: 0px;right: -50px;" @click="handleClose"></div>
+			<div class="comp">
+				<div class="sign-page-wrapper"  v-if="!qqLogin && !bindQQ">
+					
+					<div class="toggle-sign-way">
+						<div class="sign-way" title="切换登录方式" @click="handleToggleSign">
+							<img :src="$store.state.port.staticPath + ($store.state.login.signType == 'wxpage' ? image : src)" alt="">
 						</div>
-						<div class="It-modal">
-							<div class="It-modal-mask"></div>
-							
+						<div class="sign-way-tips">
+							<img :src="$store.state.port.staticPath +'/img/home/security_icon.png'" alt="">
+							<p v-if="$store.state.login.signType == 'signpage'">扫码登录在这里</p>
+							<p v-else>账号登录在这里</p>
+							<i></i>
+							<i></i>
 						</div>
-						<BindWechat v-if="bindQQ"
-							:info="info"
-						></BindWechat>
+					</div>
+					<div class="wx-page" v-if="$store.state.login.signType == 'wxpage'">
+						<div class="wx-title">
+							<span>微信登录更安全</span>
+						</div>
+						<div class="qrcode">
+							<img :src="wxqrcode" alt="" style="width:100%;height:100%;">
+							<span class="refresh-mask" v-if="showCode" @click="handleRefresh">二维码过期点击刷新</span>
+						</div>
+						<div class="wx-tips">
+							<img :src="$store.state.port.staticPath +'/img/home/wechat.png'" alt="">
+							<p>
+								打开
+								<span>微信</span>
+								扫描二维码登录
+							</p>
+						</div>
+					</div>
+					<div class="sign-page" v-if="$store.state.login.signType == 'signpage'">
+						<p class="login-pwd-title">手机号码登录</p>
+						<div class="sign-in">
+							<el-form :model="form">
+								<el-form-item>
+									<!-- <el-input type="text" @blur="detection" v-model="phone" placeholder="请输入手机号码"></el-input> -->
+									<el-input type="text" @blur="detection" v-model="form.usernameormobile" placeholder="请输入账号"></el-input>
+									<span class="error-tips">{{error}}</span>
+								</el-form-item>
+								<el-form-item>
+									<!-- <el-input type="password" v-model="password1" placeholder="请输入登录密码" @keyup.native="get($event)" @blur="blurend"></el-input> -->
+									<el-input type="password" v-model="form.password" placeholder="请输入登录密码" @keyup.native="get($event)" @blur="blurend"></el-input>
+									<span class="error-tips">{{pwderr}}</span>
+								</el-form-item>
+							</el-form>
+							<div class="sign-line">
+								<p>
+									<span>没有账号，去<span style="color: #745bff;cursor: pointer;" @click="setDialogType('register')">注册</span></span>
+								</p>
+								<p @click="setDialogType('forget')">
+									<span>忘记密码?</span>
+								</p>
+							</div>
+							<!-- <el-button :disabled="show" @click.stop="login" :style="{background: background}">登 录</el-button> -->
+							<el-button @click.stop="login">登 录</el-button>
+						</div>
+					</div>
+					<div class="others">
+						<span class="sign-qq" @click="handleOpenQQ">QQ登录</span>
 					</div>
 				</div>
-						{{qqLogin}}
+				<div v-if="qqLogin" class="It-modal-content" style="width: 500px;height:520px;marign:-530px;">
+					<iframe id="iframeqq" class="modal-iframe" :src="$store.state.port.qqServer + '/QQLogin.aspx'" frameborder="0"></iframe>
+				</div>
+				<BindWechat v-if="bindQQ"
+					@handleSkipClose="handleSkipClose"
+					:info="info"
+				></BindWechat>
 			</div>
-		</transition>
+		</div>
 	</div>
 </template>
 
 <script>
 import BindWechat from '@/components/BindWechat'
 export default {
+	name: 'login',
 	components: {
 		BindWechat
 	},
@@ -127,10 +118,13 @@ export default {
     created () {
         this.codeImg = 'https://open.aliyin.com/ValidateCode.aspx?flage='
         
-    },
+	},
     methods: {
         handleClose() {
-            this.$store.commit('login/toggleShow', false)
+			this.$store.commit('login/toggleShow', false);
+			if (this.bindQQ) {
+				this.handleSkipClose();
+			}
         },
         handleToggleSign() {  // 切换登录方式
             if(this.$store.state.login.signType == 'signpage'){
@@ -173,7 +167,7 @@ export default {
         },
         // 二维码过期刷新
         handleRefresh() {
-            console.log(this.showCode)
+            // console.log(this.showCode)
             if(this.showCode){
                 this.handleSignIn()
                 this.showCode = false
@@ -249,7 +243,7 @@ export default {
                 headers:{'Content-Type': 'multipart/form-data'}
             }
             this.$axios.post("/Login",formData).then((res)=>{
-                console.log(res.data)
+                // console.log(res.data)
                 if(res.data.State == 'Success'){
                     clearInterval(this.timer)
                     let data = res.data;
@@ -296,21 +290,16 @@ export default {
                     }
                 }
                 this.$axios.post('/TeamInfos', {}, config).then(response => {
-                    console.log(response.data)
+                    // console.log(response.data)
                     localStorage.setItem('teamNum', response.data[0].Num)
                     localStorage.setItem('teamName', response.data[0].TeamName)
                     open(true)
                 })
             })
 		},
-		beforeEnter() {
-			this.handleSignIn();
-			this.$nuxt.$loading.show = false;
-			console.log(this.$nuxt.$loading)
-		},
-		handleOpenQQ() {
-            this.qqLogin = true
-            //this.$store.commit('setDialogType', '')
+		handleOpenQQ() { // 打开QQ登录窗口
+			this.qqLogin = true
+			clearInterval(this.timer)
             this.$nextTick(() => {
                 window.addEventListener("message",(result)=>{
 					if(!result) return console.log('登录失败')
@@ -353,17 +342,56 @@ export default {
                     }
                 });
             })
-        },
+		},
+		handleSkipClose() { // 跳过手机号和微信绑定
+            if(!this.info) return
+            var formData = new FormData()
+            formData.append('qqopenid', this.info.openid);
+            formData.append('qqnicename', this.info.name);
+            formData.append('qqheaderpic', this.info.pic);
+            formData.append('qqsex', this.info.sex);
+            formData.append('RegistSource', this.source)
+            let config = {
+                headers:{'Content-Type': 'multipart/form-data'}
+            }
+            if(this.skip) return
+            this.skip = true
+            this.$axios.post('/QQModes', formData, config).then(res => {
+                // console.log(res)
+                if (res.data.status == 'ok') {
+                    this.$message({type: 'success', message: '登录成功'})
+                    this.getTeamInfo(res.data.token).then(() => {
+                        let name = res.data.nickName || res.data.userName
+                        localStorage.setItem('token', res.data.token)
+                        localStorage.setItem('userName', name)
+                        localStorage.setItem('avatar', res.data.headImage)
+                        localStorage.setItem('isDesigner', res.data.IsDesigner)
+                        localStorage.setItem('phone', res.data.bindPhone)
+                        localStorage.setItem('loginType', res.data.loginType)
+                        localStorage.setItem('isBindWx', res.data.bindWX)
+                        localStorage.setItem('isBindQQ', res.data.bindqq)
+						localStorage.setItem('times', res.data.logintimes)
+						
+                        // 将用户token保存到vuex中
+						this.$store.commit('login/addToKen', res.data.token)
+						this.$store.commit('login/setUserName', name)
+						this.$store.commit('login/changeLogin', true)
+						this.$store.commit('login/toggleShow', false)
+						this.$store.$cookiz.set('token', res.data.token,{maxAge: 604800}) 
+                        this.skip = false
+                        history.go(0)
+                    })
+                }else{
+                    this.$message({type: 'warning', message: res.data.Message})
+                }
+            })
+        }
     },
     destroyed() {
         clearInterval(this.timer)
     },
-    watch: {
-        
-    },
     mounted () {
 		this.$nextTick(() => {
-			
 			const body = document.querySelector("body");
 			if (body.append) {
 				body.append(this.$el);
@@ -371,7 +399,7 @@ export default {
 				body.appendChild(this.$el);
 			}
 		});
-        // this.handleSignIn()
+        this.handleSignIn()
 	},
 	
 }
@@ -381,12 +409,13 @@ export default {
 
 // 登录样式
 .logreg-wrapper{
-    width: 509px;
+    min-width: 509px;
     background: #fff;
     border-radius: 10px;
     box-shadow: 0 0 2px 0 rgba(0,0,0,.12);
     text-align: center;
     padding-bottom: 30px;
+	position: relative;
 }
 .error-tips{
     position: absolute;
@@ -396,7 +425,6 @@ export default {
     line-height: 16px;
 }
 .logreg-wrapper /deep/ .el-form .el-form-item .el-form-item__content .el-input .el-input__inner{
-    width:356px;
     height:48px;
     background:rgba(255,255,255,1);
     border:1px solid rgba(210,210,210,1);
@@ -421,6 +449,10 @@ export default {
 .comp{
     width: 100%;
     height: 100%;
+	position: relative;
+	overflow: hidden;
+	border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
 }
 
 .sign-page-wrapper{
@@ -637,6 +669,7 @@ export default {
     }
 }
 .modal-iframe{
+	margin: -48px -60px;
     width: 620px;
     height: 600px;
     background-color: #fff;

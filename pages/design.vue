@@ -9,7 +9,11 @@ export default {
 	name: 'design',
 	components: {
 	},
-	async asyncData({store}) {
+	async asyncData({app, store}) {
+		console.log(process.server)
+		// let form = new FormData();
+		// app.myInjectedFunction('123131')
+		// console.log()
 		// console.log(context)
 		// let {data} = await context.$axios.get("/Fonts");
 		return {
@@ -22,8 +26,8 @@ export default {
 		// console.log(cookie, req.headers.cookie)
 	},
 	mounted() {
-		console.log(this)
-		this.$axios.get("/Fonts");
+		// console.log(this)
+		// this.$axios.get("/Fonts");
 		// console.log(this.fontList)
 		
 		

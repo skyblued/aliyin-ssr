@@ -36,6 +36,7 @@ module.exports = {
 	plugins: [
 		'@/plugins/element-ui',
 		'@/plugins/axios',
+		'@/plugins/ctx-inject'
 	],
 	/*
 	** Nuxt.js modules
