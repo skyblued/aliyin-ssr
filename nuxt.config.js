@@ -72,7 +72,6 @@ module.exports = {
 	build: {
 		transpile: [/^element-ui/],
 		extractCSS: true,
-        vendor:['axios'], // 多个组件引用相同模块,打包一次
 		/*
 		** You can extend webpack config here
 		*/
