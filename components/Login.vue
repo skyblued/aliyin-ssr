@@ -1,13 +1,13 @@
 <template>
     <div>
 		<transition name="el-fade-in-linear">
-			<div class="model-mask" v-show="$store.state.login.loginShow"></div>
+			<div class="model-mask" v-show="$store.state.login.loginShow" ></div>
 		</transition>
-		<div class="model-dialog" v-show="$store.state.login.loginShow">
-			<transition name="animation-scale">
-				<div class="logreg-wrapper" v-if="$store.state.login.loginShow">
+		<transition name="animation-scale" @before-enter="beforeEnter">
+			<div class="model-dialog" v-if="$store.state.login.loginShow" @click="$store.commit('login/toggleShow', false)">
+				<div class="logreg-wrapper" @click.stop>
 					<div class="comp">
-						<div class="sign-page-wrapper">
+						<div class="sign-page-wrapper"  v-if="!qqLogin">
                             <div class="close-btn" style="top: 0px;right: -50px;" @click="$store.commit('login/toggleShow', false)"></div>
 							<div class="toggle-sign-way">
 								<div class="sign-way" title="切换登录方式" @click="handleToggleSign">
@@ -65,29 +65,52 @@
 									<el-button @click.stop="login">登 录</el-button>
 								</div>
 							</div>
+							<div v-if="qqLogin" class="It-modal-content" style="width: 500px;height:520px;marign:-530px;">
+								<iframe id="iframeqq" class="modal-iframe" :src="$store.state.port.qqServer + '/QQLogin.aspx'" frameborder="0"></iframe>
+							</div>
                             <div class="others">
-                                <span class="sign-qq">QQ登录</span>
+                                <span class="sign-qq" @click="handleOpenQQ">QQ登录</span>
                             </div>
 						</div>
+						<div class="It-modal">
+							<div class="It-modal-mask"></div>
+							
+						</div>
+						<BindWechat v-if="bindQQ"
+							:info="info"
+						></BindWechat>
 					</div>
 				</div>
-			</transition>
-		</div>
+						{{qqLogin}}
+			</div>
+		</transition>
 	</div>
 </template>
 
 <script>
+import BindWechat from '@/components/BindWechat'
 export default {
+	components: {
+		BindWechat
+	},
     data () {
         return {
             image: '/img/home/computer_icon.png',
             src: '/img/home/Qrcode_icon.png',
             dialogForgetPwd: false,     // 忘记密码弹出框
-            dialogApplyDesigner: false,  // 申请设计师弹出框
+			dialogApplyDesigner: false,  // 申请设计师弹出框
+			qqLogin: false,
+			bindQQ: false,
             form: {
                 usernameormobile: '',
                 password: '',
                 Type: ''
+			},
+			info: {
+                openid: '',
+                name: '',
+                pic: '',
+                sex: '',
             },
             background: 'rgba(210,210,210,1)',
             disabled: true,
@@ -171,6 +194,7 @@ export default {
                             // console.log(result)
                             if(result.data.status == 'ok') {
                                 this.getTeamInfo(result.data.token).then(() => {
+									
                                     let name = result.data.nickName || result.data.userName 
                                     localStorage.setItem('token', result.data.token)
                                     localStorage.setItem('userName', name)
@@ -278,51 +302,68 @@ export default {
                     open(true)
                 })
             })
-        }
+		},
+		beforeEnter() {
+			this.handleSignIn();
+			this.$nuxt.$loading.show = false;
+			console.log(this.$nuxt.$loading)
+		},
+		handleOpenQQ() {
+            this.qqLogin = true
+            //this.$store.commit('setDialogType', '')
+            this.$nextTick(() => {
+                window.addEventListener("message",(result)=>{
+					if(!result) return console.log('登录失败')
+					// console.log(result.data.openid)
+					this.bindQQ = true;
+                    this.info.openid = result.data.openid
+                    if(result.data.data !== undefined){
+                        this.info.name = result.data.data.nickname
+                        this.info.pic = result.data.data.figureurl_qq_2
+                        this.info.sex = result.data.data.gender
+                    }
+                    if (result.data.message == 'needbind') {
+						this.qqLogin = false;
+						
+                    }else{
+                        if(!result.data) return
+                        this.getTeamInfo(result.data.token).then(() => {
+                            let name = result.data.nickName || result.data.userName || result.data.bindPhone
+                            localStorage.setItem('token', result.data.token)
+                            localStorage.setItem('userName', name)
+                            localStorage.setItem('isDesigner', result.data.IsDesigner)
+                            localStorage.setItem('avatar', result.data.headImage)
+                            let phone = result.data.bindPhone
+                            phone = phone.toString().replace(/^(\d{3})\d{4}(\d{4})$/, '$1****$2')
+                            localStorage.setItem('phone', phone)
+                            localStorage.setItem('loginType', result.data.loginType)
+                            localStorage.setItem('isBindWx', result.data.bindWX)
+                            localStorage.setItem('isBindQQ', result.data.bindqq)
+                            localStorage.setItem('times', result.data.LoginTimes)
+                            this.$message({type: 'success', message: '登录成功'})
+							 // 将用户token保存到vuex中
+							this.$store.commit('login/addToKen', data.Token)
+							this.$store.commit('login/setUserName', name)
+							this.$store.commit('login/changeLogin', true)
+							this.$store.commit('login/toggleShow', false)
+							this.$store.$cookiz.set('token', data.Token,{maxAge: 604800}) 
+                            this.qqLogin = false
+                            history.go(0)
+                        })
+                    }
+                });
+            })
+        },
     },
     destroyed() {
         clearInterval(this.timer)
     },
-    // computed: {
-    //     show() {
-    //         if(this.form.password == -1 && this.form.usernameormobile == -1){
-    //             this.background = '#745bff'
-    //             return false
-    //         }else{
-    //             this.background = 'rgba(210,210,210,1)'
-    //             return true
-    //         }
-    //     }
-    // },
     watch: {
-        // 验证手机号或邮箱
-        // phone() {
-        //     if(/(^1[0-9]{10}$)|(^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$)/.test(this.phone)) { 
-        //         this.form.usernameormobile = -1
-        //     }else{
-        //         this.form.usernameormobile = 1
-        //     }
-        // },
-        // code() {  // 监听输入的图形验证码
-        //     this.inputCode()
-        // },
-        // 验证密码
-        // password1() {
-        //     if(/^[0-9A-Za-z]{6,20}$/.test(this.password1)) {
-        //         this.form.password = -1
-        //     }else{
-        //         this.form.password = 1
-        //     }
-        // },
-        // str() {
-        //     if(this.str == 'signpage'){
-        //         clearInterval(this.timer)
-        //         return
-        //     }
-        // }
+        
     },
     mounted () {
 		this.$nextTick(() => {
+			
 			const body = document.querySelector("body");
 			if (body.append) {
 				body.append(this.$el);
@@ -330,8 +371,9 @@ export default {
 				body.appendChild(this.$el);
 			}
 		});
-        this.handleSignIn()
-    }
+        // this.handleSignIn()
+	},
+	
 }
 </script>
 
@@ -480,7 +522,9 @@ export default {
     height: 206px;
     border: 1px solid #9b9b9b;
     margin: 0 auto;
-    position: relative;
+	position: relative;
+	border-radius: 5px;
+	overflow: hidden;
 }
 .refresh-mask{
     position: absolute;
@@ -575,5 +619,27 @@ export default {
     }
 }
 
+
+.It-modal-content{
+    .It-modal-close{
+        position: absolute;
+        right: -36px;
+        top: -4px;
+        color: #fff;
+        cursor: pointer;
+        &::before{
+            content: '';
+            background-image: url(/img/home/fork_gray.png);
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+        }
+    }
+}
+.modal-iframe{
+    width: 620px;
+    height: 600px;
+    background-color: #fff;
+}
 
 </style>
