@@ -12,7 +12,7 @@ import HeaderTop from '@/components/HeaderTop'
 import Header from '@/components/home/Header'
 import Footer from '@/components/Footer'
 export default {
-    name: 'templatecenter',
+    name: 'print',
     components: {
 		HeaderTop,
 		Header,

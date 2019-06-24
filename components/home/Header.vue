@@ -15,9 +15,9 @@
                 <ul>
                     <li :class="{'menu-list': true, active: path == '/'}" @click="handleJump('/')">首页</li>
                     <nuxt-link to="/templateList">
-                        <li :class="{'menu-list': true, active: path == '/templatelist' || path == '/templatecenter'}">在线设计</li>
+                        <li :class="{'menu-list': true, active: path.indexOf('/templateList') > -1}">在线设计</li>
                     </nuxt-link>
-                    <li :class="{'menu-list': true, active: path == '/print' || path == '/printdetail'}" @click="handleJump('/print')">在线印刷</li>
+                    <li :class="{'menu-list': true, active: path.indexOf('/print') > -1}" @click="handleJump('/print')">在线印刷</li>
                 </ul>
             </div>
             <div class="header-right">
