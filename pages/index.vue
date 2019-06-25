@@ -1,8 +1,8 @@
 <template>
 	<div class="container">
 		<HeaderTop></HeaderTop>
-		<Header></Header>
-		<div class="carousel-content">
+		<Header id="header" :isFixed="isFixed" :barList="barList" :class="{fixed : isFixed}"></Header>
+		<div class="carousel-content" :style="{ marginTop: marginTop }">
 			<TemplateClass :barList="barList"></TemplateClass>
 			<Carousel :banner="banner"></Carousel>
 		</div>
@@ -38,6 +38,8 @@ export default {
 		// console.log(query, '服务端' + process.server , '客服端' + process.client);
 		// let cookie = app.$cookiz.getAll();
 		// if (req) console.log(cookie,isDev, req.headers.cookie);
+		let isFixed = false;
+		let marginTop = 0;
 		let [AllTemplate, Carousel, Steps, TempCommend, FooterCode, FooterArticle] = await Promise.all([
 			$axios.get(store.state.port.AllTemplate),
 			$axios.get(store.state.port.Advertise + '?ID=131'),
@@ -52,9 +54,29 @@ export default {
 			bannerList: Steps.data.Advertisements,
 			label: TempCommend.data,
 			qrcode: FooterCode.data.Advertisements[0].FileUrl,
-			articleList: FooterArticle.data
+			articleList: FooterArticle.data,
+			isFixed,
+			marginTop
 		}
-	}
+	},
+	methods: {
+		scrollToTop() {
+			let osTop = document.documentElement.scrollTop || document.body.scrollTop
+			if (osTop >= 40) {
+				this.isFixed = true
+				this.marginTop = document.querySelector('#header').offsetHeight + 'px'
+			} else {
+				this.isFixed = false
+				this.marginTop = 0
+			}
+		}
+	},
+	mounted() {
+		window.addEventListener('scroll', this.scrollToTop)
+	},
+	destroyed () {
+		window.removeEventListener('scroll', this.scrollToTop); 
+	},
 }
 </script>
 
@@ -64,6 +86,14 @@ export default {
 	justify-content: space-between;
 	width: 1200px;
 	margin: 30px auto 20px;
+	padding-top: 25px;
+}
+.fixed{
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	z-index: 2000;
 }
 </style>
 

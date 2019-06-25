@@ -4,7 +4,7 @@
             class="upload-demo"
             ref="upload"
             drag
-            action="http://v1.yinbuting.cn/api/UploadToOSS"
+            :action="$store.state.port.netServer + '/UploadOrderFile'"
             :on-preview="handlePreview"
             :on-remove="handleRemove"
             :onSuccess="uploadSuccess"
@@ -15,15 +15,21 @@
             :data="paramsData"
             :headers="myHeader"
             :before-upload="beforeAvatarUpload"
-            accept=".jpg,.png"
             multiple>
-            <!-- <i class="el-icon-upload"></i> -->
-            <img class="el-icon-upload" :src="$store.state.port.staticPath + '/img/personal/qyadd_icon.png'" alt="">
+            <img class="el-icon-upload" src="/img/personal/qyadd_icon.png" alt="">
             <div class="el-upload__text">支持文件格式：pdf、cdr、ai、jpg、zip、rar、psd、png</div>
         </el-upload>
-        <div v-if="logoFlag" class="progress-bar progress-bar-striped active" :style="{width: logoUploadPercent + '%'}">{{logoUploadPercent+ '%'}}</div>
-        <div class="footer">
-            <el-button type="primary" @click="handleUpload">确定上传</el-button>
+        <div class="close-btn" style="top: 0px;right: -50px;" @click="handleClose"></div>
+        <div id="loading" v-if="loading">
+            <div class="loader-inner ball-beat">
+                <div></div>
+                <div></div>
+                <div></div>
+            </div>
+        </div>
+        <div v-if="success" style="color: #745bff;font-size: 16px;">文件上传成功</div>
+        <div class="footer" style="margin-top: 30px;">
+            <el-button :class="{disabled : !disabled}" @click="handleUpload" :disabled="disabled">确定上传</el-button>
             <el-button @click="handleClose">取消</el-button>
         </div>
     </div>
@@ -33,30 +39,42 @@
 export default {
     data() {
         return {
-            logoFlag: false
+            filename: '',
+            filepath: '',
+            disabled: true,
+            loading: false,
+            success: false
         }
     },
     methods: {
         beforeAvatarUpload(file) {  
-            const isLt2M = file.size <  1024 * 1024 * 20;
+            const isLt2M = file.size <  1024 * 1024 * 200;
             if (!isLt2M) {
-                this.$message.error('上传图片大小不能超过 20MB!');
+                this.$message.error('上传图片大小不能超过 200MB!');
             }
             return isLt2M;
         },
 
         uploadSuccess (response, file, fileList) {
             console.log('上传文件', response)
+            if(response.status == 'ok') {
+                this.loading = false
+                this.success = true
+                this.logoUploadPercent = 100
+                this.filepath = response.key
+                this.disabled = false
+            }
         },
         uploadError (response, file, fileList) {
             console.log('上传失败，请重试！',response)
+            this.$message({type: 'error', message: '上传文件失败'})
+            this.loading = false
         },
         // 文件上传时的函数
         progress(event, file, fileList) {
             console.log(event,file)
-            this.logoFlag = true;   
-            this.logoUploadPercent = parseInt(event.percent.toFixed(0))
-            //this.logoUploadPercent = parseInt((event.loaded / event.total * 100).toFixed(0))
+            this.loading = true
+            this.filename = file.name
         },
         handleRemove(file, fileList) {
             console.log(file, fileList);
@@ -65,11 +83,23 @@ export default {
             console.log(file);
         },
         // 确定上传
-        handleUpload() {},
+        handleUpload() {
+            this.$emit('setCartFile', {name: this.filename, path: this.filepath})
+            this.$refs.upload.clearFiles()
+            this.disabled = true
+            this.success = false
+            this.$store.commit('port/setDialogUpload', false)
+        },
 
         handleClose() {
-            this.$store.commit('setDialogUpload', false)
+            this.disabled = true
+            this.success = false
+            this.$store.commit('port/setDialogUpload', false)
         }
+    },
+    destroyed() {
+        this.disabled = true
+        this.filepath = ''
     },
     computed: {
         paramsData: function() {
@@ -101,5 +131,52 @@ export default {
         color:rgba(153,153,153,1);
         line-height: 45px;
     }
+}
+.upload /deep/ .footer .el-button{
+    width: 98px;
+}
+.upload /deep/ .footer .el-button:first-child{
+    background: rgba(236,236,236,1);
+    color: rgba(51,51,51,1);
+    margin-right: 40px;
+}
+.upload .footer .disabled{
+    background: #745bff !important;
+    color: rgba(255,255,255,1) !important;
+    &:hover{
+        color: rgba(255,255,255,1);
+    }
+}
+
+#loading{
+    position: absolute;
+    top: 75%;
+    left: 50%;
+    transform: translateY(-50%) translateX(-50%);
+    z-index: 1000;
+}
+@keyframes ball-beat {
+    50% {
+        opacity: 0.2;
+        transform: scale(0.75);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+.ball-beat > div {
+    background: $color;
+    width: 8px;
+    height: 30px;
+    // border-radius: 100%;
+    border-radius: 5px;
+    margin: 5px;
+    animation-fill-mode: both;
+    display: inline-block;
+    animation: ball-beat 0.7s infinite linear;
+}
+.ball-beat > div:nth-child(2n-1){
+    animation-delay: 0.35s !important;
 }
 </style>

@@ -110,7 +110,7 @@
                         </span> -->
                     </div>
                 </div>
-                <el-dialog title="上传文件" :visible.sync="$store.state.dialogUpload" :close-on-click-modal="false" :lock-scroll="false" class="upload">
+                <el-dialog title="上传文件" :visible.sync="$store.state.port.dialogUpload" :close-on-click-modal="false" :lock-scroll="false" class="upload" :show-close="false">
                     <UploadFile @setCartFile="setCartFile"></UploadFile>
                 </el-dialog>
                 <el-dialog
@@ -125,6 +125,7 @@
                             <div></div>
                         </div>
                     </div>
+                    <div class="close-btn" style="top: 0px;right: -50px;" @click="dialogVisible = false"></div>
                     <div class="choose-title">模板P数: {{pages + 'P'}}  模板尺寸:  {{sizename}}</div>
                     <div class="template-list" v-if="list.length">
                         <div :class="['template-item',tempIndex == i ? 'active' : '']" v-for="(item,i) in list" :key="i" @click="handleChooseTemp(i)">
@@ -329,7 +330,7 @@ export default {
             this.dialogVisible = false
             let num = this.info[0].ProductType.FromClass
             let subtitle = this.info[0].ProductType.TypeName
-            this.$router.push({path: '/templatecenter', query: {id: this.$route.query.id, n: num, title: '', subtitle: subtitle}})
+            this.$router.push({path: 'templateList/templateCenter', query: {id: this.$route.query.id, n: num, title: '', subtitle: subtitle}})
         },
 
         // 删除选择的模板 
@@ -566,11 +567,11 @@ export default {
                 this.file = true
                 this.self = false
                 this.original = false
-                this.$store.commit('setDialogUpload', true)
+                this.$store.commit('port/setDialogUpload', true)
             }else if(msg == 'self'){
                 if (!localStorage['token']) {
                     this.$message({type: 'warning', message: '请先登录'})
-                    this.$store.commit('setDialogType', 'login')
+                    this.$store.commit('login/toggleShow', true)
                     return
                 } else {
                     this.printprice.OrderType = 3
@@ -1030,12 +1031,14 @@ export default {
         position: relative;
         .el-dialog__headerbtn{
             position: absolute;
-            top: 17px;
+            top: 0;
             right: -45px;
+            background: rgba(255,255,255,1);
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
             .el-dialog__close{
-                width: 24px;
-                height: 24px;
-                color: rgba(255,255,255,1);
+                color: rgba(51,51,51,1);
             }
         }
     }

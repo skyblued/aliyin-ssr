@@ -42,6 +42,9 @@ export default {
                 's4'
             ],
         }
+    },
+    mounted() {
+        window.scrollTo(0,0)
     }
 }
 </script>
@@ -103,6 +106,10 @@ export default {
         margin-bottom: 40px;
         background: rgba(255,255,255,1);
         cursor: pointer;
+        &:hover .pic-image{
+            transform: translateY(-8px);
+            box-shadow: 0 20px 30px 0 rgba(26,56,97,.13);
+        }
         .pic-img-wrap{
             width: 100%;
             height: 172px;
@@ -116,6 +123,7 @@ export default {
                 background-size: contain;
                 background-position: 50%;
                 background-repeat: no-repeat;
+                transition: all .2s;
             }
         }
         .pic-title{
