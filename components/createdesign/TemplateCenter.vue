@@ -146,6 +146,8 @@
 <script>
 import HomePagination from '@/components/home/HomePagination.vue'
 export default {
+	name: 'templateCenter',
+	props: ['center'],
     data () {
         return {
             isAll: true,
@@ -203,7 +205,7 @@ export default {
                 tips: '会员免费'
             }],
             sizeList: [],  // 尺寸列表
-            templateList: [],  // 模板列表
+            templateList: this.center.Data,  // 模板列表
             image: '/img/home/collect-icon.png',
             collectImage: '/img/home/collect_s_icon_hl.png',
             dialogSizeVisible: false,
@@ -281,35 +283,35 @@ export default {
 
         // 获取模板参数
         getParam() {
-            new Promise((resolve, reject) => {
-                if(localStorage['teamNum']) this.templateParam.TeamNum = localStorage['teamNum']
-                let ProductCategorieNum = this.num,
-                    ProductTypeId = this.typeId,
-                    SizeId = this.templateParam.SizeId,
-                    pageIndex = this.page.currentPage,
-                    pageSize = this.page.pageSize,
-                    SortOrder = this.templateParam.SortOrder,
-                    ChargingMode = this.templateParam.ChargingMode,
-                    StrFilterValue = '',
-                    TeamNum = this.templateParam.TeamNum,
-                    keywords = this.keywords
-                if(this.$route.query.filter) {
-                    StrFilterValue = this.$route.query.filter.replace(/-/g, ',')
-                }
-                this.typeList.forEach(item => {
-                    item['FilterValues'].forEach(temp => {
-                        if (!temp['IsEnable']) {
-                            StrFilterValue += temp.ValueId + ','
-                        }
-                    })
-                })
-                if(StrFilterValue.lastIndexOf(',') == StrFilterValue.length - 1) StrFilterValue = StrFilterValue.slice(0, -1)
-                resolve({ProductCategorieNum, ProductTypeId, SizeId, pageIndex, SortOrder, ChargingMode, StrFilterValue, TeamNum, keywords,pageSize})
-            }).then(obj => {
-                // console.log(obj)
-                this.templateParam = obj
-                this.getTempLateList(this.templateParam)
-            })
+            // new Promise((resolve, reject) => {
+            //     if(localStorage['teamNum']) this.templateParam.TeamNum = localStorage['teamNum']
+            //     let ProductCategorieNum = this.num,
+            //         ProductTypeId = this.typeId,
+            //         SizeId = this.templateParam.SizeId,
+            //         pageIndex = this.page.currentPage,
+            //         pageSize = this.page.pageSize,
+            //         SortOrder = this.templateParam.SortOrder,
+            //         ChargingMode = this.templateParam.ChargingMode,
+            //         StrFilterValue = '',
+            //         TeamNum = this.templateParam.TeamNum,
+            //         keywords = this.keywords
+            //     if(this.$route.query.filter) {
+            //         StrFilterValue = this.$route.query.filter.replace(/-/g, ',')
+            //     }
+            //     this.typeList.forEach(item => {
+            //         item['FilterValues'].forEach(temp => {
+            //             if (!temp['IsEnable']) {
+            //                 StrFilterValue += temp.ValueId + ','
+            //             }
+            //         })
+            //     })
+            //     if(StrFilterValue.lastIndexOf(',') == StrFilterValue.length - 1) StrFilterValue = StrFilterValue.slice(0, -1)
+            //     resolve({ProductCategorieNum, ProductTypeId, SizeId, pageIndex, SortOrder, ChargingMode, StrFilterValue, TeamNum, keywords,pageSize})
+            // }).then(obj => {
+            //     // console.log(obj)
+            //     // this.templateParam = obj
+            //     // this.getTempLateList(this.templateParam)
+            // })
             if (!this.typeId) return 
             this.$axios.get('/ProductTypeFilter?productTypeID=' + this.typeId).then(res => {
                 if(res === undefined) return console.log('没有数据')
@@ -609,18 +611,12 @@ export default {
         this.templateParam.SizeId = this.$route.query.sizeId || ''
 
         document.head.querySelector('title').innerHTML = `免费${this.subtitle}模板列表_海量免费${this.subtitle}模板无限制使用_免费下载${this.subtitle}高清无水印文件_阿里印`
-        this.getParam()
+		
+		this.getParam();
         window.scrollTo(0,0)
-        // this.$bus.$on('setKeyword', (msg) => {
-        //     this.keywords = msg
-        //     this.templateParam.keywords = msg
-        //     this.getTempLateList(this.templateParam)
-        // })
+       
 
     },
-    // destroyed() {
-    //     this.$bus.$off('setKeyword')
-    // },
     components: {
         HomePagination
     }

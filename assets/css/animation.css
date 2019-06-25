@@ -22,14 +22,14 @@
 	display: none !important;
 }
 
-.page-enter-active, 
+/* .page-enter-active, 
 .page-leave-active {
 	transition: opacity .3s;
 }
 .page-enter, 
 .page-leave-to {
 	opacity: 0;
-}
+} */
 
 .animation-scale-enter-active,
 .animation-scale-leave-active {
