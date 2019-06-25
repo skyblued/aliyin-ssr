@@ -12,7 +12,7 @@
                     <img src="/img/personal/drop_down.png" alt="">
                 </div>
                 <div class="info-dropdown">
-                    <div class="item item1" @click="handleClick('/account/center')">
+                    <div class="item item1" @click="handleClick('/personal/acountcenter')">
                         <i></i>
                         <span>账号管理</span>
                     </div>
@@ -69,7 +69,7 @@ export default {
             //     this.$emit('setData', 'center')
             // }
             this.$router.push(url)
-            this.$emit('setData', 'center')
+            this.$emit('setData', 'acountcenter')
         },
         // handleJump(msg) {
         //     this.$emit('setVip', msg)

@@ -31,7 +31,7 @@
 export default {
     data () {
         return {
-            avatar: localStorage['avatar'],
+            // avatar: localStorage['avatar'],
             email: '',
             code: '',
             password: ''

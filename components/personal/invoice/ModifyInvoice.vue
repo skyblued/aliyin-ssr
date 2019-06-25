@@ -137,13 +137,13 @@ export default {
                     return
                 }else{
                     this.$message({type: 'success', message: '修改成功'})
-                    this.$store.commit('setDialogModifyInvoice', false)
+                    this.$store.commit('login/setDialogModifyInvoice', false)
                     this.$emit('getInvoice')
                 }
             })
         },
         handleCancel() {
-            this.$store.commit('setDialogModifyInvoice', false)
+            this.$store.commit('login/setDialogModifyInvoice', false)
         },
 
         // 获取当前点击发票信息

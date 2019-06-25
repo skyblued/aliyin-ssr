@@ -77,7 +77,7 @@ export default {
         
         // 获取省份信息
         getProvinceList() {
-            this.$http.get('/regions').then(res => {
+            this.$axios.get('/regions').then(res => {
                 //console.log(res.data)
                 this.provinceList = res.data
             })
@@ -107,7 +107,7 @@ export default {
         // 获取城市信息列表
         getCityList() {
             if(this.provinceId){
-                this.$http.get('/regions/?id=' + this.provinceId).then(res => {
+                this.$axios.get('/regions/?id=' + this.provinceId).then(res => {
                     // console.log(res.data)
                     this.cityList = res.data
                 })
@@ -142,7 +142,7 @@ export default {
         // 获取地区信息列表
         getAreaList() {
             if(this.provinceId && this.cityId){
-                this.$http.get('/regions/?id=' + this.cityId).then(res => {
+                this.$axios.get('/regions/?id=' + this.cityId).then(res => {
                     // console.log(res.data)
                     this.areaList = res.data
                 })
@@ -203,16 +203,16 @@ export default {
             let config = {
                 headers:{'Content-Type': 'application/json'}
             }
-            this.$http.post('/shipaddress', obj, config).then(response => {
+            this.$axios.post('/shipaddress', obj, config).then(response => {
                 if(JSON.stringify(response.data) == '{}') return
                 console.log(response.data)
-                this.$store.commit('setDialogAdd', false)
+                this.$store.commit('login/setDialogAdd', false)
                 this.$message({type: 'success', message: '添加成功'})
                 this.$emit('setAddress')
             })
         },
         handleCancel() {
-            this.$store.commit('setDialogAdd', false)
+            this.$store.commit('login/setDialogAdd', false)
         }
     },
     mounted() {

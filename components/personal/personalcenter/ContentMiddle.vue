@@ -2,7 +2,7 @@
     <div class="content-middle">
         <div class="content-avatar">
             <div>
-                <img v-if="$store.state.avatar != 'null' && $store.state.avatar != ''" :src="$store.state.avatar.indexOf('http') > -1 ? $store.state.avatar :$store.state.port.imgBaseUrl + $store.state.avatar" alt="">
+                <img v-if="$store.state.login.avatar != 'null' && $store.state.login.avatar != ''" :src="$store.state.login.avatar.indexOf('http') > -1 ? $store.state.login.avatar :$store.state.port.imgBaseUrl + $store.state.login.avatar" alt="">
                 <div v-else class="avatar-wrap"></div>
                 <div class="avatar-mask" @click="handleChoose('ChangeAvatar','更换头像')">
                     <span>更换头像</span>
@@ -52,7 +52,7 @@
             <div class="It-modal" v-if="qqLogin">
                 <div class="It-modal-mask"></div>
                 <div class="It-modal-content">
-                    <iframe id="iframeqq" class="modal-iframe" src="http://open.aliyin.com/QQLogin.aspx" frameborder="0"></iframe>
+                    <iframe id="iframeqq" class="modal-iframe" :src="$store.state.port.qqServer + '/QQLogin.aspx'" frameborder="0"></iframe>
                     <i class="It-modal-close" @click="qqLogin = false"></i>
                 </div>
             </div>
@@ -72,16 +72,23 @@ export default {
     data () {
         return {
             // avatar: localStorage['avatar'],
-            username: localStorage['userName'],
-            Phone: localStorage['phone'],
-            isbindwx: localStorage['isBindWx'],
-            isbindqq: localStorage['isBindQQ'],
-            logintype: localStorage['loginType'],
+            username: null,
+            Phone: null,
+            isbindwx: null,
+            isbindqq: null,
+            logintype: null,
             qqLogin: false,
             DialogVisibleTips: false
         }
     },
     methods: {
+        setParam() {
+            this.username = localStorage['userName']
+            this.Phone = localStorage['phone']
+            this.isbindwx = localStorage['isBindWx']
+            this.isbindqq = localStorage['isBindQQ']
+            this.logintype = localStorage['loginType']
+        },
         handleChoose(title, t) {
             //this.$router.push({path: url, query: {t}})  
             this.$emit('setPersonal', {title,t})
@@ -110,7 +117,7 @@ export default {
                     let config = {
                         headers:{'Content-Type': 'multipart/form-data'}
                     }
-                    this.$http.post('/UserBindQQ', formData, config).then(res => {
+                    this.$axios.post('/UserBindQQ', formData, config).then(res => {
                         console.log(res.data)
                         if (res.data == true) {
                             this.qqLogin = false
@@ -125,6 +132,9 @@ export default {
             })
         }
     },
+    mounted() {
+        this.setParam()
+    }
 }
 </script>
 

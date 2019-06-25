@@ -229,15 +229,15 @@ export default {
 
         // 没有记录跳转到创建设计
         handleToDesign() {
-            // this.$router.push('/personal')
-            this.$emit('setRecord', 'Create')
+            this.$router.push('/personal')
+            // this.$emit('setRecord', 'Create')
         },
         // 跳转到设计器
         handleJump(item) {
             //console.log(item)
             let str = 'DocumentNumber=' + item.DocumentNumber
             str = window.btoa(str)
-            var url = this.$router.resolve('/designer/'+ str)
+            var url = this.$router.resolve('/design/'+ str)
             window.open(url.href,'_blank')
         },
 
@@ -433,9 +433,6 @@ export default {
         border-radius: 5px;
         color: rgba(254,254,254,1);
         cursor: pointer;
-        // &:hover{
-        //     background: #0893ff;
-        // }
     }
 }
 

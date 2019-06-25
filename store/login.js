@@ -5,6 +5,10 @@ export const state = () => ({
 	loginShow: false,
 	userName: '', // 用户名
 	avatar: '',   // 用户头像
+	dialogAdd: false,   // 添加地址弹框
+	dialogModify: false,  // 修改地址弹框
+	dialogAddInvoice: false,  // 添加发票弹框
+	dialogModifyInvoice: false,  // 修改发票弹框
 })
 
 export const mutations = {
@@ -25,5 +29,17 @@ export const mutations = {
 	},
 	setAvatar(state,msg) {
 		state.avatar = msg
+	},
+	setDialogAdd(state,msg) {
+		state.dialogAdd = msg
+	},
+	setDialogModify(state,msg) {
+		state.dialogModify = msg
+	},
+	setDialogAddInvoice(state,msg) {
+		state.dialogAddInvoice = msg
+	},
+	setDialogModifyInvoice(state,msg) {
+		state.dialogModifyInvoice = msg
 	}
 }

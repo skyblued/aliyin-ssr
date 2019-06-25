@@ -8,7 +8,7 @@
                 :default-sort = "{prop: 'identity', order: 'ascending'}">
                 <el-table-column label="头像">
                     <template slot-scope="scope">
-                        <img v-if="scope.row.avatar != 'null' && $store.state.avatar != ''" class="avatar" :src="scope.row.avatar.indexOf('http') > -1 ? scope.row.avatar :$store.state.port.imgBaseUrl + scope.row.avatar" alt="">
+                        <img v-if="scope.row.avatar != 'null' && $store.state.login.avatar != ''" class="avatar" :src="scope.row.avatar.indexOf('http') > -1 ? scope.row.avatar :$store.state.port.imgBaseUrl + scope.row.avatar" alt="">
                         <img v-else class="avatar" src="/img/personal/avatar_icon.png" alt="">
                     </template>
                 </el-table-column>

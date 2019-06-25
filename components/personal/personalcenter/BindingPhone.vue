@@ -1,7 +1,7 @@
 <template>
     <div class="binding-phone">
         <div class="content-avatar">
-            <img v-if="$store.state.avatar != 'null' && $store.state.avatar != ''" class="avatar" :src="$store.state.avatar.indexOf('http') > -1 ? $store.state.avatar :$store.state.port.imgBaseUrl + $store.state.avatar" alt="">
+            <img v-if="$store.state.login.avatar != 'null' && $store.state.login.avatar != ''" class="avatar" :src="$store.state.login.avatar.indexOf('http') > -1 ? $store.state.login.avatar :$store.state.port.imgBaseUrl + $store.state.login.avatar" alt="">
             <div v-else class="avatar-wrap"></div>
             <p>{{username}}</p>
         </div>
@@ -60,7 +60,7 @@ export default {
     },
     created () {
         this.flage = parseInt(new Date().getTime() / 1000)
-        this.codeImg = this.$store.state.qqServer +  '/ValidateCode.aspx?flage=' + this.flage
+        this.codeImg = this.$store.state.port.qqServer +  '/ValidateCode.aspx?flage=' + this.flage
     },
     methods: {
         // 失去焦点验证手机号
@@ -74,7 +74,7 @@ export default {
  
         updataCode() {  // 刷新图片验证码
             this.flage = parseInt(new Date().getTime() / 1000)
-            this.codeImg = this.$store.state.qqServer +  '/ValidateCode.aspx?flage='+this.flage
+            this.codeImg = this.$store.state.port.qqServer +  '/ValidateCode.aspx?flage='+this.flage
         },
 
 

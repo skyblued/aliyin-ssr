@@ -107,7 +107,7 @@
                         <el-dialog title="添加发票抬头" :visible.sync="$store.state.dialogAddInvoice" :close-on-click-modal="false" :lock-scroll="false">
                             <AddInvoice @getInvoice="getInvoice"></AddInvoice>
                         </el-dialog>
-                        <el-dialog title="修改发票抬头" :visible.sync="$store.state.dialogModifyInvoice" :close-on-click-modal="false" :lock-scroll="false">
+                        <el-dialog title="修改发票抬头" :visible.sync="$store.state.login.dialogModifyInvoice" :close-on-click-modal="false" :lock-scroll="false">
                             <ModifyInvoice @getInvoice="getInvoice" :id="InvoiceId"></ModifyInvoice>
                         </el-dialog>
                     </div>

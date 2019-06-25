@@ -4,8 +4,8 @@
             <div class="invoice-info-header">
                 <p>发票抬头</p>
                 <div class="add-invoice" @click="handleAdd">添加发票</div>
-                <el-dialog title="添加发票抬头" :visible.sync="$store.state.dialogAddInvoice" :close-on-click-modal="false" :lock-scroll="false">
-                    <AddInvoice v-if="$store.state.dialogAddInvoice" @getInvoice="getInvoiceList"></AddInvoice>
+                <el-dialog title="添加发票抬头" :visible.sync="$store.state.login.dialogAddInvoice" :close-on-click-modal="false" :lock-scroll="false">
+                    <AddInvoice v-if="$store.state.login.dialogAddInvoice" @getInvoice="getInvoiceList"></AddInvoice>
                 </el-dialog>
             </div>
 
@@ -161,11 +161,11 @@ export default {
 
         // 打开添加发票弹出框
         handleAdd() {
-            this.$store.commit('setDialogAddInvoice', true)
+            this.$store.commit('login/setDialogAddInvoice', true)
         },
         handleModify(row){
             this.InvoiceId = row.id
-            this.$store.commit('setDialogModifyInvoice', true)
+            this.$store.commit('login/setDialogModifyInvoice', true)
         }
     },
     mounted() {

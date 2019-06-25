@@ -153,3 +153,95 @@
 	}
 }
 
+
+
+.form-inline .el-input__inner, .el-input, .form-inline .el-form-item__content, .form-inline .el-form-item__label{
+    height: 37px;
+    line-height: 37px;
+}
+
+.form-inline{
+    min-width: 960px;
+    background:rgba(255,255,255,1);
+    box-shadow:0px 0px 20px 1px rgba(203,211,217,0.3);
+    border-radius:10px;
+    padding: 19px 20px 20px;
+    margin-bottom: 25px;
+    .el-form-item{
+        margin: 0;
+        height: 37px;
+        line-height: 37px;
+        margin-right: 32px !important;
+    }
+    .el-form-item__label{
+        color:rgba(51,51,51,1);
+        float: left;
+    }
+    .el-form-item__content{
+        .el-icon-date::before{
+            content: '';
+        }
+        .el-icon-date::after{
+            background-image: url(/img/personal/time_icon.png);
+            width: 100%;
+            height: 30px;
+            vertical-align: middle;
+        }
+    }
+    .el-input{
+        width: 173px;
+    }
+    .screen{
+        background: $color;
+        display: inline-block;
+        line-height: 37px;
+        padding: 0 12px;
+        border-radius: 5px;
+        color: rgba(254,254,254,1);
+        cursor: pointer;
+    }
+}
+
+.form-inline .form-item{
+    .range{
+        margin: 0 10px;
+    }
+    .block-date{
+        display: inline-block;
+        .el-date-editor, .el-input__inner{
+            width: 144px;
+        }
+        .el-input--prefix .el-input__inner{
+            padding-left: 35px;
+            padding-right: 18px;
+        }
+    }
+}
+
+// 下拉按钮样式
+.form-inline .select .el-input__suffix-inner i::before{
+    content: '';
+}
+.form-inline .select .el-input .el-select__caret{
+    transform: rotateZ(0);
+}
+.form-inline .select .el-input__suffix-inner i::after{
+    background-image: url(/img/personal/drop_down.png);
+    width: 100%;
+    height: 30px;
+}
+.to-create{
+    margin-top: 200px;
+    text-align: center;
+    p{
+        margin-bottom: 15px;
+    }
+    .el-button{
+        background: $color;
+        color: rgba(255,255,255,1);
+        &:hover{
+            background: $color;
+            color: rgba(255,255,255,1);
+        }
+    }
+}

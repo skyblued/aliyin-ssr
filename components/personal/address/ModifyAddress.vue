@@ -79,7 +79,7 @@ export default {
 
         // 获取省份信息
         getProvinceList() {
-            this.$http.get('/regions').then(res => {
+            this.$axios.get('/regions').then(res => {
                 //console.log(res.data)
                 this.provinceList = res.data
             })
@@ -109,7 +109,7 @@ export default {
         // 获取城市信息列表
         getCityList() {
             if(this.provinceId){
-                this.$http.get('/regions/?id=' + this.provinceId).then(res => {
+                this.$axios.get('/regions/?id=' + this.provinceId).then(res => {
                     //console.log(res.data)
                     this.cityList = res.data
                 })
@@ -144,7 +144,7 @@ export default {
         // 获取地区信息列表
         getAreaList() {
             if(this.provinceId && this.cityId){
-                this.$http.get('/regions/?id=' + this.cityId).then(res => {
+                this.$axios.get('/regions/?id=' + this.cityId).then(res => {
                     //console.log(res.data)
                     this.areaList = res.data
                 })
@@ -196,11 +196,11 @@ export default {
             let config = {
                 headers:{'Content-Type': 'application/json'}
             }
-            this.$http.put('/shipaddress', this.shipaddress, config).then(res => {
+            this.$axios.put('/shipaddress', this.shipaddress, config).then(res => {
                 // console.log(res.data)
                 if(res.data == true){
                     this.$message.success('修改成功')
-                    this.$store.commit('setDialogModify', false)
+                    this.$store.commit('login/setDialogModify', false)
                     this.$emit('setAddress')
                 }else{
                     this.$message.error('修改失败')
@@ -208,13 +208,13 @@ export default {
             })
         },
         handleCancel() {
-            this.$store.commit('setDialogModify', false)
+            this.$store.commit('login/setDialogModify', false)
         },
 
 
         // 获取当前点击的地址信息
         getAddressInfo() {
-            this.$http.get('/shipaddress?id=' + this.id).then(res =>{
+            this.$axios.get('/shipaddress?id=' + this.id).then(res =>{
                 console.log(res.data)
                 this.shipaddress = res.data
                 this.form.checked = res.data.IsDefault

@@ -1,7 +1,7 @@
 <template>
     <div class="change-phone">
         <div class="content-avatar">
-            <img v-if="$store.state.avatar != 'null' && $store.state.avatar != ''" class="avatar" :src="$store.state.avatar.indexOf('http') > -1 ? $store.state.avatar :$store.state.port.imgBaseUrl + $store.state.avatar" alt="">
+            <img v-if="$store.state.login.avatar != 'null' && $store.state.login.avatar != ''" class="avatar" :src="$store.state.login.avatar.indexOf('http') > -1 ? $store.state.login.avatar :$store.state.port.imgBaseUrl + $store.state.login.avatar" alt="">
             <div v-else class="avatar-wrap"></div>
             <p>{{username}}</p>
         </div>

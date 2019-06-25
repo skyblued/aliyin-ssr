@@ -84,20 +84,20 @@
                         </div>
                         <div class="aside-create-btn" @click="handleJump">开始创作</div>
                         <ul>
-                            <li :class="asideTitle == 'center' ? 'active' : ''" @click="handleToggle('center')">
-                                <img :src="asideTitle == 'center' ? '/img/personal/leftnav/zhgl_white_icon.png' : '/img/personal/leftnav/zhgl_gray_icon.png'" alt="">
+                            <li :class="asideTitle == 'acountcenter' ? 'active' : ''" @click="handleToggle('acountcenter')">
+                                <img :src="asideTitle == 'acountcenter' ? '/img/personal/leftnav/zhgl_white_icon.png' : '/img/personal/leftnav/zhgl_gray_icon.png'" alt="">
                                 <span>账号管理</span>
                             </li>
                             <!-- <li :class="asideTitle == 'team' ? 'active' : ''" @click="handleToggle('team')">
                                 <img :src="asideTitle == 'team' ? '/img/personal/leftnav/tdgl_white_icon.png' : '/img/personal/leftnav/tdgl_gray_icon.png'" alt="">
                                 <span>团队管理</span>
                             </li> -->
-                            <li :class="asideTitle == 'address' ? 'active' : ''" @click="handleToggle('address')">
-                                <img :src="asideTitle == 'address' ? '/img/personal/leftnav/shdz_white_icon.png' : '/img/personal/leftnav/shdz_gray_icon.png'" alt="">
+                            <li :class="asideTitle == 'acountaddress' ? 'active' : ''" @click="handleToggle('acountaddress')">
+                                <img :src="asideTitle == 'acountaddress' ? '/img/personal/leftnav/shdz_white_icon.png' : '/img/personal/leftnav/shdz_gray_icon.png'" alt="">
                                 <span>收货地址</span>
                             </li>
-                            <li :class="asideTitle == 'invoiceinfo' ? 'active' : ''" @click="handleToggle('invoiceinfo')">
-                                <img :src="asideTitle == 'invoiceinfo' ? '/img/personal/leftnav/fpxx_white_icon.png' : '/img/personal/leftnav/fpxx_grat_icon.png'" alt="">
+                            <li :class="asideTitle == 'acountInvoice' ? 'active' : ''" @click="handleToggle('acountInvoice')">
+                                <img :src="asideTitle == 'acountInvoice' ? '/img/personal/leftnav/fpxx_white_icon.png' : '/img/personal/leftnav/fpxx_grat_icon.png'" alt="">
                                 <span>发票信息</span>
                             </li>
                             <!-- <li :class="asideTitle == 'MessageCenter' ? 'active' : ''" @click="handleToggle('MessageCenter')">
@@ -120,7 +120,7 @@ import Header from '@/components/personal/Header'
 export default {
     asyncData({app, store}) {
         // console.log(app.$cookiz)
-        store.commit('login/addToKen', store.$cookiz.getAll().token)
+        if (!store.state.login.token) store.commit('login/toggleShow', true)
     },
     data () {
         return {
@@ -134,12 +134,13 @@ export default {
         setParam() {
             this.teamname = localStorage['teamName']
             this.username = localStorage['userName']
-            this.show = this.$route.fullPath.indexOf('account') > -1 ? '' : 'toggle'
-            this.asideTitle = this.$route.fullPath.indexOf('account') > -1 ? 'center' : ''
+            this.show = this.$route.fullPath.indexOf('acount') > -1 ? '' : 'toggle'
+            this.asideTitle = this.$route.fullPath.indexOf('acount') > -1 ? 'acountcenter' : ''
             this.$store.commit('login/setAvatar', localStorage['avatar'])
         },
 
         setData(val){
+            console.log(val)
             this.show = val
             this.asideTitle = val
         },
@@ -148,16 +149,12 @@ export default {
         },
         handleToggle(title) {
             this.asideTitle = title
-            if(this.show == 'toggle'){
-                this.$router.push('/personal/' + title)
-            }else{
-                this.$router.push('/account/' + title)
-            }
+            this.$router.push('/personal/' + title)
         },
         handleJump() {
             this.show = 'toggle'
-            this.asideTitle = 'create'
-            this.$router.push('/personal/create')
+            this.asideTitle = ''
+            this.$router.push('/personal')
         },
         handleShow(bool) {
             // this.$bus.$emit('setToggle', bool)
@@ -169,6 +166,7 @@ export default {
     mounted() {
         this.setParam()
         // this.$bus.$on('setMyOrder', (msg) =>this.asideTitle = msg)
+        console.log(this.$route)
         var title = this.$route.fullPath.split('/')[2]
         this.asideTitle = title
     },

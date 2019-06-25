@@ -175,13 +175,13 @@ export default {
                     return
                 }else{
                     this.$message({type: 'success', message: '添加成功'})
-                    this.$store.commit('setDialogAddInvoice', false)
+                    this.$store.commit('login/setDialogAddInvoice', false)
                     this.$emit('getInvoice')
                 }
             }) 
         },
         handleCancel() {
-            this.$store.commit('setDialogAddInvoice', false)
+            this.$store.commit('login/setDialogAddInvoice', false)
         }
     },
     watch: {
