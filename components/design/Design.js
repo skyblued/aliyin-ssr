@@ -56,7 +56,7 @@ export default {
 		Psd,
 	},
 	asyncData({app, isDev, route, store, env, params, query, req, res, redirect, error}) {
-		// console.log(store.state.login.token)
+		console.log(store.state.login.token,1232131, app)
 		if (!store.state.login.token) store.commit('login/toggleShow', true)
 	},
 	validate({ params, query, redirect }) {
@@ -402,7 +402,7 @@ export default {
 		}
 	},
 	mounted() {
-		console.log(this)
+		// console.log(this)
 		this.createInfo();
 		this.getTemplate().then(data => {
 			this.handleLoadTemplateData(data);
@@ -424,7 +424,7 @@ export default {
 	},
 	methods: {
 		createInfo() {
-			console.log(this.$store)
+			// console.log(this.$store)
 			let params = this.$route.params,
 				query = window.atob(params.t),
 				queryArr = query.split('&');
