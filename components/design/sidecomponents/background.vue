@@ -81,7 +81,6 @@
 </template>
 
 <script>
-import {getImagesArr} from '@/assets/js/utils.js'
 import { setWaterfall } from "@/assets/js/commonJS.js";
 import Share from '@/components/design/share.vue'
 export default {
@@ -291,7 +290,7 @@ export default {
 </script>
 
 <style lang='scss' scoped>
-@import "@/assets/init.scss";
+
 .background {
 	width: 100%;
 	height: 100%;

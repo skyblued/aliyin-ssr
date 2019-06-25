@@ -58,25 +58,13 @@ export default {
 		Psd,
 	},
 	data() {
-		
-		window.history.forward(1); 
-		let params = this.$route.params,
-			query = window.atob(params.t),
-			queryArr = query.split('&'),
-			queryNumber = queryArr[0].split('='),
-			superAdmin = queryArr[1] == 'admin=admin' ? 'admin' : null;
-		
-				
-		// 获取查询字符串
-		let svgSize = this.$route.query;
-		// 获取设计者身份
-		let autosave = superAdmin ? false : true;
+	
 		return {
 			saveUrl: '', // 保存接口
-			autosave,
+			autosave: null,
 			saveAllpageBtn: true, // 保存按钮限制
-			superAdmin, // 超级管理员
-			queryNumber, // 查询编号
+			superAdmin: null, // 超级管理员
+			queryNumber: null, // 查询编号
 			isSave: false, // 是否保存
 			wsServer: null, // ws
 			wsMssage: '', // ws mssage
@@ -389,6 +377,20 @@ export default {
 			},
 			PageMode: null, // p数模式
 		};
+	},
+	created() {
+			
+		let params = this.$route.params,
+			query = window.atob(params.t),
+			queryArr = query.split('&');
+			this.queryNumber = queryArr[0].split('='),
+			this.superAdmin = queryArr[1] == 'admin=admin' ? 'admin' : null;
+		
+				
+		// 获取查询字符串
+		this.svgSize = this.$route.query;
+		// 获取设计者身份
+		this.autosave = this.superAdmin ? false : true;	
 	},
 	filters: {
 		setInt(num) { // 取整

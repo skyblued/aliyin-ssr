@@ -430,7 +430,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import "@/assets/init.scss";
+
 .uploading {
 	width: 100%;
 	min-height: 100%;

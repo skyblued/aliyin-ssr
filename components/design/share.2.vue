@@ -70,7 +70,7 @@ export default {
 </script>
 
 <style lang="scss">
-@import "@/assets/init.scss";
+
 .share-content-group {
 	float: left;
 	width: 50%;

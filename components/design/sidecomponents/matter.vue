@@ -594,7 +594,7 @@ export default {
 
 <style lang="scss" scoped>
 // 悬停时 浅蓝色
-@import "@/assets/init.scss";
+
 $hoverColor: #00c1de;
 .matter {
   width: 100%;
