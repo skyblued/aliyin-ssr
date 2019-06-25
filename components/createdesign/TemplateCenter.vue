@@ -505,17 +505,19 @@ export default {
             let config = {
                 headers:{'Content-Type': 'multipart/form-data'}
             }
-            // var url = window.open('/design', '_blank')
+            var url = window.open('/design', '_blank')
             this.$axios.post('/CopyTemplate', formData, config).then(res => {
                 if(res.data == '') return console.log('没有返回')
                 // console.log(res.data)
                 let str = 'DocumentNumber=' + res.data
 				str = window.btoa(str);
-				var a = document.createElement('a')
-					a.target = "_blank"
-					a.href = '/design/' + str;
-					a.click();
-					a = null;
+				// var a = document.createElement('a')
+				// 	a.target = "_blank"
+				// 	a.href = '/design/' + str;
+				// 	a.click();
+				// 	a = null;
+				// url.location = '/design/' + str
+				url.location.replace('/design/' + str)
             })
         },
 
@@ -546,7 +548,7 @@ export default {
                     }]
                 }
                 // console.log(obj, '创建参数')
-                // var url = window.open('/designer', '_blank')
+                var url = window.open('/design', '_blank')
                 this.$axios.post(this.$store.state.port.TeamTemplate,obj).then(res =>{
                     if(res.data == 'NoAuthority') return this.$message('没有权限')
                     // console.log(JSON.parse(res.data))
@@ -554,13 +556,13 @@ export default {
                     let data = JSON.parse(res.data)
                     let str = 'DocumentNumber=' + data.DocumentNumber
 					str = window.btoa(str)
-					var a = document.createElement('a')
-					a.target = "_blank"
-					a.href = '/design/' + str;
-					a.click();
-					console.log(a)
-					a = null;
-                    // url.location = '/designer/' + str;
+					// var a = document.createElement('a')
+					// a.target = "_blank"
+					// a.href = '/design/' + str;
+					// a.click();
+					// console.log(a)
+					// a = null;
+                    url.location.replace('/design/' + str)
                 })
             }else{
                 console.log('缺少必要参数')

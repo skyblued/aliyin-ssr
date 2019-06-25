@@ -82,20 +82,20 @@ export default {
         // 进入设计器
         handleToDesign(item) {
             // console.log(item)
-            if (!localStorage['token']) return this.$store.commit('setDialogType', 'login')
+            if (!localStorage['token']) return this.$store.commit('login/toggleShow', true)
             var formData = new FormData()
             formData.append('TemplateNumber', item.TemplateNumber);
             formData.append('TeamNum', localStorage['teamNum']);
             let config = {
                 headers:{'Content-Type': 'multipart/form-data'}
             }
-            var url = window.open('/designer', '_blank')
+            var url = window.open('/design', '_blank')
             this.$axios.post('/CopyTemplate', formData, config).then(res => {
                 if(res.data == '') return console.log('没有返回')
                 // console.log(res.data)
                 let str = 'DocumentNumber=' + res.data
                 str = window.btoa(str)
-                url.location = '/designer/' + str
+                url.location.replace('/design/' + str)
             })
         },
 
