@@ -36,7 +36,7 @@ export default {
 	},
 	async asyncData({app, $axios, route, store, query, req, redirect, error}) {
 		// console.log(query, '服务端' + process.server , '客服端' + process.client);
-		let cookie = app.$cookiz.getAll();
+		// let cookie = app.$cookiz.getAll();
 		// if (req) console.log(cookie,isDev, req.headers.cookie);
 		let [AllTemplate, Carousel, Steps, TempCommend, FooterCode, FooterArticle] = await Promise.all([
 			$axios.get(store.state.port.AllTemplate),

@@ -6,7 +6,7 @@
                 @current-change="handleCurrentChange"
                 :current-page.sync="Page.currentPage"
                 :page-size="Page.pageSize"
-                layout="prev, pager, next, total, jumper"
+                
                 :total="Page.totalRecords">
             </el-pagination>
             <div class="sure" @click="handleJump">确定</div>
@@ -31,6 +31,7 @@ export default {
             console.log(`当前页: ${val}`);
             //this.Page.pageSize = val
             this.$emit('getTempList')
+            this.$emit('setTempList', val)
         },
         handleJump() {
             // this.handleCurrentChange()
