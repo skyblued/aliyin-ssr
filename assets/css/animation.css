@@ -22,23 +22,26 @@
 	display: none !important;
 }
 
-.page-enter-active, .page-leave-active {
+/* .page-enter-active, 
+.page-leave-active {
 	transition: opacity .3s;
 }
-.page-enter, .page-leave-active {
+.page-enter, 
+.page-leave-to {
 	opacity: 0;
-}
+} */
 
-.animation-scale-enter,
-.animation-scale-leave-to{
-	  opacity: 0;
-	  transform:  scale3d(0.9, 0.9, .9);
-	}
-  /* */
 .animation-scale-enter-active,
 .animation-scale-leave-active {
 	transition: all .3s;
 }
+.animation-scale-enter,
+.animation-scale-leave-to{
+	  opacity: 0;
+	  transform: scale3d(0.9, 0.9, .9);
+	}
+  /* */
+
   
   
   .burstout-enter,

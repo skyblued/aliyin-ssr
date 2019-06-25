@@ -2,10 +2,10 @@
     <div class="bind-wechat">
         <div class="toggle-right">
             <div class="sign-way" title="切换绑定方式" @click="handleToggleWay">
-                <img :src="phone ? src : image" alt="">
+                <img :src="$store.state.port.staticPath + (phone ? src : image)" alt="">
             </div>
             <div class="sign-way-tips">
-                <img src="/img/home/security_icon.png" alt="">
+                <img :src="$store.state.port.staticPath + '/img/home/security_icon.png'" alt="">
                 <p v-if="phone">绑定微信</p>
                 <p v-else>绑定手机号</p>
                 <i></i>
@@ -40,7 +40,7 @@
                 <img :src="qrcode" alt="">
             </div>
             <div class="wx-tips">
-                <img src="/img/home/wechat.png" alt="">
+                <img :src="$store.state.port.staticPath + '/img/home/wechat.png'" alt="">
                 <span>绑定微信防止账号丢失</span>
             </div>
         </div>
@@ -83,7 +83,7 @@ export default {
     },
     created () {
         this.flage = parseInt(new Date().getTime() / 1000)
-        this.codeImg = this.$store.state.qqServer + '/ValidateCode.aspx?flage=' + this.flage
+        this.codeImg = this.$store.state.port.qqServer + '/ValidateCode.aspx?flage=' + this.flage
     },
     props: ['info'],
     methods: {
@@ -93,6 +93,7 @@ export default {
                 this.wx = true
                 this.hangleBinfWx()
             } else {
+				clearInterval(this.timer)
                 this.phone = true
                 this.wx = false
             }
@@ -100,8 +101,8 @@ export default {
 
         updataCode() {  // 刷新图片验证码
             this.flage = parseInt(new Date().getTime() / 1000)
-            console.log(this.flage)
-            this.codeImg = this.$store.state.qqServer +  '/ValidateCode.aspx?flage='+this.flage
+            // console.log(this.flage)
+            this.codeImg = this.$store.state.port.qqServer +  '/ValidateCode.aspx?flage='+this.flage
         },
 
         // 验证图片验证码
@@ -203,15 +204,15 @@ export default {
         // 绑定微信
         hangleBinfWx() {
             if(this.wx == true){
-                this.$http.get('/WeChatQR?RegistSource=' + this.source).then(res => {
-                    console.log(res)
+                this.$axios.get('/WeChatQR?RegistSource=' + this.source).then(res => {
+                    // console.log(res)
                     if(res.data.status == 'ok') {
                         this.qrcode = res.data.qrcode
                         let sceneId = res.data.sceneId
                         this.timer = setInterval(() => {
                             var formData = new FormData
                             formData.append('sceneId', sceneId)
-                            this.$http.post('/WeChatQR', formData).then(result => {
+                            this.$axios.post('/WeChatQR', formData).then(result => {
                                 console.log(result)
                                 if(result.data.status == 'ok'){
                                     clearInterval(this.timer)
@@ -232,10 +233,12 @@ export default {
                                                 localStorage.setItem('userName', name)
                                                 localStorage.setItem('avatar', response.data.headImage)
                                                 localStorage.setItem('isDesigner', response.data.IsDesigner)
-                                                this.$store.commit('setToken', response.data.token)
-                                                this.$store.commit('setUserName', name)
-                                                this.$store.commit('setIsDesigner', response.data.IsDesigner)
-                                                this.$store.commit('setDialogBind', false)
+                                                // 将用户token保存到vuex中
+												this.$store.commit('login/addToKen', data.Token)
+												this.$store.commit('login/setUserName', name)
+												this.$store.commit('login/changeLogin', true)
+												this.$store.commit('login/toggleShow', false)
+												this.$store.$cookiz.set('token', data.Token,{maxAge: 604800}) 
                                                 this.$message({type: 'success', message: '绑定成功'})
                                             } else {
                                                 this.$message({type: 'warning', message: response.data.message})
@@ -254,44 +257,6 @@ export default {
         // 跳过不绑定
         handleSkipBind() {
             this.$emit('handleSkipClose')
-            // if(!this.info) return
-            // var formData = new FormData()
-            // formData.append('qqopenid', this.info.openid);
-            // formData.append('qqnicename', this.info.name);
-            // formData.append('qqheaderpic', this.info.pic);
-            // formData.append('qqsex', this.info.sex);
-            // formData.append('RegistSource', this.source)
-            // let config = {
-            //     headers:{'Content-Type': 'multipart/form-data'}
-            // }
-            // if(this.skip) return
-            // this.skip = true
-            // this.$http.post('/QQModes', formData, config).then(res => {
-            //     console.log(res)
-            //     if (res.data.status == 'ok') {
-            //         this.getTeamInfo(res.data.token).then(() => {
-            //             let name = res.data.nickName || res.data.userName
-            //             localStorage.setItem('token', res.data.token)
-            //             localStorage.setItem('userName', name)
-            //             localStorage.setItem('avatar', res.data.headImage)
-            //             localStorage.setItem('isDesigner', res.data.IsDesigner)
-            //             localStorage.setItem('phone', res.data.bindPhone)
-            //             localStorage.setItem('loginType', res.data.loginType)
-            //             localStorage.setItem('isBindWx', res.data.bindWX)
-            //             localStorage.setItem('isBindQQ', res.data.bindqq)
-            //             localStorage.setItem('times', res.data.logintimes)
-            //             this.$store.commit('setToken', res.data.token)
-            //             this.$store.commit('setUserName', name)
-            //             this.$store.commit('setIsDesigner', res.data.IsDesigner)
-            //             this.$store.commit('setDialogBind', false)
-            //             this.$message({type: 'success', message: '登录成功'})
-            //             this.skip = false
-            //             history.go(0)
-            //         })
-            //     }else{
-            //         this.$message({type: 'warning', message: res.data.Message})
-            //     }
-            // })
         },
 
         getTeamInfo(msg) {

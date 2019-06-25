@@ -36,6 +36,7 @@ module.exports = {
 	plugins: [
 		'@/plugins/element-ui',
 		'@/plugins/axios',
+		'@/plugins/ctx-inject'
 	],
 	/*
 	** Nuxt.js modules
@@ -70,7 +71,7 @@ module.exports = {
 	*/
 	build: {
 		transpile: [/^element-ui/],
-		extractCSS: { allChunks: true },
+		extractCSS: true,
 		/*
 		** You can extend webpack config here
 		*/

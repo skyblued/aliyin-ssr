@@ -9,7 +9,12 @@ export default {
 	name: 'design',
 	components: {
 	},
-	async asyncData({store}) {
+	async asyncData({app, store}) {
+		console.log(process.server)
+		// console.log(app.$cookiz)
+		// let form = new FormData();
+		// app.myInjectedFunction('123131')
+		// console.log()
 		// console.log(context)
 		// let {data} = await context.$axios.get("/Fonts");
 		return {
@@ -17,13 +22,13 @@ export default {
 		}
 		
 	},
-	async fetch({store, req, res}) {
-		let cookie = store.$cookiz.getAll();
+	async fetch({app, req, res}) {
+		let cookie = app.$cookiz.getAll();
 		// console.log(cookie, req.headers.cookie)
 	},
 	mounted() {
-		console.log(this)
-		this.$axios.get("/Fonts");
+		// console.log(this)
+		// this.$axios.get("/Fonts");
 		// console.log(this.fontList)
 		
 		
