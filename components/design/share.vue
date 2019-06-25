@@ -63,7 +63,7 @@ export default {
 </script>
 
 <style lang="scss">
-@import "@/assets/init.scss";
+
 .waterfall-parent {
 	position: absolute;
 	top: 74px;

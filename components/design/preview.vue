@@ -103,7 +103,7 @@ export default {
 			this.scene.fog = new THREE.Fog( 0xcce0ff, 500, 10000 );
 
 			let geometry = new THREE.BoxGeometry(300, 150, 300);
-			let boxTexture = loader.load(require('../../../public/img/view/123.jpg'))
+			let boxTexture = loader.load(require('../../static/img/view/123.jpg'))
 			let material = new THREE.MeshNormalMaterial();
     		var skyBoxMaterial = new THREE.MeshBasicMaterial( { map:boxTexture, side: THREE.DoubleSide } );
 			this.mesh = new THREE.Mesh(geometry, skyBoxMaterial);
@@ -120,7 +120,7 @@ export default {
 			// this.scene.add( sphere );
 
 			
-			var groundTexture = loader.load(require('../../../public/img/view/grasslight-big.jpg'));
+			var groundTexture = loader.load(require('../../static/img/view/grasslight-big.jpg'));
 				// console.log(groundTexture )
 				groundTexture.wrapS = groundTexture.wrapT = THREE.RepeatWrapping;
 				groundTexture.repeat.set( 100, 100 );
@@ -131,7 +131,7 @@ export default {
 			mesh.receiveShadow = true;
 			// this.scene.add( mesh );
 
-			var groundTexture2 = loader.load(require('../../../public/img/view/123.jpg'));
+			var groundTexture2 = loader.load(require('../../static/img/view/123.jpg'));
 				// console.log(groundTexture )
 				groundTexture2.wrapS = groundTexture2.wrapT = THREE.RepeatWrapping;
 				groundTexture2.repeat.set( 100, 100 );
@@ -144,7 +144,7 @@ export default {
 			mesh2.receiveShadow = true;
 			// this.scene.add( mesh2 );
 
-			var groundTexture3 = loader.load(require('../../../public/img/view/grasslight-big.jpg'));
+			var groundTexture3 = loader.load(require('../../static/img/view/grasslight-big.jpg'));
 				// console.log(groundTexture )
 				groundTexture3.wrapS = groundTexture3.wrapT = THREE.RepeatWrapping;
 				groundTexture3.repeat.set( 100, 100 );

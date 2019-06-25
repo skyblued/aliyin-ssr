@@ -461,7 +461,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import "@/assets/init.scss";
 .dialog {
 	position: absolute;
 	width: 830px;
