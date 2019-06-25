@@ -1,10 +1,11 @@
 <template>
-	<div class="uploading" ref="boxUpload">
+	<div class="uploading" >
 		<div class="uploading-btn">
 			<el-upload 
-				:action="'http://v1.yinbuting.cn/api' + uploadUrl"
+				:action=" $store.state.netServer + uploadUrl"
 				:headers="headers"
 				multiple
+				accept="image/*"
 				:show-file-list="false"
 				:data="param"
 				:on-preview="handleUploadFill"
@@ -19,19 +20,22 @@
 		</div>
 		<!-- 上传方式切换 -->
 		<template>
-			<div v-if="uploadType == 'pc'? true : false" class="area">
-				<span class="area-icon" @click="handleActiveUpload" @dragenter.prevent @dragover.prevent @drop.prevent="handledragend($event)">选择文件或者将文件拖到上传框中</span>
+			<div class="area"
+			    @drop="handledragend($event)">
+				<span class="area-icon" @click="handleActiveUpload">选择文件或者将文件拖到上传框中</span>
 			</div>
-			<div v-if="uploadType == 'phone'? true : false" class="qr">
-				<div class="qr-icon">
-					<img :src="phoneQr" alt="">
+			<transition name="el-zoom-in-center">
+				<div class="img-preivew" v-if="phoneQr" @click="handleUpdate">
+					<div class="lt-modal-content">
+                        <img style="width: 166px;height: 166px;margin-top: 30px;" :src="phoneQr" alt="">
+                        <p style="margin-top: 20px">用手机"扫一扫"上传手机相册图片</p>
+                        <p style="margin-top: 20px">（*上传成功后，关闭页面即可使用）</p>
+                        <div class="close-btn"></div>
+                    </div>
 				</div>
-				<div class="title">
-					<span>使用微信扫一扫上传手机图片</span>
-				</div>
-			</div>
+			</transition>
 		</template>
-		<div class="content">
+		<div class="content" ref="boxUpload" @scroll="getMore">
 			<div class="uploading-icon">
 				<span>已上传的素材</span>
 				<div class="uploading-gif" v-show="uploadMssage.show">
@@ -39,49 +43,46 @@
 					<span>{{uploadMssage.msg}}</span>
 				</div>
 			</div>
-			<!-- <div class="content-list" ref="list">
-				<div class="list-item" @mousedown="setCopyBox($event, item)" v-for="(item,index) in list" :key="index">
-					<img draggable="false" @click="handleCreateImage(item)" @load="setWaterfall"  class="img" :src="$store.state.port.imgBaseUrl + item.FilePath + (item.Svgtext == '' ? '!w300.src': '')" alt="">
-					
-					<span class="del-icon" @click="handleDelete(item, index)"></span>
-					
+			<div class="items"  ref="itemsList">
+				<div class="items-item" v-for="(item, index) of list" :key="index"
+					@mousedown="setCopyBox($event, item)"
+				>
+					<img 
+						@load="getSvgContent"
+						draggable="false" 
+						:style="`${item.Svgtext == '' ? '':'object-fit: fill'}`"
+						@click.stop="handleCreateImage(item)" 
+						@error="imgError"
+						:src="$store.state.port.imgBaseUrl + item.FilePath + (item.FilePath.lastIndexOf('.svg') == -1 ? '!w300.src' : '')" alt="">
+					<div>
+						<span class="del-icon" @click="handleDelete(item, index)"></span>
+					</div>
 				</div>
-			</div> :row="true" :height="75"-->
-            <div class="waterfall-wrap" ref="container">
-                <div v-for="(item, index) of waterList"
-                    :key="index"
-                    @mousedown="setCopyBox($event, item)"
-                    class="column-item">
-                    <img draggable="false" @click="handleCreateImage(item)" :src="item.url" alt="">
-                    <span class="del-icon" @click="handleDelete(item, index)"></span>
-                </div>
-            </div>
+			</div>
+			<div v-if="loadingIcon || baseLine" style="width: 100%;text-align:center;padding: 50px 0;">
+				<img v-if="loadingIcon" style="height: 40px;" src="https://aliyinstatic.oss-cn-shenzhen.aliyuncs.com/img/loading.gif" title="加载中..." alt="加载中...">
+				<span style="font-size: 14px;">{{baseLine}}</span>
+			</div>
 		</div>
 	</div>
 </template>
 
 <script>
-import Waterfall from '@/components/design/Waterfall.vue'
-import ImagesLayout from '@/assets/imagesLayout.js'
+import ImagesLayout from '@/assets/js/imagesLayout.js'
 export default {
-    components: {
-        Waterfall,
-    },
+	name: 'uploading',
+    
 	props: ['copyBox', 'pageIndex'],
 	data() {
 		// 获取身份
 		let identity = this.$route.params.t;
-		
-		identity = window.atob(identity).split('=')[0] == 'TemplateNumber' ? true : false
-		let TeamNum = sessionStorage['teamNum'] || 0;
-		let uploadUrl = null, getloadUrl = null, deleteUrl, param, page = 0;
-		uploadUrl = identity ?  this.$store.state.port.DesignerMaterial
-								: this.$store.state.port.TeamMaterial
-		getloadUrl = identity ? this.$store.state.port.DesignerMaterials + `?pageIndex=${page}&SubStatus=0&AudStatus&StarTime&EndTime&TypeNum&TypeCateNum&Keywords`
-								: this.$store.state.port.TeamMaterials + `?TeamNum=${TeamNum}&pageIndex=${page}&IsPublic=0&pageSize=20`
-		// 删除素材接口
-		deleteUrl = identity ? this.$store.state.port.DesignerMaterial
-							: this.$store.state.port.TeamMaterial;
+		identity = window.atob(identity).split('&')
+		if (identity.length > 1) identity = true;
+		else {
+			identity = identity[0].split('=')[0] == 'TemplateNumber' ? true : false
+		}
+		let TeamNum = localStorage['teamNum'];
+		let param;
 		param = identity ? {
 							TypeNum: 0,
 							TypeCategoryNum: 0,
@@ -94,13 +95,24 @@ export default {
 							IsPublic: 0
 						}
 		return {
+			loadingIcon: true, // 加载样式
+			baseLine: '', // 没有更多
 			// 身份
 			identity,
-			// 上传接口设置
-			uploadUrl,
-			// 获取数据接口设置
-			getloadUrl,
-			deleteUrl, // 删除素材接口
+			// 上传参数配置
+			param,
+			pageParams: { // 分页参数
+				pageIndex: 0,
+				pageSize: 30
+			},
+			
+			uploadUrl: identity ? this.$store.state.port.DesignerMaterial
+										: this.$store.state.port.TeamMaterial,// 上传接口设置
+			getloadUrl: identity ? this.$store.state.port.DesignerMaterials + `?SubStatus=0&AudStatus&StarTime&EndTime&TypeNum&TypeCateNum&Keywords`
+										: this.$store.state.port.TeamMaterials + `?TeamNum=${TeamNum}&IsPublic=0`,// 获取数据接口设置
+			deleteUrl: identity ? this.$store.state.port.DesignerMaterial
+										: this.$store.state.port.TeamMaterial, // 删除素材接口
+
 			// 上传类型
 			uploadType: 'pc',
 			// 手机上传二维码
@@ -109,12 +121,12 @@ export default {
 			headers: {
 				'token': localStorage['token']
 			},
-			// 上传参数配置
-			param,
+			
 			// 团队编号
 			TeamNum, 
 			// 用户自己上传的列表
 			list: [],
+			waterfallList: [],
 			// 上传提示
 			uploadMssage: {
 				show: false,
@@ -123,8 +135,6 @@ export default {
 			},
 			// 选中元素
 			ele: null,
-			// 页码
-			page,
 			// 总页数
 			totalPage: 0,
 			imageArr: [], //img标签
@@ -138,17 +148,12 @@ export default {
 	methods: {
 		/**上传动画 */
 		setUploading (type) {
-            if (type == 'waterfall') {
-				this.uploadMssage.src = 'https://aliyinstatic.oss-cn-shenzhen.aliyuncs.com/img/loading.gif'
-				this.uploadMssage.show = true
-                return
-            }
 			if (type) {
 				this.uploadMssage.src = 'https://aliyinstatic.oss-cn-shenzhen.aliyuncs.com/img/loading.gif'
 				this.uploadMssage.msg = '正在上传'
 				this.uploadMssage.show = true
 			} else {
-				this.uploadMssage.src = 'https://aliyinstatic.oss-cn-shenzhen.aliyuncs.com/icon/success.png'
+				// this.uploadMssage.src = 'https://aliyinstatic.oss-cn-shenzhen.aliyuncs.com/icon/success.png'
 				this.uploadMssage.msg = '上传成功'
 				this.uploadMssage.show = false
 			}
@@ -161,9 +166,10 @@ export default {
 		},
 		// 生成手机上传链接二维码
 		productionQr () {
-			let formdata = new FormData();
-			let src = `http://192.168.3.100:8686/phoneupload/${sessionStorage['teamNum']}`
-			formdata.append('teamnum', sessionStorage['teamNum'])
+			let formdata = new FormData(),
+				query = `teamNum=${localStorage['teamNum']}&type=${this.identity}&v=${new Date().getTime()}`;
+			let src = `${window.location.origin}/phoneupload?${query}`;
+			formdata.append('teamnum', localStorage['teamNum'])
 			formdata.append('content', src)
 			formdata.append('action', 'createqr')
 			formdata.append('precolor', '#000')
@@ -172,7 +178,7 @@ export default {
 			this.$axios.post('/QrCode', formdata, config)
 			.then((res) => {
 				let data = JSON.parse(res.data)
-				console.log(data)
+				// console.log(data)
 				this.phoneQr = data.url
 			}).catch((err) => {
 				alert(err)
@@ -184,6 +190,7 @@ export default {
 		},
 		// 拖入文件触发
 		handledragend (e) {
+			e.preventDefault();
 			let file = e.dataTransfer.files[0]
 			const size = file.size / 1024 / 1024 < 20
 			if (!size) {
@@ -195,14 +202,14 @@ export default {
 			if (this.identity) {
 				formdata.append('TypeNum', 0)
 				formdata.append('TypeCategoryNum', 0)
-				
-				formdata.append('KeyWords', 'sdf')
+				formdata.append('KeyWords', 'sheji')
 			} else {
 				formdata.append('TeamNum', this.TeamNum)
 				formdata.append('TypeNum', 0)
 				formdata.append('TypeCategoryNum', 0)
 				formdata.append('IsPublic', 0)
 			}
+			
 			formdata.append('file',file)
 			let config = {
 				headers: {
@@ -232,94 +239,48 @@ export default {
 						console.log(err)
 					})
 		},
-		getImagesArr(arr) { // 获取图片宽高
-            this.setUploading('waterfall')
-			if (typeof arr != "object") return console.log('不是图片数组')
-			return Promise.all(Array.from(arr).map((item,i) => {
-                let reg = /(png|jpg|jpeg)/ig
-                if (reg.test(item.FilePath)) {
-                    return new Promise((resolve, reject)=> {
-                            let img = new Image();
-                            img.onload = (load) => {
-                                let data = load.path[0]
-                                item.url = data.src;
-                                item.width = data.width;
-                                item.height = data.height;
-                                resolve(item)
-                            }
-                            img.src = this.$store.state.port.imgBaseUrl + item.FilePath + '!w300.src'
-                    })
-                }
-			})).then(list => {
-                this.setUploading(false)
-                list.forEach((item, i) => {
-                    if(!item) list.splice(i, 1)
-                })
-                this.waterList = list
-                this.renderList()
-            })
+        
+		getUserUpload() {
+			this.loadingIcon = true
+			let url = this.getloadUrl + `&pageIndex=${this.pageParams.pageIndex}&pageSize=${this.pageParams.pageSize}`
+			return new Promise((resolve, reject) => {
+				// this._http.get(url).then(res => console.log(res))
+				this.$axios.get(url)
+				.then( res =>{
+					this.loadingIcon = false;
+					let data = res.data;
+						data = typeof data == 'object' ? data : data != '暂无数据' ? JSON.parse(res.data) : {Data: []};
+					resolve(data)
+				})
+			})
+			
 		},
-        renderList() {
-        // 纵向排列使用绝对定位排列
-          // 存储每列已排列的高度
-            this.columnData = []
-            // 计算出每列应该占总宽度的百分比
-            this.itemWidth = `${100 / 3}%`
-            this.$nextTick(() => {
-                // 对所有盒子进行计算绝对定位的位置
-                const boxes = this.$refs.container.getElementsByClassName('column-item')
-                for (let i = 0; i < boxes.length; i++) {
-                this.setElementStyle(boxes[i], this.waterList[i], i)
-                }
-            })
-        },
-        setElementStyle (element, img, index) {
-            // 计算出图片实际在项目中显示的高
-            const w = this.$refs.container.offsetWidth / this.column
-            const h = ((w - 6) / img.width) * img.height + 6
-            if (index < this.column) {
-                element.style.left = `${index * (100 / this.column)}%`
-                this.columnData[index] = this.columnData[index] ? this.columnData[index] + h : h
-                this.$refs.container['style']['height'] = this.columnData[index] + 'px'
-            } else {
-                // 找出最小高度的列
-                let min = {}
-                for (let i = 0; i < this.columnData.length; i++) {
-                    if (!min.hasOwnProperty('index')) {
-                    min = {index: i, value: this.columnData[i]}
-                    } else {
-                    if (this.columnData[i] < min.value) {
-                        min = {index: i, value: this.columnData[i]}
-                    }
-                    }
-                }
-                element.style.left = `${min.index * (100 / this.column)}%`
-                element.style.top = `${min.value}px`
-                this.columnData[min.index] += h
-                this.$refs.container['style']['height'] = this.columnData[min.index] + 'px'
-            }
-            element.style.width = this.itemWidth
-        },
-		// 获取用户的上传列表
-		getData () {
-			this.$axios.get(this.getloadUrl)
-			.then( res =>{
-				if (!res) return
-				let data = JSON.parse(res.data)
-				this.list = [].concat(this.list, data.Data)
-				
-				this.totalPage= data['X-Pagination'].TotalPages
+		getData () {// 获取用户的上传列表
+			this.getUserUpload().then(data => {
+				// console.log(data)
+				this.list = data.Data
 			})
 		},
+        handleUpdate() { // 使用手机上传后更新
+            this.pageParams.pageIndex = 1;
+            this.getUserUpload().then(data => {
+				// console.log(data)
+				this.list = data.Data
+                this.phoneQr = ''
+			})
+        },
         getMore(e) {
 			let uploading = this.$refs.boxUpload;
 			let total = uploading.scrollHeight; // 整个文档的高度
-			let viewHeight = document.documentElement.clientHeight; // 可视区域的高度
+			let viewHeight = uploading.clientHeight; // 可视区域的高度
 			let scrollY = uploading.scrollTop || document.body.scrollTop; // 滚动条滚动的距离
-			this.mouseTop = scrollY
-            console.log(viewHeight + scrollY , total)
-			if (viewHeight + scrollY >= total - 60) {
-				this.pageIndex += 1;
+			this.mouseTop = scrollY;
+			if (viewHeight + scrollY >= total && !this.baseLine) {
+				this.pageParams.pageIndex++;
+				this.getUserUpload().then(data => {
+					if (data.Data.length < 1) this.baseLine = '没有更多'
+					this.list = this.list.concat(data.Data)
+				})
 			}
 		},
 		// 上传之前的钩子
@@ -332,13 +293,18 @@ export default {
 		},
 		// 上传之后的文件
 		handleUploadFill (file) {
-			
+			console.log(file)
 		},
 		// 上传成功
 		handleSuccess (response, file, fileList) {
 			this.setUploading(false)
-			let data = JSON.parse(response), key = '', Svgtext = '',TypeNum = null;
-			console.log(data)
+			let data = JSON.parse(response), 
+				key = '', 
+				Svgtext = '',
+				TypeNum = null,
+				MaterialNum = data.materialnum,
+				ID = data.materialid;
+				// console.log(data)
 			if (data.status == 'ok') {
 				key = data.key
 				TypeNum = 7
@@ -347,122 +313,13 @@ export default {
 				Svgtext = data.svgcontent;
 				TypeNum = 1
 			}
-			this.list.unshift({FilePath: key, Svgtext, TypeNum})
+			this.list.unshift({FilePath: key, Svgtext, TypeNum, MaterialNum,ID})
 			
 
 		},
-		// 上传时的钩子
-		handleProgress (e, file, fileList) {
-			this.setUploading(true)
-		},
-		// 上传失败
-		handleError () {
-			this.setUploading(false)
-		},
-		/**
-		 * 将图片路径上行给父组件
-		 */
-		handleCreateImage (obj) {
-			let result = this.checkedType(obj);
-      		this.$emit("handleAdd", result);
-		},
-		// 检测当前元素类型
-		checkedType(obj) {
-			let src, type, native;
-			// console.log(obj)
-			if (obj.Svgtext != "") {
-				src = obj.Svgtext;
-				type = "svg";
-			} else {
-				src = this.$store.state.port.imgBaseUrl + obj.FilePath + "!w300.src";
-				type = "image";
-				native = this.identity ? true : false;
-                let image = document.createElement('img')
-                image.onload = () => {
-                    image = null
-                }
-                image.setAttribute('src', this.$store.state.port.imgBaseUrl + obj.FilePath + "!w800.src");
-			}
-			return { src, type ,native};
-		},
-		// 获取当前元素的位置和大小
-		setCopyBox (e, item) {
-			// console.log(item)
-			let ele = e.target,
-				x = e.clientX - e.offsetX,
-				y = e.clientY - e.offsetY, 
-				w = ele.offsetWidth, 
-				h = ele.offsetHeight;
-			let cx = e.clientX, cy = e.clientY;
-			let result = this.checkedType(item);
-			let src = this.$store.state.port.imgBaseUrl + item.FilePath + (item.Svgtext == '' ? "!w300.src" : '')
-			this.$emit("setCopyBox", {result, x, y, w, h, src, cx, cy});
-			// this.ele = ele;
-		},
-		// 分类详细内容列表瀑布流
-		setWaterfall() {
-			let list = this.$refs.list
-            var li = list.children;
-            var Height = { f: [], w: [], three: []}
-            for (var i = 0;i < li.length;i++){
-                var inow = i%3;
-				   li[i].style.transition = '1s'
-				let w = li[i].offsetWidth;
-				let h = li[i].offsetHeight;
-                switch(inow) {
-                    case 0:
-                        li[i].style.left = 15 + 'px';
-                        Height.f.push(h)
-                        var step = Math.floor(i/3);
-                        if(!step) {
-                            li[i].style.top = 0;
-                        } else {
-                            var sum = 0;
-                            for(var j = 0; j < step;j++){
-                                sum += Height.f[j] + 5;
-                            }
-                            li[i].style.top = sum + 'px';
-						}
-						list['style']['height'] = sum + h + 'px'
-                        break;
-                    case 1:
-                        li[i].style.left = w + 30 + 'px';
-                        Height.w.push(h);
-                        var step = Math.floor(i/3);
-                        if(!step) {
-                            li[i].style.top = 0;
-                        } else {
-                            var sum = 0;
-                            for(var j = 0; j < step;j++){
-                                sum += Height.w[j] + 5;
-                            }
-                            li[i].style.top = sum + 'px';
-						}
-						list['style']['height'] = sum + h + 'px'
-                        break;
-                    case 2:
-                    li[i].style.left = w * 2 + 45 + 'px';
-                    Height.three.push(h);
-                    var step = Math.floor(i/3);
-                    if(!step) {
-                        li[i].style.top = 0;
-                    } else {
-                        var sum = 0;
-                        for(var j = 0; j < step;j++){
-                            sum += Height.three[j] + 5;
-                        }
-                        li[i].style.top = sum + 'px';
-                    }
-                    list['style']['height'] = sum + h + 'px'
-                    break;
-				}
-				
-            }
-            // console.log('完毕')
-		},
 		// 删除素材
-		handleDelete (item) {
-			console.log(item, 'sfdsf')
+		handleDelete (item, index) {
+			// console.log(item,index)
 			let formdata = new FormData();
 			if (this.identity) {
 				formdata.append('Id', item.ID)
@@ -474,43 +331,100 @@ export default {
 			}
 			this.$axios.delete(this.deleteUrl,{data:formdata})
 			.then(res => {
-				console.log(res)
+				// console.log(this.list)
 				if (res.data == 'Success') {
-					this.list = []
-					this.getData()
+					this.list.splice(index, 1)
+					if (this.list.length < 1) {
+						this.getData() 
+					}
+					// console.log(this.list)
 				}
 			})
 
 		},
+		// 上传时的钩子
+		handleProgress (e, file, fileList) {
+			this.setUploading(true)
+		},
+		// 上传失败
+		handleError () {
+			this.setUploading(false)
+		},
+		getSvgContent(e) {
+			// 获取svg内容
+			if (!this.$refs.itemsList) return
+			let list = this.$refs.itemsList.childNodes,
+					src = e.path[0].src;
+				if (src.lastIndexOf('.svg') > -1) {
+					fetch(src).then(response => response.text())
+					.then(data => {
+						list.forEach((div, index) => {
+							if (div == e.path[0].parentNode) {
+								this.selectContentList[index].Svgtext = data
+							}
+						})
+					})
+				}
+		},
+		/**
+		 * 将图片路径上行给父组件
+		 */
+		handleCreateImage (obj) {
+			this.checkedType(obj).then(result => {
+				this.$emit("handleAdd", result);
+			});
+		},
+		// 检测当前元素类型
+		checkedType(obj) {
+			let src, type, native = this.identity ? true : false;
+			// console.log(obj)
+			return new Promise((resolve, reject) => {
+				if (obj.FilePath.lastIndexOf('.svg') != -1) {
+					fetch(this.$store.state.port.imgBaseUrl + obj.FilePath)
+					.then(response => response.text())
+					.then(res => {
+						src = res;
+						type = "svg";
+						resolve({ src, type ,native})
+					})
+				} else {
+					src = this.$store.state.port.imgBaseUrl + obj.FilePath + "!w300.src";
+					type = "image";
+					let image = document.createElement('img')
+					image.onload = () => {
+						image = null
+					}
+					image.setAttribute('src', this.$store.state.port.imgBaseUrl + obj.FilePath + "!w800.src");
+					resolve({ src, type ,native})
+				}
+				
+			})
+			
+		},
+		// 获取当前元素的位置和大小
+		setCopyBox (e, item) {
+			let ele = e.target,
+				x = e.clientX - e.offsetX,
+				y = e.clientY - e.offsetY, 
+				w = ele.offsetWidth, 
+				h = ele.offsetHeight;
+			let cx = e.clientX, cy = e.clientY;
+			this.checkedType(item).then(result => {
+				let src = this.$store.state.port.imgBaseUrl + item.FilePath + (item.FilePath.lastIndexOf('.svg') == -1 ? '!w300.src' : '')
+				this.$emit("setCopyBox", {result, x, y, w, h, src, cx, cy, ele});
+			})
+		},
+		imgError(err) {
+			err && err.target.parentNode.setAttribute('style', 'display: none')
+		}
+		
 	},
 	mounted () {
 		// 获取用户上传素材列表
 		this.getData() 
 	},
 	computed: {
-        
 	},
-	watch: {
-		// 监控当前元素的值
-		copyBox () {
-			// console.log(this.copyBox)
-			// if(this.copyBox) {
-			// 	this.ele.style.display = 'none'
-			// } else {
-			// 	this.ele.style.display = 'block'
-			// }
-		},
-		// 监视页码
-		pageIndex () {
-			this.page++
-			if(this.page <= this.totalPage) this.getData()
-		},
-        list () { // 监视图片列表
-            this.getImagesArr(this.list)
-            // console.log(this.list)
-            // this.newList = this.list
-        },
-	}
 
 }
 </script>
@@ -577,10 +491,58 @@ export default {
 		}
 	}
 }
+.img-preivew {
+	position: fixed;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+	z-index: 2019;
+	padding: 20px;
+	left: 60px;
+	top: 50px;
+	right: 0;
+	bottom: 0;
+	background: rgba(0, 0, 0, .3);
+	overflow: auto;
+	
+}
+.lt-modal-content {
+    position: relative;
+    margin: auto;
+    width: 440px;
+    text-align: center;
+    background-color: #fff;
+    padding: 20px 20px 30px;
+    border: 0;
+    border-radius: 6px;
+    background-clip: padding-box;
+    box-shadow: 0 4px 12px rgba(0,0,0,.15);
+}
+.close-btn {
+    position: absolute;
+    right: 20px;
+    top: 10px;
+    width: 20px;
+    height: 20px;
+    transform: rotate(45deg);
+    cursor: pointer;
+    &::before, &::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        width: 100%;
+        height: 3px;
+        border-radius: 3px;
+        background: #745bff;
+    }
+    &::after {
+        transform: rotate(90deg);
+    }
+}
 .qr {
 	.qr-icon {
-		width: 150px;
-		height: 150px;
+		width: 100px;
+		height: 100px;
 		margin: 0 auto;
 		border: 1px solid rgba(210,210,210,1);
 		img {
@@ -594,15 +556,17 @@ export default {
 		span {
 			display: block;
 			padding: 8px 20px;
-			background: url(/img/desicon/plugin/wechat_icon.png) no-repeat 15% 50%;
+			// background: url(/img/desicon/plugin/wechat_icon.png) no-repeat 15% 50%;
 			// background-size: 27px 100%;
 		}
 	}
 }
 .content{
-	position: relative;
+	position: absolute;
+	top: 182px;
+	bottom: 0;
 	width: 100%;
-	height: 100%;
+	overflow-y: auto;
 	.uploading-icon {
 		font-size: 14px;
 		padding: 10px;
@@ -612,114 +576,50 @@ export default {
 		}
 	}
 }
-.content-list{
-	position: relative;
-	width: 100%;
-	img{
-		display: block;
+.items {
+		padding-left: 	15px;
 		width: 100%;
-		transition: .3s;
-		cursor: pointer;
-		
-	}
-}
-.list-item{
-	width: 88px;
-	height: auto;
-	position: absolute;
-	overflow: hidden;
-	background: rgba(0,0,0,.3);
-	&:hover::after{
-		content: '';
-		width: 100%;
-		height: 100%;
-		background: rgba(0,0,0,0.3);
-		outline: #FFFFFF 2px solid;
-		position: absolute;
-		top: 0;
-		left: 0;
-		z-index: 1;
-		pointer-events: none;
-	}
-	&:hover .del-icon {
-		display: block;
-	}
-	
-	.del-icon {
-		display: none;
-		position: absolute;
-		right: 5px;
-		top: 5px;
-		width: 20px;
-		height: 20px;
-		border-radius: 5px;
-		background-repeat: no-repeat;
-		background-color: rgba(255, 255, 255, 1);
-		background-size: 100%;
-		background-image: url(/img/desicon/delete_small_icon.png);
-		z-index: 2;
-		cursor: pointer;
-		&:hover {
-			background-image: url(/img/desicon/delete_small_blue_icon.png);
+		.items-item {
+			display: inline-block;
+			width: 94px;
+			height: 94px;
+			margin-right: 7px;
+			padding: 10px;
+			margin-bottom: 10px;
+			background: #F4F4F4;
+    		cursor: pointer;
+			position: relative;
+			img {
+				width: 100%;
+				height: 100%;
+				object-fit: contain;
+			}
+			&:hover .del-icon {
+				display: block;
+			}
 		}
 	}
-}
 
-.waterfall-wrap {
-    position: relative;
-    // overflow-y: scroll;
-    .column-item {
-      position: absolute;
-      padding: 3px;
-      font-size: 0;
-      box-sizing: border-box;
-      transition: all .3s ease;
-      img {
-        max-width: 100%;
-      }
-      &:hover .del-icon {
-		display: block;
+
+
+.del-icon {
+	display: none;
+	position: absolute;
+	right: 5px;
+	top: 5px;
+	width: 20px;
+	height: 20px;
+	border-radius: 5px;
+	background-repeat: no-repeat;
+	background-color: rgba(255, 255, 255, 1);
+	background-size: 100%;
+	background-image: url(/img/desicon/delete_small_icon.png);
+	z-index: 2;
+	cursor: pointer;
+	&:hover {
+		background-image: url(/img/desicon/delete_small_blue_icon.png);
 	}
-    }
-    .del-icon {
-		display: none;
-		position: absolute;
-		right: 5px;
-		top: 5px;
-		width: 20px;
-		height: 20px;
-		border-radius: 5px;
-		background-repeat: no-repeat;
-		background-color: rgba(255, 255, 255, 1);
-		background-size: 100%;
-		background-image: url(/img/desicon/delete_small_icon.png);
-		z-index: 2;
-		cursor: pointer;
-		&:hover {
-			background-image: url(/img/desicon/delete_small_blue_icon.png);
-		}
-	}
-    &.row {
-      display: flex;
-      flex-wrap: wrap;
-      .row-item {
-        margin: 5px;
-        flex-grow: 1;
-        font-size: 0;
-        box-sizing: border-box;
-        transition: all .3s ease;
-        img {
-          min-height: 100%;
-          min-width: 100%;
-          object-fit: cover;
-        }
-      }
-      .last-box {
-        margin: 5px;
-        flex-grow: 999;
-      }
-    }
-  }
+}
 
 
 </style>

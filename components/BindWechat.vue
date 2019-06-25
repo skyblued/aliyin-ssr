@@ -108,7 +108,7 @@ export default {
         // 验证图片验证码
         handlePicCode() {
             var url = '/VerificationCode?flage='+this.flage+'&code='+this.code;
-            this.$http.get(url).then(res => {
+            this.$axios.get(url).then(res => {
                 console.log(res.data)
                 if(res.data == true){
                     this.passing = true
@@ -146,7 +146,7 @@ export default {
                 let config = {
                     headers:{'Content-Type': 'multipart/form-data'}
                 }
-                this.$http.post('/VerificationCodeMobile', formData, config)
+                this.$axios.post('/VerificationCodeMobile', formData, config)
                 .then(res => {
                     console.log(res)
                 })
@@ -171,7 +171,7 @@ export default {
             console.log(this.Phone,this.form.phonecode,this.info.openid,this.info.name,this.info.pic,this.info.sex)
             if(this.bindphone) return 
             this.bindphone = true
-            this.$http.post('LoginPhone4QQ', formData, confirm)
+            this.$axios.post('LoginPhone4QQ', formData, confirm)
             .then(res => {
                 console.log(res)
                 if (res.data.status == 'ok') {
@@ -225,7 +225,7 @@ export default {
                                         formdata.append('qqheaderpic', this.info.pic);
                                         formdata.append('qqsex', this.info.sex);
                                         formdata.append('userid', result.data.userid);
-                                        this.$http.post('/QQCallback', formdata).then(response => {
+                                        this.$axios.post('/QQCallback', formdata).then(response => {
                                             console.log(response)
                                             if (response.data.status == 'ok') {
                                                 let name = response.data.nickName || response.data.userName
@@ -267,7 +267,7 @@ export default {
                         'Content-Type': 'application/json'
                     }
                 }
-                this.$http.post('/TeamInfos', {}, config).then(response => {
+                this.$axios.post('/TeamInfos', {}, config).then(response => {
                     console.log(response.data)
                     localStorage.setItem('teamNum', response.data[0].Num)
                     localStorage.setItem('teamName', response.data[0].TeamName)

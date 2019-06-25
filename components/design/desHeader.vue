@@ -2,40 +2,84 @@
     <div class="des-header">
         <div class="des-header-left">
             <div class="logo">
-				<router-link to="/"><img :src="$store.state.port.staticPath + '/img/logo_designer.png'" alt="logo"></router-link>
+				<router-link to="/"><img src="/img/logo.svg" alt="logo"></router-link>
 			</div>
             <div class="set">
 				<span :class="setundo.un == 0 ? 'undo' : ''" @click="undo('undo')">撤销</span>
 				<span :class="setundo.re == 0 ? 'redo' : ''" @click="undo('redo')">恢复</span>
             </div>
         </div>
-        <div class="des-header-right">
-			<a href="" type="file"></a>
-			<div class="des-header-right-btn" @click="download('down')">
+        <div class="des-header-right" 
+
+		>
+			<div class="des-header-right-btn" 
+				v-if="previewbtn.btnSee"
+				@click="preview">
+				<span class="right-btn-icon share-icon"></span>
+				<span>预览</span>
+			</div>
+			<div class="des-header-right-btn" 
+				:style="`opacity: ${isSave? '.3': '1'}`"
+				@click="!isSave && download('down')">
 				<span class="right-btn-icon download-icon"></span>
 				<span>下载</span>
 			</div>
-			<div class="des-header-right-btn" @click="download('print')">
+			<div
+				v-if="headerParams && headerParams.OnlinePrint_Status" 
+				class="des-header-right-btn" 
+				:style="`opacity: ${isSave? '.3': '1'}`"
+				@click="!isSave && download('print')">
 				<span class="right-btn-icon print-icon"></span>
 				<span>印刷</span>
 			</div>
-			<div class="des-header-right-btn" @click="preview">
-				<span class="right-btn-icon share-icon"></span>
-				<span>分享</span>
-			</div>
-			<div class="des-header-right-btn" @click="handleSave">
-				<span class="right-save">保存</span>
+			<!-- v-if="superAdmin"  -->
+			<div class="des-header-right-btn">
+				<span @click="handleSave" class="right-save">保存</span>
+				<span v-if="headerParams.identity && !superAdmin" @click="toggleDialog(true)" class="right-save">提交</span>
+				<span 
+					@click="againFile"
+					v-if="false"
+					class="right-save" 
+				>生成文件</span>
 			</div>
         </div>
-		 
+		<div v-if="dialogShow">
+			
+			 <el-dialog
+				:visible="dialogShow"
+				top="10vh"
+				width="880px"
+				append-to-body
+			>
+				 <TempSubmit 
+				 :faceImg="getFaceImg"
+				 @toggleDialog="toggleDialog" 
+				 :ProductTypeId="headerParams.productId" 
+				 :TemplateNumber="headerParams.tempNum" 
+				 :tempName="headerParams.design_title"></TempSubmit>
+			</el-dialog>
+		 </div>
     </div>
 </template>
 <script>
+import TempSubmit from '@/components/designer/mytemplate/TempSubmit.vue'
 export default {
-	props: ['setundo'],
+	components: {
+		TempSubmit
+	},
+	props: ['setundo', 'headerParams', 'isSave', 'previewbtn', 'faceImg'],
     data() {
+		let params = this.$route.params,
+			query = window.atob(params.t),
+			queryArr = query.split('&'),
+			queryNumber = queryArr[0].split('='),
+			superAdmin = queryArr[1] == 'admin=admin' ? 'admin' : null;
         return {
+			superAdmin,
 			val: '',
+			dialogShow: false, // 提交弹出框
+			isSaveOk: false,
+			thumb:''
         }
 	},
 	methods: {
@@ -45,30 +89,56 @@ export default {
 		},
 		// 保存模板
 		handleSave () {
-			this.$emit('handleSave')
+			this.$message.closeAll();
+			this.$message({type: 'warning', message: '保存中', customClass: 'info',duration: 0})
+			this.$emit('handleSave', true)
 		},
 		download (type) { // 下载和印刷
 			this.$emit('setDownAndPrint', type);
 		},
 		preview () { // 预览
-			this.$emit('setPreview')
+			this.$emit('setPreview', true)
 		},
+		toggleDialog(type) { // 关闭提交组件
+			this.dialogShow = type
+			if (this.dialogShow) {
+				window.addEventListener('keydown', this.keydown)
+			} else {
+				window.removeEventListener('keydown', this.keydown)
+			}
+		},
+		againFile() { // 重新生成PDF文件
+			this.$emit('againFile')
+		},
+		keydown(e) {
+			if (e.ctrlKey) this.$emit('clearClone')
+		}
+	},
+	mounted() {
+		// console.log(this.headerParams)
+	},
+	computed: {
+		getFaceImg() {
+			return this.faceImg.replace(/(http|https):\/\/img.aliyin.com\//, '')
+		}
 	}
 }
 </script>
 <style lang="scss" scoped>
+// @import "@/assets/init.scss";
 body{
 	min-width: 1120px;
 }
 
 .des-header{
 	position: relative;
-    background: #0083E9;
-    color: white;
+    background: $white;
+    color: #000;
     justify-content: space-between;
     width: 100%;
     height: 50px;
-    line-height: 50px; 
+	line-height: 50px; 
+	border-bottom: 1px solid #EAECEE;
 	overflow: hidden;
 }
 
@@ -104,12 +174,12 @@ body{
 			background: url(/img/desicon/undo_icon.png) no-repeat 0 50%;
 		}
 		span.undo {
-			color: rgba(255, 255, 255, .3);
+			color: #000;
 			cursor: default;
 			background: url(/img/desicon/redo_n_icon.png) no-repeat 0 50%;
 		}
 		span.redo {
-			color: rgba(255, 255, 255, .3);
+			color: #000;
 			cursor: default;
 			background: url(/img/desicon/undo_n_icon.png) no-repeat 0 50%;
 		}
@@ -147,7 +217,7 @@ body{
 			background: url(/img/desicon/header/print_icon.png) no-repeat 50%;
 		}
 		.share-icon{
-			background: url(/img/desicon/header/share_icon.png) no-repeat 50%;
+			background: url(/img/desicon/header/preview_icon.png) no-repeat 50%;
 		}
 	}
 	.des-header-right-btn:last-child {
@@ -157,11 +227,12 @@ body{
 		.right-save{
 			padding: 2px 14px;
 			border-radius: 12px;
-			background: rgba(255, 255, 255, 1);
-			color: rgba(0, 0, 0, .8);
+			background: $gradient;
+			margin-right: 10px;
+			color: #fff;
 			cursor: pointer;
 			&:hover {
-				background: rgba(255, 255, 255, .8);
+				opacity: .8;
 			}
 		}
 	}

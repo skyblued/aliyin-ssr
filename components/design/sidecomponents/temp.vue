@@ -9,9 +9,9 @@
 			<span @click="handleToggleType('bus')" :class="toggle == 'bus'? 'btn-active' : ''">公用模板</span>
 			<span @click="handleToggleType('team')" :class="toggle == 'team'? 'btn-active' : ''">团队模板</span>
 			<!-- <span @click="handleToggleType('shopping')" :class="toggle == 'shopping'? 'btn-active' : ''">已购买</span> -->
-			<span @click="handleToggleType('store')" :class="toggle == 'store'? 'btn-active' : ''">已收藏</span>
+			<span @click="handleToggleType('store')" :class="toggle == 'store'? 'btn-active' : ''">收藏模板</span>
 		</div>
-		<div class="temp-filter" v-if="toggle == 'bus'">
+		<div class="temp-filter" v-if="false">
 			<div class="temp-filter-content">
 				<span>{{proClass.title}}</span>
 				<div class="content-item">
@@ -31,17 +31,32 @@
 			</div>
 		</div>
 		<!-- 内容 -->
-		<div class="temp-content" ref="tempList">
+		<div class="temp-content" ref="tempList" @scroll="getMoreData" v-if="!loadingIcon">
 			<div class="temp-content-item" v-for="(item, index) in list" :key="index">
-				<img class="template-face" draggable="false" @click="getPage(item, index)" :src="$store.state.port.imgBaseUrl + item.FacePicture" alt="">
+				
+					<img 
+					class="template-face" 
+					draggable="false" 
+					@click="getPage(item, index)" 
+					:src="$store.state.port.imgBaseUrl + item.FacePicture" alt="">
+				
 			</div>
-			<div class="content-pages" ref="contentPages" v-show="templateNum">
-				<div class="pages-item" v-for="(page, i) in templatePages" :key="i">
-					<img class="page-img" @click="copyPage(page)" :src="$store.state.port.imgBaseUrl + page.Thumb" alt="">
+			<transition name="el-zoom-in-top">
+				<div class="content-pages" ref="contentPages" v-show="seleteTemplate.templateNum">
+					<div class="page-detail">
+						<span>{{seleteTemplate.temp && seleteTemplate.temp.Name}}</span>
+					</div>
+					<div class="page-content">
+						<div class="pages-item" v-for="(page, i) in templatePages" :key="i">
+							<img class="page-img" @click="copyPage(page)" :src="$store.state.port.imgBaseUrl + page.Thumb" alt="">
+						</div>
+					</div>
 				</div>
-			</div>
+			</transition>
 		</div>
-		<div style="margin-top: 200px;"><Loading :moreShow="moreShow"></Loading></div>
+		<div v-if="loadingIcon" style="text-align:center;padding: 50px 0;"><img style="height: 40px;" src="https://aliyinstatic.oss-cn-shenzhen.aliyuncs.com/img/loading.gif" title="加载中..." alt="加载中..."></div>
+		<div v-if="!loadingIcon && !list.length" style="text-align:center;padding: 50px 0;"><img style="width: 50%;" src="/img/error/ku.png" title="空空如也" alt="空空如也"></div>
+		
     </div>
 </template>
 
@@ -53,181 +68,243 @@ export default {
   data() {
     return {
       /** 样式,显示切换 */
-      fixedShow: false, // 固定显示
-      contentPagesShow: false, // 模板页
-      templateNum: "", // 选中模板下标
+		loadingIcon: true, // 数据加载
+		contentPagesShow: false, // 模板页
+		seleteTemplate: { //选中模板
+			templateNum: "", // 选中模板下标
+			temp: null
+		},
+		params: { // 查询参数
+			pageIndex: 1,
+			pageSize: 20
+		},
+		page: 0, // 分分类
+		keyword: "", // 模板搜索关键字
 
-	  page: 0, // 分页
-	  keyword: '', // 模板搜索关键字
+		getMore: true, // 避免重复请求
+		moreShow: true,
+		toggle: "bus",
+		list: [], // 获取当前产品列表
+		templatePages: "", // 选中模板后获取模板数据
 
-      getMore: true, // 避免重复请求
-      moreShow: true,
-      toggle: "bus",
-      list: [], // 获取当前产品列表
-      templatePages: "", // 选中模板后获取模板数据
-
-      proClass: { title: "热门推荐", shop: "全部" }, // 产品排序
-      ev: { target: { id: "editor-page" } },
-      // 查询当前分类模板
-      tempdata: []
+		proClass: { title: "热门推荐", shop: "全部" }, // 产品排序
+		ev: { target: { id: "editor-page" } },
+		// 查询当前分类模板
+		tempdata: []
     };
   },
-  props: ["templateInfo", "pageIndex"],
+  props: ["templateInfo"],
   methods: {
     /**
      * @param {String} 模板类型
      */
-    handleToggleType: function(type) {
+    handleToggleType (type) {
 		this.toggle = type;
-		this.templatePages = ''
-		this.templateNum = ''
-	  
-      switch (type) {
+		this.templatePages = "";
+		this.seleteTemplate.templateNum = "";
+		this.loadingIcon = true;
+		this.params.pageIndex = 1;
+		this.list = [];
+		switch (type) {
 			case "bus":
-				this.getData({ ChargingMode: "", SortOrder: 0 })
+			this.getData({ ChargingMode: "", SortOrder: 0 })
+			.then(data => {
+				this.list = data.Data;
+				this.getMore = data.Data.length;
+			})
 			break;
 			case "team":
-				this.getTeamData();
+			this.getTeamData()
+			.then(data => {
+				this.list = data.Data;
+				this.getMore = data.Data.length;
+			});
 			break;
 			case "store":
-				this.getFavoritedTemplates()
+			this.getFavoritedTemplates()
+			.then(data => {
+				this.list = data.Data;
+				this.getMore = data.Data.length;
+			});
 			break;
 			default:
 			return;
-      }
+      	}
     },
     // 获取团队母版数据
     getTeamData() {
-		let url = this.$store.state.port.TeamMasters;
-		let formdata = new FormData();
-		formdata.append("TeamNum", sessionStorage["teamNum"]);
-		formdata.append("pageIndex", 0);
-		formdata.append("startTime", "");
-		formdata.append("endTime", "");
-		formdata.append("productcategory", '');
+		return new Promise((resolve, reject) => {
+			let url = this.$store.state.port.TeamMasters;
+			let formdata = new FormData();
+			formdata.append("TeamNum", localStorage["teamNum"]);
+			formdata.append("pageIndex", this.params.pageIndex);
+			formdata.append("startTime", "");
+			formdata.append("endTime", "");
+			formdata.append("productcategory", "");
 
-		this.$axios.post(url, formdata).then(res => {
-			console.log(res);
-			if (res == undefined || res == 'undefined') return console.log('没有返回数据')
-			this.list = res.data.Data;
-		});
-	},
-	// 获取团队收藏模板
-	getFavoritedTemplates () {
-		let url = this.$store.state.port.FavoritedTemplates;
-		let formdata = new FormData()
-		formdata.append('TeamNum', sessionStorage['teamNum'])
-		formdata.append('pageIndex', 0)
-		formdata.append('startTime', '')
-		formdata.append('endTime', '')
-		formdata.append('productcategory', '')
-		let params = {
-			'TeamNum': sessionStorage['teamNum'],
-			'pageIndex': 0,
-			'startTime': '',
-			'endTime': '',
-			'productcategory': 0,
-		}
-		this.$axios.get(url, {params})
-		.then(res => {
-			console.log(res)
-			if (res == undefined || res == 'undefined') return console.log('没有返回数据')
-			this.list = res.data.Data;
+			this.$axios.post(url, formdata).then(({data}) => {
+				this.loadingIcon = false;
+				if (data == "") return resolve([]);
+				resolve(data)
+			});
 		})
-	},
-	searchTemp (e) { // 搜索
-		if (e.code == 'Enter' || e.code == 'NumpadEnter' || e.type == 'click')
-			this.getData({ ChargingMode: "", SortOrder: 0 })
-	},
+    },
+    // 获取团队收藏模板
+    getFavoritedTemplates() {
+		return new Promise((resolve, reject) => {
+			let url = this.$store.state.port.FavoritedTemplates;
+			let formdata = new FormData();
+			formdata.append("TeamNum", localStorage["teamNum"]);
+			formdata.append("pageIndex", this.params.pageIndex);
+			formdata.append("startTime", "");
+			formdata.append("endTime", "");
+			formdata.append("productcategory", "");
+			let params = {
+				TeamNum: localStorage["teamNum"],
+				pageIndex: 0,
+				startTime: "",
+				endTime: "",
+				productcategory: 0
+			};
+			this.$axios.get(url, { params }).then(({data}) => {
+				this.loadingIcon = false;
+				if (data == "") return resolve([]);
+				resolve(data);
+			});
+		})
+    },
+    searchTemp(e) {
+      // 搜索
+      if (e.code == "Enter" || e.code == "NumpadEnter" || e.type == "click") {
+		  this.getData({ ChargingMode: "", SortOrder: 0 })
+		  .then(data => {
+			  this.list = data.Data;
+		  });
+	  }
+    },
     // 获取公用模板数据
     getData({ ChargingMode = "", SortOrder = 0 }) {
-	  let svgSize = this.templateInfo;
-	//   console.log(svgSize)
-      if (!this.getMore) return;
-      this.getMore = false;
-      this.moreShow = true;
-      let formData = new FormData();
-      let ProductTypeId = svgSize.ProductTypeId || svgSize.Size.TypeID;
-      let ProductCategorieNum = svgSize.ProductCategorieNum;
-	  let SizeId = svgSize.SizeId;
-	//   console.log(ProductCategorieNum,  ProductTypeId, SizeId)
-      formData.append("ProductCategorieNum", ProductCategorieNum);
-      formData.append("ProductTypeId", ProductTypeId);
-      formData.append("SizeId", SizeId);
-      formData.append("ChargingMode", ChargingMode);
-      formData.append("SortOrder", SortOrder);
-      formData.append("pageIndex", this.page);
-	  formData.append("TeamNum", sessionStorage["teamNum"]);
-	  formData.append('KeyWords', this.keyword)
-	 
-      let config = {
-        headers: { "Content-Type": "multipart/form-data" }
-      };
-      this.$axios
-        .post("/TemplateCenter", formData, config)
-        .then(res => {
-			 this.keyword = ''
-          if (res == undefined || res == "") return console.log("没有返回数据");
-        //   console.log(res, 'moban')
-          this.getMore = true;
-          let data = res.data.Data;
-          // console.log(data)
-          this.list = data;
-          this.moreShow = false;
-        })
-        .catch(err => {
-          this.moreShow = false;
-          this.getMore = true;
-          console.log(err);
-        });
-    },
+		return new Promise((resolve, reject) => {
+			let svgSize = this.templateInfo;
+			this.moreShow = true;
+			let formData = new FormData();
+			let ProductTypeId = svgSize.ProductTypeId || svgSize.Size.TypeID;
+			let ProductCategorieNum = svgSize.ProductCategorieNum;
+			let SizeId = svgSize.SizeId;
+			//   console.log(ProductCategorieNum,  ProductTypeId, SizeId)
+			formData.append("ProductCategorieNum", ProductCategorieNum);
+			formData.append("ProductTypeId", ProductTypeId);
+			formData.append("SizeId", SizeId);
+			formData.append("ChargingMode", ChargingMode);
+			formData.append("SortOrder", SortOrder);
+			formData.append("pageIndex", this.params.pageIndex);
+			formData.append("TeamNum", localStorage["teamNum"]);
+			formData.append("KeyWords", this.keyword);
+
+			let config = {
+				headers: { "Content-Type": "multipart/form-data" }
+			};
+			this.$axios.post("/TemplateCenter", formData, config)
+			.then(({data}) => {
+				// console.log(data)
+				this.loadingIcon = false;
+				this.keyword = "";
+				resolve(data)
+				this.moreShow = false;
+			})
+			.catch(err => {
+				resolve([])
+				this.moreShow = false;
+				// console.log(err);
+			});
+		})
+	},
+	getMoreData() { // 加载更多分页
+		if (!this.getMore) return;
+		let uploading = this.$refs.tempList,
+			total = uploading.scrollHeight, // 整个文档的高度
+			viewHeight = uploading.clientHeight, // 可视区域的高度
+			scrollY = uploading.scrollTop || document.body.scrollTop; // 滚动条滚动的距离
+		
+		this.params.pageIndex++;
+		if (viewHeight + scrollY >= total) { 
+			if (this.toggle == 'bus') {
+				this.getData({ ChargingMode: "", SortOrder: 0 })
+				.then(data => {
+					this.list = [].concat(this.list, data.Data);
+					this.getMore = data.Data.length;
+				})
+			} else if (this.toggle == 'team') {
+				this.getTeamData()
+				.then(data => {
+					this.list = [].concat(this.list, data.Data);
+					this.getMore = data.Data.length;
+				});
+			} else if (this.toggle == 'store') {
+				this.getFavoritedTemplates()
+				.then(data => {
+					this.list = [].concat(this.list, data.Data);
+					this.getMore = data.Data.length;
+				});
+			}
+		}
+	},
     // 排序和收费筛选
     getOrder(SortOrder, title) {
-      this.proClass.title = title;
-      this.getData({ SortOrder });
-      this.templateNum = "";
+		this.proClass.title = title;
+		this.getData({ SortOrder });
+		this.seleteTemplate.templateNum = "";
     },
     getMony(ChargingMode, shop) {
       this.proClass.shop = shop;
       this.getData({ ChargingMode });
-      this.templateNum = "";
+      this.seleteTemplate.templateNum = "";
     },
     // 查询模板
     getPage(item, index) {
-		this.templateNum = this.templateNum == index + 1 ? "" : index + 1;
-		console.log(item, this.templateNum)
-		let page = this.toggle == 'bus' || this.toggle == 'store' ? 'TemplatePages' : 'Pages'
-		let tempList = this.$refs.tempList,
-			child = tempList.childNodes[index],
-			step = (index % 1) + 1;
-		let height = child.offsetHeight;
-		this.$refs.contentPages["style"]["top"] = step * height + 20 + "px";
-		let formdata = new FormData(), url = null;
-		if (page == 'TemplatePages') {
-			formdata.append('TemplateNumber', item['TemplateNumber'])
-			url = '/Template'
-		} else {
-			formdata.append('DocumentNumber', item['DocumentNumber'])
-			formdata.append('TeamNum', sessionStorage['teamNum'])
-			url = '/Document'
+		this.seleteTemplate.templateNum = this.seleteTemplate.templateNum == index + 1 ? "" : index + 1;
+		if (this.seleteTemplate.templateNum == '') {
+			this.templatePages = [];
+			return
 		}
-		this.$axios.post(url, formdata).then(res => {
-			if (res == "undefined" || res == "null") return console.log("没有数据");
-			if (res.data == "") return console.log("没有数据");
-			let data = res.data[page];
-			// console.log(data);
-			this.templatePages = data;
+		this.seleteTemplate.temp = item;
+	//   console.log(item, this.seleteTemplate.templateNum);
+		let page =
+		this.toggle == "bus" || this.toggle == "store"
+			? "TemplatePages"
+			: "Pages";
+		let child = this.$refs.tempList.childNodes[index],
+			step = parseInt(index / 2) + 1,
+			height = child.offsetHeight;
+		// console.log(step, height)
+		this.$refs.contentPages["style"]["top"] = step * (height + 16) + "px";
+		let formdata = new FormData(),
+		url = null;
+		if (page == "TemplatePages") {
+		formdata.append("TemplateNumber", item["TemplateNumber"]);
+		url = "/Template";
+		} else {
+		formdata.append("DocumentNumber", item["DocumentNumber"]);
+		formdata.append("TeamNum", localStorage["teamNum"]);
+		url = "/Document";
+		}
+		this.$axios.post(url, formdata).then(({data}) => {
+		//   console.log(data)
+		if (data == "") return this.templatePages = [];
+		this.templatePages = data[page];
+		// console.log(data);
 		});
     },
     // 切换模板
     copyPage(page) {
-      this.$confirm("是否使用这一页模板", "提示", {
+      this.$confirm("使用模板后，将会覆盖掉此画布上的所有现有内容哦", "提示", {
         confirmButtonText: "确认",
         cancelButtonText: "取消",
-        center: true
+		center: true,
+		customClass: 'temp-replace'
       })
         .then(() => {
-          this.$emit("copyPage", page);
+          this.$emit("templatePageReplace", JSON.parse(JSON.stringify(page)));
         })
         .catch(() => {});
     },
@@ -242,21 +319,13 @@ export default {
     }
   },
   mounted() {
-    this.getData({ ChargingMode: "", SortOrder: 0 });
-  },
-  updated() {
-    this.fixedShow = true;
+    this.getData({ ChargingMode: "", SortOrder: 0 }).then(data => {
+		this.list = data.Data;
+	});
   },
   components: {
     Loading
   },
-  watch: {
-    pageIndex() {
-      if (!this.getMore) return;
-      this.page++;
-      this.getData();
-    }
-  }
 };
 </script>
 
@@ -264,7 +333,9 @@ export default {
 @import "@/assets/init.scss";
 .temp {
   width: 100%;
+  height: 100%;
   padding-top: 72px;
+  position: relative;
   #search-active {
     position: fixed;
     top: 50px;
@@ -276,12 +347,13 @@ export default {
     position: absolute;
     top: 0;
     left: 0;
-    width: 90%;
+    width: 100%;
     padding: 15px;
     .temp-search-input {
-      width: 77%;
+      width: 100%;
       height: 42px;
-      border: 1px solid rgba(220, 220, 220, 1);
+	  border: 1px solid rgba(220, 220, 220, 1);
+	  border-radius: 5px;
       background-color: transparent;
       padding: 0 50px 0 20px;
       outline: none;
@@ -301,11 +373,11 @@ export default {
 }
 
 .temp-btn {
-	overflow: hidden;
-	padding-left: 15px;
+  overflow: hidden;
+  padding-left: 15px;
   span {
-	float: left;
-	margin-right: 10px;
+    float: left;
+    margin-right: 10px;
     font-size: 12px;
     border: 1px solid rgba(220, 220, 220, 1);
     border-radius: 3px;
@@ -319,14 +391,14 @@ export default {
   }
 }
 .temp-filter {
-	// overflow: hidden;
-	font-size: 12px;
-	padding-left: 15px;
-	margin-top: 15px;
+  // overflow: hidden;
+  font-size: 12px;
+  padding-left: 15px;
+  margin-top: 15px;
   .temp-filter-content {
-	  float: left;
-	  width: 50px;
-	  margin-right: 10px;
+    float: left;
+    width: 100px;
+    margin-right: 10px;
     padding: 3px 35px 3px 5px;
     border: 1px solid rgba(220, 220, 220, 1);
     border-radius: 3px;
@@ -372,46 +444,61 @@ export default {
 
 // 内容
 .temp-content {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  width: 100%;
-  position: relative;
+	position: absolute;
+	top: 119px;
+	bottom: 0;
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	width: 100%;
+
+	overflow-y: auto;
   .temp-content-item {
-    width: 44%;
-    background: #fff;
-    margin: 8px;
-    border: 1px solid $line;
-    border-radius: 3px;
-    // overflow: hidden;
-    position: relative;
-    .template-face {
-      display: block;
-      width: 100%;
-      cursor: pointer;
-    }
-  }
-  .content-pages {
-    position: absolute;
-    display: flex;
-    width: 326px;
-    padding-top: 10px;
-    padding-left: 8px;
-	padding-bottom: 10px;
-    flex-wrap: wrap;
-	background: rgb(240, 236, 236);
-    .pages-item {
-      width: 45%;
-	  border: 1px solid rgba(0, 0, 0, .1);
-      .page-img {
-		  display: block;
+		width: 44%;
+		background: #fff;
+		margin: 8px;
+		border-radius: 3px;
+		overflow: hidden;
+		position: relative;
+		transition: all .3s;
+		&:hover {
+			box-shadow: rgba(0, 0, 0, 0.66) 0px 4px 8px 0px;
+			.template-face {
+				transform: scale(1.2);
+			}
+		}
+		.template-face {
+			display: block;
 			width: 100%;
 			cursor: pointer;
-      }
-    }
-    .pages-item:nth-child(2n) {
-      padding-left: 15px;
-    }
+			transition: .3s;
+		}
+  }
+  .content-pages {
+	position: absolute;
+	width: 100%;
+	padding: 10px 8px;
+	background: rgb(240, 236, 236);
+	box-shadow: rgba(0, 0, 0, 0.66) 0px 4px 8px 0px;
+	.page-detail {
+		padding: 10px 0;
+		text-align: center;
+	}
+    .page-content {
+		// position: absolute;
+		display: flex;
+		flex-wrap: wrap;
+		.pages-item {
+			width: 50%;
+			border: 1px solid rgba(0, 0, 0, 0.1);
+			.page-img {
+				display: block;
+				width: 100%;
+				cursor: pointer;
+			}
+		}
+		
+	}
   }
 }
 </style>

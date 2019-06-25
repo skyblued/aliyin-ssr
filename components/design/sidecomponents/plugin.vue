@@ -62,6 +62,7 @@
 
 <script>
 export default {
+	name: 'plugin',
 	data () {
 		return {
 			pre_color: '#000',
@@ -103,7 +104,7 @@ export default {
 		handleGet (content = 'http://www.aliyin.com') {
 			
 			let formdata = new FormData();
-			formdata.append('teamnum', sessionStorage['teamNum'])
+			formdata.append('teamnum', localStorage['teamNum'])
 			formdata.append('content', content)
 			formdata.append('action', 'createqr')
 			// console.log(this.pre_color, this.bg_color)

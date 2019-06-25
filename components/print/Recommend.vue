@@ -28,14 +28,14 @@ export default {
     methods: {
         getCommand() {
             var url = "/Advertise?ID="+134;
-            this.$http.get(url).then(res => {
+            this.$axios.get(url).then(res => {
                 // console.log(res.data)
                 this.commandList = res.data.Advertisements
             })
         },
         getData() {
             var url = "/Advertise?ID="+135;
-            this.$http.get(url).then(res => {
+            this.$axios.get(url).then(res => {
                 // console.log(res.data)
                 var data = res.data.Advertisements
                 this.banner = data.splice(0,1)

@@ -1,302 +1,249 @@
 <template>
-	<div>
-		<div ref="editor" class="editor" :style="boxStyle">
-			<div v-if="clip">
-				<span>{{XY.x}},</span>
-				<span>{{XY.y}}</span>
-			</div>
-			<div class="clip" v-if="!clip">
-				<div class="right" @mousedown="handleAgree(true)">√</div>
-				<div class="wrong" @mousedown="handleAgree(false)">×</div>
-			</div>
-			<!-- <div class="resize t-resize-point"></div>
-			<div class="resize r-resize-point"></div>
-			<div class="resize b-resize-point"></div>
-			<div class="resize l-resize-point"></div>
 
-			<div class="resize lt-resize-point"></div>
-			<div class="resize rt-resize-point"></div>
-			<div class="resize rb-resize-point"></div>
-			<div class="resize lb-resize-point"></div>
+	<div class='test' ref='testDivDom' style=" position: relative;left: 100px;top: 100px;border:1px dashed black;width: 500px;height: 500px;overflow: hidden">
 
-			<div class="rotate-btn"></div> -->
-		</div>
+		<!-- <img src='../assets/map.jpg' alt="" class='div_img' @mousedown="dragImg" ref='dragImgDom' style='width: 1000px;top: 100px;height: 1000px;position: absolute;left: 100px;'> -->
 
-		<!-- <div ref="editor" class="editor imgbox" :style="imgBox" data-imgBox="image">
-			
-			<div class="resize t-resize-point"></div>
-			<div class="resize r-resize-point"></div>
-			<div class="resize b-resize-point"></div>
-			<div class="resize l-resize-point"></div>
-
-			<div class="resize lt-resize-point"></div>
-			<div class="resize rt-resize-point"></div>
-			<div class="resize rb-resize-point"></div>
-			<div class="resize lb-resize-point"></div>
-
-			 <div class="rotate-btn"></div>
-		</div> -->
+		<div class='div_img' @mousedown="dragImg" ref='dragImgDom' @mousewheel="fnWheel" style='width: 1000px;top: 100px;height: 1000px;position: absolute;left: 100px;'></div>
 
 	</div>
+
 </template>
 
 <script>
-
-
 export default {
-	data () {
-		return {
-			
-		}
-	},
-	props: ['box', 'clip'],
-	methods: {
-		/**
-		 * 裁剪的确认和取消
-		 * @handleAgree 确认
-		 * 
-		 */
-		handleAgree (msg) {
-			// console.log('确认:' + msg)
-			this.$emit('handleClipAgree', msg)
-		}
-	},
-	computed: {
-		/**
-		 * 返回一个选中元素生成对应的样式
-		 */
-		boxStyle () {
-			let box = this.box;
-			// console.log(box)
-			if(box === undefined) return;
+  name: "helloWorld",
 
-			// console.log(box)
+  data() {
+    return {
+      mouseLeft: 0,
 
-			let left = box.x2 + 'px' || 0;
-			let top = box.y + 'px' || 0;
-			let display = box.display || 'none';
-			let clip = box.clip;
-			return {
-				left, top ,display
-			}
-		},
-		/**
-		 * x,y坐标
-		 */
-		XY () {
-			let box = this.box;
-				
-			if(box.x === undefined || box.y === undefined) return {x : 0, y : 0}	
+      mouseTop: 0,
 
-			let x = box.x.toFixed(0)
-			let y = box.y.toFixed(0)
-			return {x,y}
-		},
-		imgBox () {
-			let box = this.box;
-            // console.log(box)
-			if(box === undefined) return
+      curX: 0,
 
-			let left = box.x + 'px' || 0;
-			let top = box.y + 'px' || 0;
-			let width = box.width + 'px' || 0;
-			let height = box.height + 'px' || 0;
-			let display = box.display || 'none';
-			let transform = `rotate(${box.rotate}deg)` || 'rotate(0deg)'
-			return {
-				left, top , width , height, display
-			}
+      curY: 0,
 
-		}
-	},
-	mounted () {
-		// this.addEvent();
-	},
+      dragFlag: false,
 
-}
+      wheelFlag: null,
+
+      oldWidth: 0,
+
+      oldHeight: 0,
+
+      scaleX: 1,
+
+      scaleY: 1,
+
+      newWidth: 0,
+
+      newHeight: 0,
+
+      x: 0,
+
+      y: 0,
+
+      bgX: 0,
+
+      bgY: 0,
+
+      ww: null,
+
+      wh: null,
+
+      imgw: null,
+
+      imgh: null,
+
+      scaleSize: null,
+
+      testDivDom: null,
+
+      dragImgDom: null,
+
+      w: null,
+
+      h: null,
+
+      i: null
+    };
+  },
+
+  mounted() {
+    // this.testDivDom = this.$refs.testDivDom;
+
+    // this.dragImgDom = this.$refs.dragImgDom;
+
+    // this.ww = parseInt(this.testDivDom.style.width);
+
+    // this.wh = parseInt(this.testDivDom.style.height);
+
+    // this.imgw = parseInt(this.dragImgDom.style.width);
+
+    // this.imgh = parseInt(this.dragImgDom.style.height);
+
+    // if (this.ww / this.wh < this.imgw / this.imgh) {
+    //   this.w = this.ww;
+
+    //   this.h = (this.imgh * this.ww) / this.imgw;
+
+    //   this.bgX = 0;
+
+    //   this.bgY = -(this.h - this.wh) / 2;
+
+    //   this.scaleSize = this.ww / this.imgw;
+    // } else {
+    //   this.w = (this.imgw * this.wh) / this.imgh;
+
+    //   this.h = this.wh;
+
+    //   this.bgX = -(this.w - this.ww) / 2;
+
+    //   this.bgY = 100;
+
+    //   this.scaleSize = this.wh / this.imgh;
+    // }
+
+    // this.dragImgDom.style.width = this.w + "px";
+
+    // this.dragImgDom.style.height = this.h + "px";
+
+    // this.dragImgDom.style.left = this.bgX + "px";
+
+    // this.dragImgDom.style.top = this.bgY + "px";
+  },
+
+  methods: {
+    getOffset(o) {
+      var left = 0;
+
+      var top = 0;
+
+      while (o != null && o !== document.body) {
+        top += o.offsetTop;
+
+        left += o.offsetLeft;
+
+        o = o.offsetParent;
+      }
+
+      return {
+        left: left,
+
+        top: top
+      };
+    },
+
+    dragImg(e) {
+      this.dragFlag = true;
+
+      this.mouseLeft = e.clientX - parseInt(this.$refs.dragImgDom.offsetLeft);
+
+      this.mouseTop = e.clientY - parseInt(this.$refs.dragImgDom.offsetTop);
+
+      document.onmousemove = e => {
+        if (this.dragFlag) {
+          this.curX = e.clientX - this.mouseLeft;
+
+          this.curY = e.clientY - this.mouseTop;
+
+          this.$refs.dragImgDom.style.left = this.curX + "px";
+
+          this.$refs.dragImgDom.style.top = this.curY + "px";
+
+          console.log(this.curX);
+        }
+      };
+
+      document.onmouseup = () => {
+        this.dragFlag = false;
+      };
+    },
+
+    fnWheel(e) {
+      // 思路：以鼠标为中心实现滚动的话，那么将会鼠标在背景图片（注意我这里是用背景图片的，不是img的）中滚动的时候的位置比率是不会变的
+
+      if (e.wheelDelta > 0) {
+        this.wheelFlag = true;
+      } else {
+        this.wheelFlag = false;
+      }
+
+      this.oldWidth = this.$refs.dragImgDom.offsetWidth;
+
+      this.oldHeight = this.$refs.dragImgDom.offsetHeight;
+
+      this.mouseLeft =
+        e.clientX -
+        this.$refs.dragImgDom.offsetLeft -
+        parseInt(this.$refs.testDivDom.offsetLeft);
+
+      this.mouseTop =
+        e.clientY -
+        this.$refs.dragImgDom.offsetTop -
+        parseInt(this.$refs.testDivDom.offsetTop);
+
+      // 分别计算出scaleX,scaleY的倍数
+
+      this.scaleX = this.mouseLeft / this.oldWidth;
+
+      this.scaleY = this.mouseTop / this.oldHeight;
+
+      if (this.wheelFlag) {
+        this.$refs.dragImgDom.style.width =
+          this.$refs.dragImgDom.offsetWidth * 1.05 + "px";
+
+        this.$refs.dragImgDom.style.height =
+          this.$refs.dragImgDom.offsetHeight * 1.05 + "px";
+
+        if (parseInt(this.$refs.dragImgDom.style.width) > 2500) {
+          this.$refs.dragImgDom.style.width = "2500px";
+        }
+
+        if (parseInt(this.$refs.dragImgDom.style.height) > 1500) {
+          this.$refs.dragImgDom.style.height = "1500px";
+        }
+      } else {
+        this.$refs.dragImgDom.style.width =
+          this.$refs.dragImgDom.offsetWidth * 0.95 + "px";
+
+        this.$refs.dragImgDom.style.height =
+          this.$refs.dragImgDom.offsetHeight * 0.95 + "px";
+
+        if (parseInt(this.$refs.dragImgDom.style.width) < 70) {
+          this.$refs.dragImgDom.style.width = "70px";
+        }
+
+        if (parseInt(this.$refs.dragImgDom.style.height) < 70) {
+          this.$refs.dragImgDom.style.height = "70px";
+        }
+      }
+
+      // 鼠标为中心的开始点,如果去掉这个将会以左上角开始滚动图片
+
+      this.newWidth = this.$refs.dragImgDom.offsetWidth;
+
+      this.newHeight = this.$refs.dragImgDom.offsetHeight;
+
+      this.$refs.dragImgDom.style.left =
+        this.$refs.dragImgDom.offsetLeft -
+        this.scaleX * (this.newWidth - this.oldWidth) +
+        "px";
+
+      this.$refs.dragImgDom.style.top =
+        this.$refs.dragImgDom.offsetTop -
+        this.scaleY * (this.newHeight - this.oldHeight) +
+        "px";
+    }
+  }
+};
 </script>
 
-<style lang="scss" scoped>
+ 
 
-.editor{
-	position: absolute;
-	z-index: 10;
-	transform: all .3s;
-	display: none;
-	// width: 70px;
-	background: rgba(0, 0, 0, 0.3);
-	// height: 20px;
-	pointer-events: none;
-	font-size: 12px;
-	color: #fff;
-	&::before{
-		content: "";
-		position: absolute;
-		left: 0;
-		top: 0;
-		right: 0;
-		bottom: 0;
-		border: 1px solid #fff;
-	}
-	&:after{
-		content: "";
-		position: absolute;
-		left: 0;
-		top: 0;
-		right: 0;
-		bottom: 0;
-		border: 1px dashed rgba(0, 0, 0, .5);
-		z-index: 10;
-	}
-	.resize{
-		position: absolute;
-		width: 14px;
-		height: 14px;
-		z-index: 1;
-		background-image: url(/img/dartboard.svg);
-		background-repeat: no-repeat;
-		background-position-x: 0;
-		right: -8px;
-		bottom: -8px;
-		pointer-events: auto;
-	}
-	.t-resize-point{
-		// cursor: ns-resize;
-		top: -7px;
-		left: 50%;
-		margin-left: -7px;
-		z-index: 2;
-		background-position-y: -96px;
-		&:hover, &:active{
-			// cursor: ns-resize;
-			background-position-x: -24px;
-		}
-	}
-	.r-resize-point{
-		// cursor: ew-resize;
-		top: 50%;
-		margin-top: -7px;
-		right: -13px;
-		z-index: 2;
-		background-position-y: -168px;
-		&:hover, &:active{
-			// cursor: ew-resize;
-			background-position-x: -24px;
-		}
-	}
-	.b-resize-point{
-		// cursor: ns-resize;
-		bottom: -9px;
-		left: 50%;
-		margin-left: -7px;
-		z-index: 2;
-		background-position-y: -116px;
-		&:hover, &:active{
-			// cursor: ns-resize;
-			background-position-x: -24px;
-		}
-	}
-	.l-resize-point{
-		// cursor: ew-resize;
-		top: 50%;
-		margin-top: -7px;
-		left: -8px;
-		z-index: 2;
-		background-position-y: -144px;
-		&:hover, &:active{
-			// cursor: ew-resize;
-			background-position-x: -24px;
-		}
-	}
-	.lt-resize-point{
-		left: -8px;
-		top: -8px;
-		background-position-y: -24px;
-		&:hover, &:active{
-			// cursor: nwse-resize;
-			background-position-x: -24px;
-		}
-	}
-	.rt-resize-point{
-		right: -8px;
-		top: -8px;
-		background-position-y: 0;
-		&:hover, &:active{
-			// cursor: nesw-resize;
-			background-position-x: -24px;
-		}
-	}
-	.rb-resize-point{
-		right: -8px;
-		bottom: -8px;
-		background-position-y: -72px;
-		&:hover, &:active{
-			// cursor: nwse-resize;
-			background-position-x: -24px;
-		}
-	}
-	.lb-resize-point{
-		left: -8px;
-		bottom: -8px;
-		background-position-y: -48px;
-		&:hover, &:active{
-			// cursor: nesw-resize;
-			background-position-x: -24px;
-		}
-	}
-	// 旋转
-	.rotate-btn{
-		width: 0;
-		height: 40px;
-		margin: 0 auto;
-		position: absolute;
-		top: 100%;
-		left: 50%;
-		transform: translateX(-50%);
-		&::before{
-			content: "";
-			position: absolute;
-			top: 16px;
-			left: -10px;
-			width: 20px;
-			height: 20px;
-			border-radius: 10px;
-			background: url(/img/dartboard.svg) 0 -192px;
-			// cursor: pointer;
-		}
-		&:hover::before{
-			background: url(/img/dartboard.svg) -30px -192px;
-		}
-		&::after{
-			content: "";
-			display: block;
-			position: absolute;
-			left: 50%;
-			height: 16px;
-			border-left: 1px dashed #9b9b9b;
-		}
-	}
-}
-.clip{
-	width: 32px;
-	height: 64px;
-	background: #fff;    
-	box-shadow: 0 2px 8px 0 rgba(0,0,0,.24);
-	pointer-events: auto;
-	cursor: pointer;
-	.right, .wrong{
-		width: 100%;
-		height: 32px;
-		font-size: 25px;
-		line-height: 32px;
-		text-align: center;
-		color: rgb(153,153,153);
-		&:hover{
-			color: rgb(48,158,238);
-		}
-	}
-	.right{
-		border-bottom: 1px solid rgba(255, 255, 255, .3);
-	}
+<style scoped>
+.div_img {
+  background: url("/img/error/2019-04-13.png") center/100% 100%;
 }
 </style>

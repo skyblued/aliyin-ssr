@@ -1,103 +1,71 @@
 <template>
 	<div class="preivew" id="preivew" ref="preivew">
-		<div class="close-btn" @click="close"></div>
-		
-		 <model-obj 
-			v-if="size.ok"
+		 <!-- <model-obj 
 			:position="position"
 			:rotation="rotation"
+			@on-load="handleLoad"
 			:width="size.width"
 			:height="size.height"
-			@on-load="onLoad" 
-			:lights="light"
-			:src="options.src" 
-			:mtl="options.mtl" 
-			
-			backgroundColor="#00c1de"
-		 ></model-obj>
-		<!-- <model-stl 
-			:src="options.stl"
-			backgroundColor="#00c1de"
-		></model-stl> -->
-		<!-- <model-collada 
-			:width="size.width"
-			:height="size.height"
-			:src="options.dae"
-		></model-collada> -->
-		<!-- <div id="container" ref="box"></div>#00c1de #f06-->
-		<!-- <div id="canvas" ref="canvas" @mousewheel="setWheel"></div> -->
+			:lights='lights'
+			:src="modelData.data.obj" 
+			:mtl="modelData.data.mtl" 
+			:backgroundAlpha="0"
+			:cameraPosition="cameraPosition"
+			:cameraRotation="cameraRotation"
+			:cameraUp="cameraUp"
+			:cameraLookAt="cameraLookAt"
+		 ></model-obj> -->
+		
+		<div id="container" ref="container"></div>
 	</div>
 </template>
 
 
 <script>
 import * as THREE from 'three'
-import {OrbitControls} from "@/assets/controls/OrbitControls.js";
+import OrbitControls from 'three-orbitcontrols';
+import {OBJLoader, MTLLoader, OBJMTLLoader} from "three-obj-mtl-loader";
 
-import { ModelThree, ModelObj, ModelStl, ModelCollada } from 'vue-3d-model' 
+
 export default {
-	components: { ModelThree, ModelObj, ModelStl, ModelCollada },
 	props: {
-		list: {
-			type: Array,
-			default: []
+		modelData: {
+			type: Object
 		}
 	},
 	data () {
 		return {
-			json: ``,
-			scene: null, // 场景: 需要展示的物品(材料)
-			camera: null, // 相机: 保存物品的各种属性
-			renderer: null, // 渲染器: 展示的画布
-			mesh: null,
-			fov: 3, // 视野角度: 越大看到越小,反之越大
-			arr: [], // 存放所有元素
-
-			scene: null, 
-			camera: null, 
-			light: null, 
-			renderer: null,
-    		cup: null,
-			cupBodyGeometry: null, 
-			cupBodyMaterials: [], 
-			cupBodyMaterial: null,  
-			cupBodyMaterialTexture: null, 
-			cupBodyMesh: null,
-			cupTop: null, 
-			cupTopGeometry: null, 
-			cupTopMaterial: null,
-			logoGeometry: null, 
-			logoMaterial: null, 
-			logoMesh: null,
-			logoFaceArray: null,
-			logoImage: null,
-			dotsImage: null,
-			options: {
-				dae: 'http://localhost:5050/obj/elf.dae',
-				stl: 'http://localhost:5050/obj/file.stl',
-				src: 'http://localhost:5050/obj/box.obj',
-				mtl: 'http://localhost:5050/obj/box.mtl'
-			},
 			size: { // 大小
-				width: 0,
-				height: 0,
-				ok: false
+				width: window.innerWidth,
+				height: window.innerHeight
 			},
-			light: [
+			lights: [
                     {
-                        type: 'HemisphereLight',
-                        position: { x: 0, y: 0, z: 0 },
-                        skyColor: 0xaaaaff,
-                        groundColor: 0x806060,
-                        intensity: .8
-                    },
+						type: 'AmbientLight',
+						color: 0xffffff,
+						castShadow: true,
+						intensity: 1.7
+					},
                     {
-                        type: 'DirectionalLight',
-                        position: { x: 1, y: 1, z: 1 },
-                        color: 0xffffff,
-                        intensity: 0.8
+						type: 'SpotLight',
+						castShadow: true,
+                        position: { x: 0, y: 50, z: 100 },
+                        color: 'red',
+                        intensity: 3
                     }
 			],
+			cameraPosition: { // 相机位置
+				x: 0, y: 0, z: 50
+			},
+			cameraRotation: {
+				x: 0, y: 0, z: 0
+			},
+			cameraUp: {
+				x: 0, y: 1, z: 0
+			},
+			cameraLookAt: {
+				x: 0, y: 0, z: 0
+			},
 			position: { // 位置
 				x: 0, y: 0, z: 0
 			},
@@ -106,363 +74,227 @@ export default {
                 y: 0,
                 z: 0
 			},
-			intersected: null, // 引用
+			isRotation: 0, // 是否选转
 			parentElem: null, // 父元素
+
+			camera: null, // 相机
+			scene: null,// 相机
+			renderer: null,// 渲染器
+			controls: null, // 控制器
+			stats: null, // 性能
+			mesh: null, // 物品
+			reqId: null, // 渲染帧ID
+			lightArr: [], //灯光
+			modelObj: null,
 		}
 	},
 	methods: {
-		close () { // 关闭
-			this.$emit('setPreview')
-		},
-		setSize() { // 设置大小
-			this.parentElem = this.$refs.preivew
-			this.size.width = this.parentElem.offsetWidth
-			this.size.height = 700
-			this.size.ok = true
+		init: function() {
 			
-		},
-		rotate () { // 旋转
-				this.rotation.y += 0.01;
-				requestAnimationFrame( this.rotate );
-		},
-		onLoad(e) { // 加载完
-			
-			// this.rotate()
-		},
-		onMouseMove(event) { // 鼠标
-			 if ( !event ) {
-
-                        if ( this.intersected ) {
-							this.intersected.material.color.setStyle( 'red' );
-							// this.intersected.material.map.
-                        }
-
-                        this.intersected = null;
-                        return;
-                    }
-
-                    this.intersected = event.object;
-                    this.intersected.material.color.setStyle( 'red' );
-		},
-		setWheel(e) { // 设置相机FOV: 视野角度 ,越大看到越小,反之越大
-			if (e.wheelDelta < 0) {
-				this.fov++
-			} else {
-				this.fov--
-			}
-			if (this.fov <= 2) this.fov = 3
-			this.camera.position.set(0, 0, this.fov)
-			this.animate()
-		},
-		init() {
-			this.logoFaceArray = [
-					0, 1, 2, 3, 4, 5, 6, 7, 24, 25, 26, 27, 28, 29, 30, 31
-					, 48, 49, 50, 51, 52, 53, 54, 55, 72, 73, 74, 75, 76, 77, 78, 79
-					, 96, 97, 98, 99, 100, 101, 102, 103, 120, 121, 122, 123, 124, 125, 126, 127
-				];
-
-			this.logoImage = new Image();
-
-			this.dotsImage = new Image();
-		},
-		generateGeometry(parent, faces) {
-			var returnFaces = [],
-				returnVertices = [],
-				cloneControl = {},
-				counter = 0;
-
-			for (var i = 0; i < faces.length; i++) {
-				var fA, fB, fC,
-					vA = parent.faces[faces[i]].a,
-					vB = parent.faces[faces[i]].b,
-					vC = parent.faces[faces[i]].c;
-
-				if (cloneControl[vA] != undefined) {
-					fA = cloneControl[vA];
-				} else {
-					returnVertices.push(parent.vertices[vA]);
-					cloneControl[vA] = fA = counter;
-					counter++;
-				}
-				if (cloneControl[vB] != undefined) {
-					fB = cloneControl[vB];
-				} else {
-					returnVertices.push(parent.vertices[vB]);
-					cloneControl[vB] = fB = counter;
-					counter++;
-				}
-				if (cloneControl[vC] != undefined) {
-					fC = cloneControl[vC];
-				} else {
-					returnVertices.push(parent.vertices[vC]);
-					cloneControl[vC] = fC = counter;
-					counter++;
-				}
-				returnFaces.push(new THREE.Face3(fA, fB, fC));
-			}
-			return {faces: returnFaces, vertices: returnVertices};
-		},
-		initSchene(){
-			/** Schene */
-			let div = this.$refs.box
+			let container = document.getElementById('container');
+	
+			this.camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.01, 10000);
+			// this.camera.position.y = 30;
+			this.camera.position.z = 80;
+			let loader = new THREE.TextureLoader(); // 贴图加载器
+			// this.camera.lookAt(new THREE.Vector3(0, 0, 0));
 			this.scene = new THREE.Scene();
-			let w = div.offsetWidth,
-				h = div.offsetHeight;
+			this.scene.background = new THREE.Color( 0xcce0ff );
+			this.scene.fog = new THREE.Fog( 0xcce0ff, 500, 10000 );
 
-			/** Renderer */
-			this.renderer = new THREE.WebGLRenderer({
-			antialias: true,
-			preserveDrawingBuffer: false,
-			alpha: true
-			});
-			this.renderer.setClearColor(0xffffff, 0);
+			let geometry = new THREE.BoxGeometry(300, 150, 300);
+			let boxTexture = loader.load(require('../../../public/img/view/123.jpg'))
+			let material = new THREE.MeshNormalMaterial();
+    		var skyBoxMaterial = new THREE.MeshBasicMaterial( { map:boxTexture, side: THREE.DoubleSide } );
+			this.mesh = new THREE.Mesh(geometry, skyBoxMaterial);
+			this.mesh.castShadow = true;
+			this.receiveShadow = true;
+			this.mesh.position.y = 40;
+			// this.scene.add(this.mesh);
 
-			// this.renderer.setSize(window.innerWidth, window.innerHeight);
-			this.renderer.setSize(w, h);
-			document.getElementById('container').appendChild(this.renderer.domElement);
-		
-			/** Camera */
-			this.camera = new THREE.PerspectiveCamera(40, w / h, 1, 100);
-			this.camera.position.set(-0.00, 2, 5.2);
-			this.camera.rotation.set(0.50, 0, 0);
+			var geometry2 = new THREE.SphereGeometry( 100, 32, 32 );
+			var material2 = new THREE.MeshBasicMaterial( {map: boxTexture, side: THREE.DoubleSide} );
+			var sphere = new THREE.Mesh( geometry2, material2 );
+			sphere.rotation.y = Math.PI ;
+			sphere.position.y = 30;
+			// this.scene.add( sphere );
 
-			/** Light */
-			this.light = new THREE.DirectionalLight(0xffffff, 0.5);
-			this.light.position.set(1, 5, 7.5);
-			this.scene.add(this.light);
-		},
-		renderCup(){
-  
-			this.cup = new THREE.Object3D();
-			this.cup.name = "cup";
-		
-			/*****************************************************
-			*   BODY                                            *
-			*****************************************************/
+			
+			var groundTexture = loader.load(require('../../../public/img/view/grasslight-big.jpg'));
+				// console.log(groundTexture )
+				groundTexture.wrapS = groundTexture.wrapT = THREE.RepeatWrapping;
+				groundTexture.repeat.set( 100, 100 );
+				// groundTexture.anisotropy = 16;
+			var groundMaterial = new THREE.MeshLambertMaterial( { map: groundTexture } );
+			var mesh = new THREE.Mesh( new THREE.PlaneBufferGeometry( 20000, 20000 ), groundMaterial );
+			mesh.rotation.x = - Math.PI / 2;
+			mesh.receiveShadow = true;
+			// this.scene.add( mesh );
 
-			this.cupBodyGeometry = new THREE.CylinderGeometry(1.27, 1, 2.4, 64, 12, true);
-			var loader2 = new THREE.TextureLoader();
-			loader2.crossOrigin = '*';
-		
-			var dotsTexture = THREE.ImageUtils.loadTexture( this.dotsImage.src );
+			var groundTexture2 = loader.load(require('../../../public/img/view/123.jpg'));
+				// console.log(groundTexture )
+				groundTexture2.wrapS = groundTexture2.wrapT = THREE.RepeatWrapping;
+				groundTexture2.repeat.set( 100, 100 );
+				// groundTexture.anisotropy = 16;
+			var groundMaterial2 = new THREE.MeshLambertMaterial( { map: groundTexture2 } );
+			var mesh2 = new THREE.Mesh( new THREE.PlaneGeometry( 1, 1 ), groundMaterial2 );
+			// mesh.rotation.x = - Math.PI / 2;
+			mesh2.position.z = - 200;
+			mesh2.scale.set(30,30,30)
+			mesh2.receiveShadow = true;
+			// this.scene.add( mesh2 );
 
-			dotsTexture.wrapS = THREE.RepeatWrapping;
-			dotsTexture.wrapT = THREE.RepeatWrapping;
-			dotsTexture.repeat.set(1, 1); // 平铺比例 (x,y)
-			dotsTexture.name = 'cupBodyTexture';
-
-			this.cupBodyMaterial = new THREE.MeshBasicMaterial({
-				color: 0xFFFFFF,
-				side: THREE.DoubleSide,
-				overdraw: 0.5
-			});
-			this.cupBodyMaterial.name = "cupBodyMaterial";
-
-			this.cupBodyMaterialTexture = new THREE.MeshBasicMaterial({
-				map: dotsTexture,
-				transparent: true,
-				overdraw: true
-			});
-			this.cupBodyMaterialTexture.name = "cupBodyTexture";
-
-			this.cupBodyMaterials.push(this.cupBodyMaterial);
-			this.cupBodyMaterials.push(this.cupBodyMaterialTexture);
-
-			this.cupBodyMaterial.vertexColors = THREE.FaceColors;
-			this.cupBodyGeometry.computeFaceNormals();
-			// THREE.SceneUtils = SceneUtils
-			this.cupBodyMesh = THREE.SceneUtils.createMultiMaterialObject(this.cupBodyGeometry, this.cupBodyMaterials);
-			this.cupBodyMesh.name = 'cupBody';
-			this.cup.add(this.cupBodyMesh);
-
-			/*****************************************************
-			*   LOGO                                            *
-			*****************************************************/
-			var loader = new THREE.TextureLoader();
-			loader.crossOrigin = '*';
-			var logoTexture =  THREE.ImageUtils.loadTexture( this.logoImage.src );
-		
-			logoTexture.wrapS = THREE.ClampToEdgeWrapping;
-			logoTexture.wrapT = THREE.ClampToEdgeWrapping;
-			logoTexture.repeat.set(.5, .5);
-			logoTexture.name = 'logo';
-
-			this.logoMaterial = new THREE.MeshBasicMaterial({map: logoTexture, transparent: true, overdraw: true});
-			this.logoGeometry = new THREE.Geometry();
-
-			var logoGeometryData = this.generateGeometry(this.cupBodyGeometry, this.logoFaceArray);
-			this.logoGeometry.faces = logoGeometryData.faces;
-			this.logoGeometry.vertices = logoGeometryData.vertices;
-
-			this.logoGeometry.computeFaceNormals();
-			this.logoGeometry.computeVertexNormals();
-
-			this.logoGeometry.computeBoundingBox();
-			var max = this.logoGeometry.boundingBox.max,
-				min = this.logoGeometry.boundingBox.min;
-
-			var offsetX = (0 - min.x);
-			var offsetY = (0 - min.y);
-			var range = new THREE.Vector2(Math.atan(max.x / max.z) - Math.atan(min.x / min.z), max.y - min.y);
-
-			var rangeX = range.x + 0.07; 
-			var rangeY = max.y - min.y;
-
-			this.logoGeometry.faceVertexUvs[0] = [];
-			for (var i = 0; i < this.logoGeometry.faces.length; i++) {
-
-				var v1 = this.logoGeometry.vertices[this.logoGeometry.faces[i].a],
-					v2 = this.logoGeometry.vertices[this.logoGeometry.faces[i].b],
-					v3 = this.logoGeometry.vertices[this.logoGeometry.faces[i].c];
-
-				this.logoGeometry.faceVertexUvs[0].push([
-					new THREE.Vector2((Math.atan(v1.x / v1.z) + offsetX) / rangeX, (v1.y + offsetY) / rangeY),
-					new THREE.Vector2((Math.atan(v2.x / v2.z) + offsetX) / rangeX, (v2.y + offsetY) / rangeY),
-					new THREE.Vector2((Math.atan(v3.x / v3.z) + offsetX) / rangeX, (v3.y + offsetY) / rangeY)
-				]);
-			}
-
-			this.logoGeometry.uvsNeedUpdate = true;
-
-			this.logoMesh = new THREE.Mesh(this.logoGeometry, this.logoMaterial);
-			this.logoMesh.overdraw = true;
-			this.logoMesh.name = "cupLogo";
-			// this.cup.add(this.logoMesh); // 添加LOGO
+			var groundTexture3 = loader.load(require('../../../public/img/view/grasslight-big.jpg'));
+				// console.log(groundTexture )
+				groundTexture3.wrapS = groundTexture3.wrapT = THREE.RepeatWrapping;
+				groundTexture3.repeat.set( 100, 100 );
+				// groundTexture.anisotropy = 16;
+			var groundMaterial3 = new THREE.MeshLambertMaterial( { map: groundTexture3 } );
+			var mesh3 = new THREE.Mesh( new THREE.PlaneBufferGeometry( 20000, 20000 ), groundMaterial3 );
+			mesh3.rotation.y =  Math.PI / 2;
+			mesh3.position.x = -100;
+			mesh3.receiveShadow = true;
+			// this.scene.add( mesh3 );
 
 
-			/*****************************************************
-			 *   TOP                                             *
-			 *****************************************************/
+			// 添加灯光
+			this.addLights() 
+			// this.setLights()
 
-			this.cupTopGeometry = new THREE.TorusGeometry(1.29, .06, .16, 62);
-			this.cupTopMaterial = new THREE.MeshStandardMaterial({
-				color: 0xFFFFFF,
-				roughness: 0.50,
-				metalness: 0.50,
-				emissive: 0xC4C4C4,
-				overdraw: true
-			});
-
-			this.cupTop = new THREE.Mesh(this.cupTopGeometry, this.cupTopMaterial);
-			this.cupTop.name = 'cupTop';
-			this.cupTop.position.set(0, 1.25, 0);
-			this.cupTop.rotation.x = Math.PI / 2;
-
-			this.cup.add(this.cupTop);
-
-			this.camera.lookAt(this.cup.position);
-			this.scene.add(this.cup);
-
-		},
-		render() {
-			requestAnimationFrame(this.render);
-			this.cup.rotation.y += 0.01;
-			// this.cup.rotation.x += 0.01;
+			// 加载mtl和obj文件
+			let mtlLoader = new MTLLoader();
+			mtlLoader.crossOrigin = 'anonymous';
+			mtlLoader.load(this.modelData.data.mtl, materials => {
+				// console.log(materials)
+				materials.preload()
 				
-			this.renderer.render(this.scene, this.camera);
-		},
-		// init: function() {
-			// 	let container = document.getElementById('container');
-		
-			// 	this.camera = new THREE.PerspectiveCamera(30, container.clientWidth/container.clientHeight, 0.01, 10);
-			// 	this.camera.position.z = 1;
-		
-			// 	this.scene = new THREE.Scene();
-		
-			// 	let geometry = new THREE.BoxGeometry(0.2, 0.2, 0.2);
-			// 	let material = new THREE.MeshNormalMaterial();
-		
-			// 	this.mesh = new THREE.Mesh(geometry, material);
-			// 	this.scene.add(this.mesh);
-		
-			// 	this.renderer = new THREE.WebGLRenderer({antialias: true});
-			// 	this.renderer.setSize(container.clientWidth, container.clientHeight);
-			// 	container.appendChild(this.renderer.domElement);
-		
-			// },
-		animate: function() { // 渲染
-			// requestAnimationFrame(this.animate);
-			// this.mesh.rotation.x += 0.01;
-			// this.mesh.rotation.y += 0.02;
-			// this.arr.forEach(item => {
-			// 	item.rotation.x += 0.01;
-			// 	item.rotation.y += 0.02;
-			// })
-			this.renderer.render(this.scene, this.camera);
-		},
-		myInit () { // 初始化three 三元素
-			// console.log(THREE)
-			let canvas = this.$refs.canvas;
-			this.scene = new THREE.Scene(); // 创建场景
-			this.camera = new THREE.PerspectiveCamera(60, canvas.offsetWidth / canvas.offsetHeight, 0.1, 1000) // 透视摄像机 创建相机
+				let objLoader = new OBJLoader();
+				objLoader.setMaterials(materials);
+				objLoader.load(this.modelData.data.obj , obj => {
+					console.log(obj)
+					obj.receiveShadow = true;
+					obj.castShadow = true;
+					var box = new THREE.Box3();
+					//通过传入的object3D对象来返回当前模型的最小大小，值可以使一个mesh也可以使group
+					let boxSize = box.expandByObject(obj);
+					var maxX = boxSize.max.x;
+					var minX = boxSize.min.x;
+					var maxY = boxSize.max.y;
+					var minY = boxSize.min.y;
+					var maxZ = boxSize.max.z;
+					var minZ = boxSize.min.z;
+					var maxDis = 120 / Math.sqrt(Math.pow(maxX - minX, 2)  + Math.pow(maxY - minY, 2)  + Math.pow(maxZ - minZ, 2)) / 2;
+					// console.log( -(maxY + minY) / 3)
+					
+					obj.position.y = -(maxY + minY) / 3 * maxDis;//-20//
+					obj.children.forEach(mesh => {
+						// mesh.receiveShadow = true;
+						mesh.castShadow = true;
+					})
 
-		
+					mesh.position.y = -20;
 
-			this.camera.position.z = 5;
-
-			this.renderer = new THREE.WebGLRenderer() // 创建选软器
+					// console.log(boxSize, maxDis)
+					obj.scale.multiplyScalar(maxDis)
+					this.modelObj = obj
+					this.scene.add(obj)
+					this.$emit('handleLoad')
+				}, undefined, (err) => this.$emit('handleError'))
+			}, undefined, (err) => this.$emit('handleError'))
+			// console.log(OBJLoader, MTLLoader)
+			this.renderer = new THREE.WebGLRenderer({antialias: true, alpha: true}); // 加载渲染器,设置透明系数
 			// console.log(this.renderer)
-			this.renderer.setSize(canvas.offsetWidth, canvas.offsetHeight) // 设置渲染器的大小
-			canvas.appendChild(this.renderer.domElement)
-			var controls = new OrbitControls( this.camera, this.renderer.domElement )
-			// controls.type = 'orbit';
+			this.renderer.shadowMap.enabled = true; // 设置可渲染阴影
+			this.renderer.setSize(window.innerWidth, window.innerHeight);
+			container.appendChild(this.renderer.domElement);
+			//启用控制器
+			this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+			
+			// this.controls.autoRotate = true;
+			this.controls.maxPolarAngle = Math.PI * 0.5; // 颠倒最大和最小角度
+			// this.controls.minPolarAngle = Math.PI * 0.5; // 颠倒最大和最小角度
+			
+			// console.log(this.controls)
+			window.addEventListener( 'resize', this.onWindowResize, false );
+    	},
+		animate: function() {
+			this.reqId = requestAnimationFrame(this.animate);
+			this.controls.update();
+			this.renderer.render(this.scene, this.camera);
 		},
-		setGoods() {
-			var obj = new THREE.Object3D();
-
+		addLights: function() { // 设置灯光
+			// var light = new THREE.AmbientLight( 0x404040 ); // soft white light
+			var hemisphereLight =  new THREE.HemisphereLight(0xaaaaaa,0x000000, 1); // 半球光光源（HemisphereLight，可以为室内场景创建更加自然的光照效果，模拟反光面和光线微弱的天气）
+			var ambientLight = new THREE.AmbientLight(0x404040); // 环境光 颜色会直接作用物体的当前颜色上 ,无处不在
+			var spotLight = new THREE.SpotLight('0xffffff');     // 聚光灯  
+				spotLight.position.set(5,50,0);
+				spotLight.castShadow = true;
+			var shadowLight =  new THREE.DirectionalLight(0xffffff, 1.2); // 定向光
+				shadowLight.position.set(0, 10, 100);
+				shadowLight.shadow.mapSize.width = 1000;
+				shadowLight.shadow.mapSize.height = 1000;
+				shadowLight.castShadow = true;
+			var shadowLight2 =  new THREE.DirectionalLight(0xffffff, 1.2); // 定向光
+				shadowLight2.position.set(0, 10, -100);
+				shadowLight2.shadow.mapSize.width = 1000;
+				shadowLight2.shadow.mapSize.height = 1000;
+				shadowLight2.castShadow = true;
+			
 			
 
-			// let geometry2 = new THREE.BoxGeometry( 1, 3, 2), // 几何立方体对象 包括顶点(vertices),面(faces)
-			// 	material2 = new THREE.MeshBasicMaterial({color: 'rgb(255,255,255)'}); // 材质设置
 			
-			// let mesh = new THREE.Mesh(geometry2, material2) // 创建网格并将立方体加入网格
-			// mesh.rotation.x = 10;
-			// mesh.rotation.y = 10;
-			// this.arr.push(mesh)
-			// this.scene.add(mesh) // 将网格添加到场景
-			// // console.log(THREE.GLTFLoader())
-
-			// var geometry3 = new THREE.BoxBufferGeometry( 1, 1, 1 );
-			// var material3 = new THREE.MeshBasicMaterial( {color: 0x00ff00} );
-			// var cube = new THREE.Mesh( geometry3, material3 );
-			// this.arr.push(cube)
-			// this.scene.add( cube );
-
-			// var geometry4 = new THREE.TorusGeometry( 2, 0.3, 100, 200 );
-			// var material4 = new THREE.MeshBasicMaterial( { color: 0xffff00 } );
-			// var torus = new THREE.Mesh( geometry4, material4 );
+			this.scene.add(ambientLight);
+			this.scene.add(hemisphereLight);  
+			this.scene.add(shadowLight);
+			this.scene.add(shadowLight2);
+			// this.scene.add(spotLight);
+		},
+		setLights: function() {
+			var spotLight = new THREE.SpotLight('0xffffff');     // 聚光灯  
+			var spotLight2 = new THREE.SpotLight('0xffffff');     // 聚光灯  
+			console.log(spotLight)
 			
+			spotLight.position.set(1,18,0);
+			spotLight.castShadow = true;
+			// spotLight.decay = 2
+			// spotLight.penumbra = 0 // 边缘模糊 0-1
 
-			// this.arr.push(torus)
-			// this.scene.add( torus );
-			var material = new THREE.MeshBasicMaterial({
-                color: 'blue',
-                wireframe: true
-             });
-			var yuan = new THREE.Mesh(new THREE.TorusGeometry(1.29, 0.1, 30, 100), material);
-				yuan.rotation.x = 1.5
-				yuan.position.y = 1.2
-				obj.add(yuan )
-            var cylinder = new THREE.Mesh(new THREE.CylinderGeometry(1.27, 1, 2.4, 64, 12), material);
-			obj.add(cylinder)
 
-			this.arr.push(obj)
-			this.scene.add(obj);
+
+			spotLight2.position.set(0,10,-100);
+			spotLight2.castShadow = true;
+	
+			var light = new THREE.AmbientLight(0xffffff, .3);   // 环境光源颜色
+			// light.position.set(30, 30, 100);//光源位置
+
+			this.lightArr.push(spotLight)
+			// this.lightArr.push(spotLight2)
+			this.scene.add(spotLight);
+			// this.scene.add(spotLight2);
+
+			this.scene.add(light);//光源添加到场景中
+	
+			this.camera.lookAt(this.scene.position)
+		},
+		onWindowResize: function () {
+			this.camera.aspect = window.innerWidth / window.innerHeight;
+			this.camera.updateProjectionMatrix();
+			this.renderer.setSize( window.innerWidth, window.innerHeight );
+		},
+		handleLoad() { // 加载完成
+			this.$emit('handleLoad')
 		},
 		
 	},
 	mounted() {
-		// this.init();
-		// this.initSchene();
-		// this.renderCup();
-		// this.render();
+		this.init()
+		this.animate()
+		
 
-
-		// this.myInit()
-		// this.setGoods()
-		// this.animate()
-		console.log(this.list)
-		this.setSize()
+	},
+	beforeDestroy() {
+		cancelAnimationFrame( this.reqId );
+		window.removeEventListener( 'resize', this.onWindowResize);
 	}
 }
 </script>
@@ -473,33 +305,6 @@ export default {
 	cursor: pointer;
 }
 
-.close-btn {
-	position: absolute;
-	right: -50px;
-	top: -65px;
-	width: 24px;
-	height: 24px;
-	transform: rotate(45deg);
-	cursor: pointer;
-	&::before {
-		content: '';
-		position: absolute;
-		top:50%;
-		width: 24px;
-		height: 2px;
-		border-radius: 2px;
-		background: #fff;
-		transform: rotate(90deg);
-	}
-	&::after {
-		content: '';
-		position: absolute;
-		top:50%;
-		width: 24px;
-		height: 2px;
-		border-radius: 2px;
-		background: #fff;
-	}
-}
+
 </style>
 

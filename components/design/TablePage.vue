@@ -1,19 +1,49 @@
 <template>
     <div class="table-page" ref="tablePage">
 		<!-- @mouseenter="setPagePos(index)"  :style="{'height': 200 * list.ratio + 'px', top: index * 200 * list.ratio + 'px'}" -->
-		<div draggable=true  @dragstart="handledragStart($event,i)" @dragover="handledragOver" @dragenter="handledragEnter($event, i)" @dragleave="handledragLeave($event,i)" @dragend="handledragEnd($event, i)" @mousedown="toggleTemplatePage(i)" class="page-index" :style="{height: height}" :ref="i" v-for="(item,i) in dataList" :key="i" >
-			<div class="page-content">
-				<img :src="$store.state.port.imgBaseUrl + item.Thumb" alt="">
+        <!-- @dragstart="handledragStart($event,i)" 
+			@dragover="handledragOver" 
+			@dragenter="handledragEnter($event, i)" 
+			@dragleave="handledragLeave($event,i)" 
+			@dragend="handledragEnd($event, i)" 
+
+			
+			
+			-->
+		<div 
+			@mouseenter="activeEnter($event, i)"	
+			@mousedown="toggleTemplatePage($event, i)" 
+			class="page-index" 
+			:ref="i" v-for="(item,i) in dataList" :key="i" 
+			:style="`top:${(height + 20) * i}px;`"
+		>
+		<!--   -->
+			<div class="page-content" 
+					:style="`height: ${height}px`" v-html="item._html">
+				<!-- <img v-if="item.Thumb" :src="item.Thumb" alt=""> -->
 			</div>
-			<div class="mask" v-if="index == i"></div>
-			<div class="copy" @click="copy(i)" data-tip="复制"></div>
-			<div class="del" @click="del(i)" data-tip="删除"></div>
+			<div class="mask" :style="`opacity: ${pagenum == i ? .3 : 0}`"></div>
+			<!--  v-if="PageMode && PageMode.PageMode" -->
+			<div v-if="PageMode && (dataList.length < PageMode.MaxPages)" class="copy" @mousedown.stop="copy(i)" data-tip="复制"></div>
+			<div class="del" @mousedown.stop="del(i)" data-tip="删除"></div>
 		</div>
     </div>
 </template>
 
 <script>
 export default {
+	name: 'tablePage',
+	props: {
+		pagenum: {
+			type: Number,
+			default: 0
+		},
+		info: {
+			type: Object
+		},
+		PageMode: { // p数模式
+		}
+	},
 	data () {
 		let message = this.$message
 		return {
@@ -36,11 +66,20 @@ export default {
 			dragMoveOff: false,
 			pagePos: {
 				h: 0
+			},
+			moveElem: { // 移动的元素
+				cx: 0,
+				cy: 0,
+				w: 0,
+				h: 0,
+				oldindex: 0,
+				index: 0,
+				div: null,
+				move: false
 			}
 			/* 移动页面 ↑ */
 		}
 	},
-	props: ['data','TemplateNumber'],
 	methods: {
 		// 获取页面数据
 		getData () {
@@ -48,65 +87,106 @@ export default {
 		},
 		// 复制一页
 		copy (index) {
+			this.index = index;
 			this.$emit('copyPage', index)
 		},
 		// 删除页面
-		del (i) {
-			console.log(i)
+		del (i) { 
 			if(this.dataList.length == 1) {
+				this.$message.closeAll();
 				this.message({
 					type: 'warning',
 					message: '最后一页不能删除'
 				})
-				return
-			}
-			this.$emit('delTemplatePage', i)
-			
+			} else {
+                this.$confirm('删除该页面, 是否继续?', '提示', {
+                        confirmButtonText: '确定',
+                        cancelButtonText: '取消',
+                        type: 'warning',
+                        center: true
+                    })
+                    .then(() => {
+						this.$emit('delTemplatePage', i);
+						this.$message.closeAll();
+                        this.$message({
+                            type: 'success',
+                            message: '删除成功!'
+                        });
+                    })
+            }
 		},
 		/**
 		 * 切换页面内容
 		 */
-		toggleTemplatePage (i) {
+		toggleTemplatePage (e, i) {
 			this.index = i
 			this.$emit('toggleTemplatePage', i)
+			this.setdragStart(e, i)
 		},
+
 		// 鼠标按下记录坐标
-		setdragStart (e, id) {
-			this.dragMoveOff = true
-			this.pagePos.cy = e.clientY;
-			this.pagePos.id = id
+		setdragStart (e, i) {
+			this.dragMoveOff = true;
+			this.moveElem.cx = e.clientX;
+			this.moveElem.cy = e.clientY;
+			this.moveElem.div = this.$refs.tablePage.children[i];
+			this.moveElem.oldy = this.moveElem.div.offsetTop;
+			this.moveElem.div.classList.add('move-active')
+			this.moveElem.oldindex = i;
+			this.moveElem.index = i;
+			// console.log(this.moveElem, i)
 			document.addEventListener('mousemove', this.setdragMove)
 			document.addEventListener('mouseup', this.setdragClose)
 		},
 		setdragMove (e) {
-			let y = e.clientY - this.pagePos.cy;
-			this.pagePos.cy = e.clientY;
-			let ele = this.$refs[this.pagePos.id][0]
-			let tablePage = this.$refs.tablePage
-			let childs = tablePage.children
-			let top = ele.offsetTop;
-			let h = ele.offsetHeight
-			ele['style']['top'] = top + y + 'px'
-			let pre = tablePage.children[this.pagePos.id - 1]
-			let next = tablePage.children[this.pagePos.id + 1]
-				// console.log(this.pagePos.id)
-			// if (top + y < this.pagePos.id * 200 * this.list.ratio - h / 2) {
-			// 	// ele = tablePage.removeChild(ele)
-			// 	tablePage.insertBefore(ele, pre)
-			// 	this.pagePos.id -= 1
-			// 	pre['style']['top'] = this.pagePos.id * 200 * this.list.ratio + 'px'
-			// } 
-			// if (top + y > this.pagePos.id * 200 * this.list.ratio + h / 2) {
-			// 	this.$refs[this.pagePos.id + 1][0]['style']['top'] = (this.pagePos.id - 1) * 200 * this.list.ratio + 'px'
-			// }
+			if (!this.dragMoveOff) return;
+			let y = e.clientY - this.moveElem.cy,
+				_y = this.moveElem.oldy + y;
+			if (Math.abs(y) > 20) {
+				this.moveElem.div.style.top = _y + 'px'
+				this.moveposition(_y, this.moveElem.div)
+				this.moveElem.move = true;
+			} else {
+				this.moveElem.move = false;
+			}
 		},
 		setdragClose () {
+			this.dragMoveOff = false;
+			this.moveElem.div.classList.remove('move-active')
+			this.upposition()
 			document.removeEventListener('mousemove', this.setdragMove)
 			document.removeEventListener('mouseup', this.setdragClose)
 		},
+		moveposition(_y, div) { // 设置位置
+			// ,
+			// 	h = this.height + 20,
+			// 	step = _y / h;
+		},
+		activeEnter(e, i) { // 进入元素
+			if (!this.dragMoveOff) return;
+			let h = this.height + 20;
+			// console.log(this.moveElem.index, i)
+			if (this.moveElem.index < i ) {
+				e.target.style.top = (i - 1) * h + 'px';
+				this.moveElem.index = i;
+			} else {
+				e.target.style.top = this.moveElem.index * h + 'px';
+				this.moveElem.index--;
+			}
+		},
+		upposition() { // 松开鼠标后设置位置
+			if (!this.moveElem.move) return;
+			let h = this.height + 20,
+				divs = Array.from(this.$refs.tablePage.children);
+			divs.forEach((item, i) => {
+				item.style.top = i * h + 'px';
+			})
+			this.index = this.moveElem.index;
+			this.$emit('handleReversing', {oldindex: this.moveElem.oldindex, index: this.moveElem.index})
+			this.moveElem.move = false;
+		},
 		setPagePos (id) {
 			if (id == this.pagePos.id) return
-			console.log(1231231)
 		},
 		// 拖拽开始
 		handledragStart (e, i) {
@@ -154,9 +234,10 @@ export default {
 		}
 	},
 	watch: {
-		data () {
-			this.dataList = this.data.list;
-			this.height = this.data.ratio.Height / this.data.ratio.Width * 180 + 'px';
+		info () {
+			this.dataList = this.info.list;
+			// console.log(this.dataList[0]._html)
+			this.height = 180 * this.info.ratio;
 		}
 	}
 }
@@ -168,19 +249,20 @@ export default {
     width: 200px;
 	height: 100%;
 	padding-top: 10px;
+	padding-bottom: 20px;
 	overflow-y: auto;
     .page-index {
-		position: relative;
-		width: 180px;
-		padding: 6px 10px;
-		// overflow: hidden;
+		position: absolute;
+		width: 100%;
+		padding: 10px 10px;
+		transition: top .2s;
 		.page-content{
 			width: 100%;
-			height: 100%;
-			
 			position: relative;
 			border: 1px solid #ccc;
 			border-radius: 3px;
+			overflow: hidden;
+			box-sizing: content-box;
 			img{
 				width: 100%;
 				height: 100%;
@@ -194,7 +276,7 @@ export default {
 			left: 0;
 			right: 0;
 			bottom: 0;
-			background: rgba(0, 0, 0, .3);
+			background: #000;
 			cursor: pointer;
 		}
 		&:hover .del, &:hover .copy{
@@ -265,5 +347,11 @@ export default {
 		box-shadow: 0 2px 8px 0 rgba(0,0,0,.24);
 		z-index: 2;
 	}
+}
+// 移动
+.table-page .page-index.move-active {
+	z-index: 2;
+	transition: none;
+	pointer-events: none;
 }
 </style>

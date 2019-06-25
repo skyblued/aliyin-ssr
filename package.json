@@ -12,15 +12,22 @@
   },
   "dependencies": {
     "@nuxtjs/axios": "^5.3.6",
+    "caniuse-lite": "^1.0.30000974",
     "cookie-universal-nuxt": "^2.0.16",
     "cross-env": "^5.2.0",
     "element-ui": "^2.4.11",
     "express": "^4.16.4",
+    "html2canvas": "^1.0.0-rc.1",
     "js-cookie": "^2.2.0",
     "nuxt": "^2.0.0",
     "request": "^2.88.0",
+    "file-saver": "^2.0.1",
     "svg.draggable.js": "^2.2.1",
-    "svg.js": "^2.7.1"
+    "svg.js": "^2.7.1",
+    "svg.filter.js": "^2.0.2",
+    "three": "^0.103.0",
+    "three-obj-mtl-loader": "^1.0.3",
+    "three-orbitcontrols": "^2.102.1"
   },
   "devDependencies": {
     "@nuxtjs/proxy": "^1.3.3",

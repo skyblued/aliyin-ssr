@@ -41,7 +41,7 @@ export default {
 	methods: {
 		// 1. 获取团队专属颜色
 		getTeamColors () {
-			let TeamNum = sessionStorage['teamNum']
+			let TeamNum = localStorage['teamNum']
 			this.$axios.get(this.$store.state.port.TeamColors + `?TeamNum=${TeamNum}`)
 				.then(res => {
 					if(!res.data) return
