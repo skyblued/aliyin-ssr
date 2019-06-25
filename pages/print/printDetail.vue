@@ -11,15 +11,15 @@
 
             <div class="print-detail-content">
                 <LeftDetail :info="info"></LeftDetail>
-                <!-- <RightDetail :info="info"></RightDetail> -->
+                <RightDetail :info="info"></RightDetail>
             </div>
             <div class="product-detail">
                 <p>产品详情</p>
-                <!-- <p v-html="info.length && info[0].Description"></p> -->
+                <div v-html="info.length && info[0].Description"></div>
             </div>
 
             <div class="footer">
-                <!-- <PrintFooter></PrintFooter> -->
+                <PrintFooter></PrintFooter>
             </div>
         </div>
     </div>
@@ -27,9 +27,13 @@
 
 <script>
 import LeftDetail from '@/components/printdetail/LeftDetail'
+import RightDetail from '@/components/printdetail/RightDetail'
+import PrintFooter from '@/components/print/PrintFooter'
 export default {
     components: {
-        LeftDetail
+        LeftDetail,
+        RightDetail,
+        PrintFooter
     },
     async asyncData({$axios, isDev,route, store, env, params, query, req, res, redirect, error}) {
         var typeId = route.query.id;
@@ -41,7 +45,7 @@ export default {
 		}
     },
     mounted() {
-        console.log(this.info)
+        // console.log(this.info)
     }
 }
 </script>
@@ -54,7 +58,7 @@ export default {
 .print-detail{
     width: 1200px;
     margin: 0 auto;
-    padding-bottom: 26px;
+    // padding-bottom: 26px;
     .breadcrumb-nav{
         display: flex;
         line-height: 16px;

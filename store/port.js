@@ -47,4 +47,10 @@ export const state = () => ({
 	Templates: '/Templates',
 	// 颜色: 团队专属颜色获取
 	TeamColors: '/TeamColors',
+
+	// 印刷接口
+	print: {
+		printprice: '/printprice', // 报价计算
+		pay: '/pay', // 支付二维码获取
+	},
 })
