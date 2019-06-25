@@ -49,8 +49,8 @@ module.exports = {
 		'@nuxtjs/style-resources',
 		// Simple usage
 		'cookie-universal-nuxt',
-		// With options
-		['cookie-universal-nuxt', { alias: 'cookiz' }],
+		// // With options
+		['cookie-universal-nuxt', { alias: 'cookies' }],
 	],
 	/*
 	** Axios module configuration

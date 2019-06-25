@@ -18,7 +18,7 @@
 			 ></desHeader>
 			<div class="design_title_input"><input class="works" type="text" maxlength="20" v-model="design_title" @change="setTemplateTitle" placeholder="设置作品名称"></div>
 		</header>
-		<div class="design-main">
+		<div class="design-main" v-if="!$store.state.login.loginShow">
 			<div class="side">
 				<!-- 侧边工具导航栏 --> 
 				<div class="tools myfont">

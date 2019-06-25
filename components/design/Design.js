@@ -55,8 +55,9 @@ export default {
 		DownloadWait,
 		Psd,
 	},
-	asyncData({isDev, route, store, env, params, query, req, res, redirect, error}) {
-		console.log(store.state.login)
+	asyncData({app, isDev, route, store, env, params, query, req, res, redirect, error}) {
+		// console.log(store.state.login.token)
+		if (!store.state.login.token) store.commit('login/toggleShow', true)
 	},
 	validate({ params, query, redirect }) {
 		// console.log(params)
@@ -398,6 +399,27 @@ export default {
 				str += item + '\n'
 			})
 			return str
+		}
+	},
+	mounted() {
+		console.log(this)
+		this.createInfo();
+		this.getTemplate().then(data => {
+			this.handleLoadTemplateData(data);
+		}); // 查询模板数据
+		// this.WS()
+		
+		// 查询还是创建空白模板
+		// 获取字体列表
+		this.getFontData();
+		window.addEventListener('keyup', this.keycode)
+		window.addEventListener('keydown', this.keyDown)
+		window.addEventListener('mouseup', this.mouseUp)
+
+		window.onbeforeunload =  (e) => {
+			if (this.isSave) {
+				return false;
+			}
 		}
 	},
 	methods: {
@@ -4829,26 +4851,7 @@ export default {
 			}
 		}
 	},
-	mounted() {
-		this.createInfo();
-		this.getTemplate().then(data => {
-			this.handleLoadTemplateData(data);
-		}); // 查询模板数据
-		// this.WS()
-		
-		// 查询还是创建空白模板
-		// 获取字体列表
-		this.getFontData();
-		window.addEventListener('keyup', this.keycode)
-		window.addEventListener('keydown', this.keyDown)
-		window.addEventListener('mouseup', this.mouseUp)
-
-		window.onbeforeunload =  (e) => {
-			if (this.isSave) {
-				return false;
-			}
-		}
-	},
+	
 	
 	computed: {
 		// 字体大小的范围

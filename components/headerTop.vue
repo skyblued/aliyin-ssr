@@ -92,8 +92,8 @@ export default {
             localStorage.removeItem('loginType')
             localStorage.removeItem('isBindWx')
             localStorage.removeItem('isBindQQ')
-            localStorage.removeItem('times')
-            this.$store.$cookiz.remove('token')
+			localStorage.removeItem('times')
+            this.$cookies.remove('token')
             history.go(0)
         },
         // 个人中心
