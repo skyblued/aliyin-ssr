@@ -196,6 +196,9 @@ export default {
         color: $color;
         cursor: pointer;
     }
+    a{
+        font-size: 12px;
+    }
     span{
         margin: 0;
     }
