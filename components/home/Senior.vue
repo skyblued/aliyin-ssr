@@ -10,7 +10,9 @@
         <div class="senior-img" :style="{'background-image': `url(${$store.state.port.staticPath + '/img/home/line.png'})`}">
             <img v-for="(item,i) in imgList" :key="i" :src="$store.state.port.staticPath + item.url" alt="">
         </div>
-        <div class="senior-btn"  @click="handleClick">选择模板</div>
+        <nuxt-link to="/templateList">
+            <span class="senior-btn">选择模板</span>
+        </nuxt-link>
     </div>
 </template>
 
@@ -67,11 +69,6 @@ export default {
             },]
         }
     },
-    methods: {
-        handleClick() {
-            this.$router.push('/createdesign')
-        }
-    }
 }
 </script>
 

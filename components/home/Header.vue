@@ -9,7 +9,7 @@
                         <span class="bar-title">海量模板，每天更新</span>
                     </div>
                     <div class="bar-menu-list">
-                        <!-- <TemplateClass></TemplateClass> -->
+                        <TemplateClass :barList="barList"></TemplateClass>
                     </div>
                 </div>
                 <ul>
@@ -39,7 +39,7 @@
 </template>
 
 <script>
-// import TemplateClass from '@/components/home/TemplateClass.vue'
+import TemplateClass from '@/components/home/TemplateClass.vue'
 export default {
     data () {
         return {
@@ -48,7 +48,7 @@ export default {
             show: false
         }
     },
-    props: ['isFixed'],
+    props: ['isFixed', 'barList'],
     methods: {
         handleClick() {
             if(this.$route.path == '/') {
@@ -81,7 +81,7 @@ export default {
         }
     },
     components: {
-        // TemplateClass
+        TemplateClass
     }
 }
 </script>

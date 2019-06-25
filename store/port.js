@@ -52,4 +52,12 @@ export const state = () => ({
 		printprice: '/printprice', // 报价计算
 		pay: '/pay', // 支付二维码获取
 	},
+
+	dialogUpload: false,  // 上传文件弹出框
 })
+
+export const mutations = {
+	setDialogUpload(state,msg) {
+		state.dialogUpload = msg
+	}
+}

@@ -915,9 +915,10 @@ export default {
                 .modal-block-text-empty{
                     width: 100%;
                     height: 55px;
-                    padding-top: 12px;
+                    padding: 8px;
                     text-align: center;
                     span:first-child{
+                        display: inline-block;
                         font-size: 18px;
                         color: rgba(51,51,51,1);
                         line-height: 20px;
