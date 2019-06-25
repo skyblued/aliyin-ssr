@@ -3,12 +3,11 @@
         <div class="footer-content">
             <div class="content-left" v-if="articleList.length">
                 <ul v-for="(item,i) in articleList" :key="i">
-                    <li>{{item.ClassName}}</li>
+                    <li style="color: rgba(51,51,51,1);margin-bottom: 10px;">{{item.ClassName}}</li>
                     <nuxt-link v-for="(items,index) in item.Content" :key="index"
                         :to="`/content?id=${items.ClassID}&contentId=${items.ContentID}`"
                     >
-                    <!-- @click="handleJump(items)" -->
-                        <li style="color: rgba(153,153,153,1);">{{items.Title}}</li>
+                        <li>{{items.Title}}</li>
                     </nuxt-link>
                 </ul>
             </div>
@@ -95,18 +94,14 @@ export default {
                     text-align: left;
                     cursor: pointer;
                     &:hover{
-                        color: $color;
+                        color: #745bff;
                     }
                     a{
                         color: rgba(153,153,153,1);
                         &:hover{
-                            color: $color; 
+                            color: #745bff; 
                         }
                     }
-                }
-                li:first-child{
-                    color: rgba(51,51,51,1);
-                    margin-bottom: 10px;
                 }
             }
         }

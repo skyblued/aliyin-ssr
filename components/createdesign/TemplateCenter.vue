@@ -115,7 +115,7 @@
                 </div>
             </div>
             <div v-if="!templateList.length && !error" class="block-error">
-                <img src="/img/error/ku.png" alt="">
+                <img :src="$store.state.port.staticPath + '/img/error/ku.png'" alt="">
                 <p v-if="keywords">没有找到与“{{keywords}}”相关的模板，换个关键词试试？</p>
                 <p v-else>没有找到相关模板，换个关键词试试? </p>
             </div>
@@ -154,7 +154,7 @@ export default {
             typeList: [],  // 分类列表
             page: {
                 currentPage: 1,  // 当前页
-                totalRecords: 0,   // 总条数
+                totalRecords: this.center['X-Pagination'].TotalCount,   // 总条数
                 pageSize: 19,      // 每页个数
             },
             title: '',
@@ -312,8 +312,8 @@ export default {
             //     // this.templateParam = obj
             //     // this.getTempLateList(this.templateParam)
             // })
-            if (!this.typeId) return 
-            this.$axios.get('/ProductTypeFilter?productTypeID=' + this.typeId).then(res => {
+            if (!this.templateParam.ProductTypeId) return 
+            this.$axios.get('/ProductTypeFilter?productTypeID=' + this.templateParam.ProductTypeId).then(res => {
                 if(res === undefined) return console.log('没有数据')
                 // console.log(res.data)
                 this.typeList = res.data.FilterList || []
@@ -321,7 +321,7 @@ export default {
                     this.filters = this.setFilter(this.$route.query.filter.replace(/-/g, ','))
                 }
             })
-            this.$axios.get('/ProductTypeSize?TypeID=' + this.typeId).then(result => {
+            this.$axios.get('/ProductTypeSize?TypeID=' + this.templateParam.ProductTypeId).then(result => {
                 // console.log(result.data)
                 this.size.width = null
                 this.size.height = null
@@ -338,7 +338,7 @@ export default {
 
         // 获取模板列表
         getTempLateList(obj) {
-            // console.log(obj)
+            console.log(obj)
             this.templateList = []
             this.error = true
             window.scrollTo(0,0)
@@ -525,8 +525,8 @@ export default {
             }
         },
         handleCreate() {
-            let classNum = this.num;
-            let typeId = this.typeId;
+            let classNum = this.templateParam.ProductCategorieNum;
+            let typeId = this.templateParam.ProductTypeId;
             let sizeId = this.sizeId
             let teamNum = localStorage['teamNum']
             if(sizeId && typeId && classNum){
@@ -605,8 +605,8 @@ export default {
         // console.log(this.$route.query)
         this.title = this.$route.query.title || ''
         this.subtitle = this.$route.query.subtitle || ''
-        this.typeId = this.$route.query.id || ''
-        this.num = this.$route.query.n || ''
+        this.templateParam.ProductTypeId = this.$route.query.id || ''
+        this.templateParam.ProductCategorieNum = this.$route.query.n || ''
         this.keywords = this.$route.query.k || ''
         this.templateParam.SizeId = this.$route.query.sizeId || ''
 
@@ -614,7 +614,8 @@ export default {
 		
 		this.getParam();
         window.scrollTo(0,0)
-       
+
+        console.log(this.center)
 
     },
     components: {

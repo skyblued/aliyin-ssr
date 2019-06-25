@@ -37,7 +37,7 @@ export default {
 			$axios.post('/TemplateCenter', str)
 		])
 		templateList = center.data;
-		console.log(templateList, '服务端')
+		// console.log(templateList, '服务端')
 		return {
             templateParam,
             templateList,

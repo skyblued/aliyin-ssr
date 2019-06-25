@@ -46,6 +46,7 @@ export default {
     },
     mounted() {
         // console.log(this.info)
+        window.scrollTo(0,0)
     }
 }
 </script>
