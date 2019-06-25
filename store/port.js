@@ -1,5 +1,4 @@
 export const state = () => ({
-	// 静态资源图片地址
 	ossPath: 'http://img.aliyin.com/',
 	staticPath: '//static.aliyin.com', 
 	netServer: 'http://api.aliyin.com/api',

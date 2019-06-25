@@ -6,7 +6,6 @@ import FontText from "@/components/design/sidecomponents/FontText.vue";
 import Matter from "@/components/design/sidecomponents/matter.vue";
 import Plugin from "@/components/design/sidecomponents/plugin.vue";
 import Uploading from "@/components/design/sidecomponents/uploading.vue";
-import Box from "@/components/design/test.vue";
 import Setcolor from '@/components/design/setcolor.vue';
 import Projection from '@/components/design/projection.vue';
 import PathWs from '@/components/design/pathWS.vue'
@@ -31,9 +30,9 @@ import {
 	colorToRGB
 } from '@/assets/js/utils.js'
 
-import SVG from "svg.js";
-import draggable from "svg.draggable.js";
-import filter from 'svg.filter.js'
+// import SVG from "svg.js";
+// import draggable from "svg.draggable.js";
+// import filter from 'svg.filter.js'
 
 
 export default {
@@ -44,7 +43,6 @@ export default {
 		Background,
 		FontText,
 		Matter,
-		Box,
 		Plugin,
 		Uploading,
 		Setcolor,
@@ -80,7 +78,7 @@ export default {
 			design_title: "默认标题", // 设计作品标题
 			List: [], //
 			// 最左侧切换栏
-			sideTitle: superAdmin ? 'admin' : 'matter',
+			sideTitle: null,
 			// 搜索
 			mouseTop: null, // 搜索栏是否
 			color5: "rgba(255, 69, 0, 0.68)",
@@ -210,7 +208,6 @@ export default {
 			},
 			inputShow: false, // 输入框的切换显示
 			svgBackground: "rgb(255,255,255)",
-			svgSize: svgSize,
 			familyList: [],
 			fontColorSelect: "#C118C4",
 			useColor: [], // 模板颜色拾取(暂时支持文字)
@@ -378,20 +375,6 @@ export default {
 			PageMode: null, // p数模式
 		};
 	},
-	created() {
-			
-		let params = this.$route.params,
-			query = window.atob(params.t),
-			queryArr = query.split('&');
-			this.queryNumber = queryArr[0].split('='),
-			this.superAdmin = queryArr[1] == 'admin=admin' ? 'admin' : null;
-		
-				
-		// 获取查询字符串
-		this.svgSize = this.$route.query;
-		// 获取设计者身份
-		this.autosave = this.superAdmin ? false : true;	
-	},
 	filters: {
 		setInt(num) { // 取整
 			return num.toFixed(0)
@@ -405,6 +388,19 @@ export default {
 		}
 	},
 	methods: {
+		createInfo() {
+			console.log(this.$store)
+			let params = this.$route.params,
+				query = window.atob(params.t),
+				queryArr = query.split('&');
+				this.queryNumber = queryArr[0].split('='),
+				this.superAdmin = queryArr[1] == 'admin=admin' ? 'admin' : null;
+			
+					
+			// 获取设计者身份
+			this.autosave = this.superAdmin ? false : true;	
+			this.sideTitle = this.superAdmin ? 'admin' : 'matter';
+		},
 		closeWindow() { // 关闭窗口
 			this.$confirm(`服务器出错`, {
 				title: '提示',
@@ -469,7 +465,7 @@ export default {
 					mtl: this.$store.state.port.imgBaseUrl + this.templateInfo.Size.StereoMaterial+ `?v=${new Date().getTime()}`
 				}
 				// http://localhost:5050/replace this.$store.state.preveiwPort
-				this.$http.post(this.$store.state.preveiwPort, obj, {
+				this.$axios.post(this.$store.state.port.preveiwPort, obj, {
 					timeout: 1000 * 60 * 2
 				})
 				.then(res => {
@@ -482,14 +478,15 @@ export default {
 		},
 		// 获取字体列表
 		getFontData() {
-			this.$http.get("/Fonts").then(({data}) => {
+			this.$axios.get("/Fonts").then(({data}) => {
 				// console.log(res)
 				if (data == undefined || data == null) return console.log('没有字体')
 				this.familyList = data;
 				this.textDefault = data[0].FontThumb;
 				// console.log(res.data)
-				let font = document.getElementById('font-face'),
-					str = '';
+				// let font = document.getElementById('font-face'),
+				// 	str = '';
+				let font = document.createElement('style'), str = '';
 					this.familyList.forEach((item, i) => {
 						item.down = false;
 						if (i == 0) {
@@ -505,6 +502,7 @@ export default {
 						`
 					})
 					font.innerHTML = str;
+					document.head.append(font)
 			});
 		},
 		getFontThumb(font) { //获取当前字体名称
@@ -1055,7 +1053,7 @@ export default {
 				let formdata = new FormData();
 				formdata.append(page, t);
 				return new Promise((resolve, reject) => {
-					this.$http.post(url, formdata)
+					this.$axios.post(url, formdata)
 					.then(res => {
 						this.templateAnimation = false;
 						let data = res.data;
@@ -1091,9 +1089,10 @@ export default {
 		getPageJson(page) { // 查询json数据,和svg html
 			return Promise.all(Array.from(page).map((item, index) => {
 				return new Promise((resolve, reject) => {
-					let jsonPath = this.$store.state.ossPath + item.JsonPath + `?v=${new Date().getTime()}`,
-						svgPath = this.$store.state.ossPath + item.SvgPath;
-					this.$http.get(jsonPath)
+					
+					let jsonPath = this.$store.state.port.ossPath + item.JsonPath + `?v=${new Date().getTime()}`,
+						svgPath = this.$store.state.port.ossPath + item.SvgPath;
+					this.$axios.get(jsonPath)
 					.then(({data}) => {
 						// console.log(data)
 						item.JsonContent = JSON.stringify(data);
@@ -1277,7 +1276,7 @@ export default {
 				data.append('TemplateNum', this.templateInfo.TemplateNumber)
 			}
 			// console.log(url, 12321132131312)
-			this.$http.put(url, data)
+			this.$axios.put(url, data)
 			.then(res => {
 				// console.log(res)
 			})
@@ -1298,7 +1297,7 @@ export default {
 				clearTimeout(this.timerPng);
 				this.clickAllSavePage();
 			} else {
-				this.$http.put(this.saveUrl, putObj).then(res => {
+				this.$axios.put(this.saveUrl, putObj).then(res => {
 					this.isSave = false
 					if (res.data.status == 'success') {
 						if (btn) {
@@ -1448,7 +1447,7 @@ export default {
 					Thumb: item.Thumb,
 					ThumbPath: item.ThumbPath
 				};
-			this.$http.put(url, putObj).then(res => {
+			this.$axios.put(url, putObj).then(res => {
 				if (res.data.status == 'success' && res.data.key) {
 					item.Thumb = this.$store.state.port.imgBaseUrl + res.data.key + `?v=${new Date().getTime()}`;
 					// console.log(res.data)
@@ -1539,8 +1538,8 @@ export default {
 			page.forEach((item, i) => {
 				this.productThumbnail(item, i)
 				.then(img => {
-					item.Thumb = this.$store.state.nodeUrl + img+ `?v=${new Date().getTime()}`;
-					item.ThumbPath = this.$store.state.nodeUrl + img+ `?v=${new Date().getTime()}`;
+					item.Thumb = this.$store.state.port.nodeUrl + img+ `?v=${new Date().getTime()}`;
+					item.ThumbPath = this.$store.state.port.nodeUrl + img+ `?v=${new Date().getTime()}`;
 					this.saveSvgHtml(item, i)
 				})
 			})
@@ -1548,7 +1547,7 @@ export default {
 		templatePageReplace(page) { // 左侧选中模板页替换当前页
 			console.log(page)
 			let pagenum = this.pagenum;
-			fetch(this.$store.state.ossPath + page.JsonPath)
+			fetch(this.$store.state.port.ossPath + page.JsonPath)
 			.then(response => response.json())
 			.then(data => {
 				this.CurrentTemplateData[pagenum].JsonContent = JSON.stringify(data);
@@ -1566,7 +1565,7 @@ export default {
             })
 		},
 		putPage(obj) { // 保存页
-			this.$http.put(this.saveUrl, obj).then(res => {
+			this.$axios.put(this.saveUrl, obj).then(res => {
 				if (res.data.status == 'success' && res.data.key) {
 					// item.Thumb = this.$store.state.port.imgBaseUrl + res.data.key + `?v=${new Date().getTime()}`;
 					// console.log(res.data)
@@ -1621,7 +1620,7 @@ export default {
 			}
 			
 			// console.log(url, obj)
-			this.$http.post(url, obj)
+			this.$axios.post(url, obj)
 				.then(res => {
 					console.log(res)
 					if (res == undefined || res == 'undefined') return console.log('没有添加成功')
@@ -1647,7 +1646,7 @@ export default {
 				name = "documentpageid";
 			}
 			formdata.append(name, PageId);
-			this.$http.delete(url, {
+			this.$axios.delete(url, {
 				data: formdata
 			}).then(res => {
 				this.CurrentTemplateData.splice(i, 1);
@@ -2079,7 +2078,7 @@ export default {
 			// webserver
 			return new Promise((resolve, reject) => {
 				// this.$store.state.nodeUrl/text2path/pro
-				this.$http.post( this.$store.state.nodeUrl + "/textToPath/pro", obj)
+				this.$axios.post( this.$store.state.port.nodeUrl + "/textToPath/pro", obj)
                 .then(res => {
                     this.textProduction = false;
                     resolve(res.data);
@@ -2885,7 +2884,7 @@ export default {
 						'Content-Type': 'multipart/form-data'
 					}
 				}
-				this.$http.post(this.$store.state.port.TeamMaterial, formdata, config)
+				this.$axios.post(this.$store.state.port.TeamMaterial, formdata, config)
 					.then(res => {
 						input = null
 						let data = JSON.parse(res.data);
@@ -4506,9 +4505,10 @@ export default {
 				return new Promise((resolve, reject) => {
 					this.productThumbnail(item, i)
 					.then(img => {
-						item.Thumb = this.$store.state.nodeUrl + img+ `?v=${new Date().getTime()}`;
-						item.ThumbPath = this.$store.state.nodeUrl + img+ `?v=${new Date().getTime()}`;
-						this.$http.put(this.saveUrl, item)
+						
+						item.Thumb = this.$store.state.port.nodeUrl + img+ `?v=${new Date().getTime()}`;
+						item.ThumbPath = this.$store.state.port.nodeUrl + img+ `?v=${new Date().getTime()}`;
+						this.$axios.put(this.saveUrl, item)
 						.then(({data}) => {
 							if (data.state = 'success') {
 								this.CurrentTemplateData[i].Thumb = data.key
@@ -4583,7 +4583,7 @@ export default {
 					}
 				} 
 				// 'http://localhost:5050' this.$store.state.nodeUrl `obj=${encodeURIComponent(JSON.stringify(obj))}`
-				this.$http.post(this.$store.state.nodeUrl + '/pdf/pro', obj, {
+				this.$axios.post(this.$store.state.port.nodeUrl + '/pdf/pro', obj, {
 					responseType: 'blob'
 				})
 					.then((res) => {
@@ -4616,7 +4616,7 @@ export default {
 					width: 400
 				};
 				// this.$store.state.productThumbnail'http://localhost:5050/svgtopng'
-				this.$http.post(this.$store.state.productThumbnail, data)
+				this.$axios.post(this.$store.state.port.productThumbnail, data)
 				.then(({data}) => {
 					let url = data.path;
 					// 返回URL
@@ -4641,7 +4641,7 @@ export default {
 				width: view.width,
 				height: view.height
 			}
-			this.$http.post(this.$store.state.nodeUrl + '/downpng', obj, {
+			this.$axios.post(this.$store.state.port.nodeUrl + '/downpng', obj, {
 				responseType: 'blob'
 			})
 			.then(res => {
@@ -4817,6 +4817,7 @@ export default {
 		}
 	},
 	mounted() {
+		this.createInfo();
 		this.getTemplate().then(data => {
 			this.handleLoadTemplateData(data);
 		}); // 查询模板数据

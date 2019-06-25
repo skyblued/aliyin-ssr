@@ -19,7 +19,7 @@
 </template>
 
 <script>
-import html2canvas from 'html2canvas'
+
 import {imageToBase} from '@/assets/js/utils.js'
 export default {
 	name: 'pickColor',

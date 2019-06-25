@@ -498,26 +498,31 @@ export default {
 
         // 去制作
         handleToDesign(item) {
-            if (!localStorage['token']) return this.$store.commit('setDialogType', 'login')
+            if (!localStorage['token']) return this.$store.commit('login/toggleShow', true)
             var formData = new FormData()
             formData.append('TemplateNumber', item.TemplateNumber);
             formData.append('TeamNum', localStorage['teamNum']);
             let config = {
                 headers:{'Content-Type': 'multipart/form-data'}
             }
-            var url = window.open('/designer', '_blank')
+            // var url = window.open('/designer', '_blank')
             this.$axios.post('/CopyTemplate', formData, config).then(res => {
                 if(res.data == '') return console.log('没有返回')
                 // console.log(res.data)
                 let str = 'DocumentNumber=' + res.data
-                str = window.btoa(str)
-                url.location = '/designer/' + str
+				str = window.btoa(str);
+				var a = document.createElement('a')
+					a.target = "_blank"
+					a.href = '/design/' + str;
+					a.click();
+					a = null;
+                // url.location = '/designer/' + str
             })
         },
 
         // 创建空白画布
         handleCreatTemplate() {
-            if(!localStorage['token']) return this.$store.commit('setDialogType', 'login')
+            if(!localStorage['token']) return this.$store.commit('login/toggleShow', true)
             if(this.sizeList.length > 1) {
                 this.dialogSizeVisible = true
             }else{
@@ -542,15 +547,21 @@ export default {
                     }]
                 }
                 // console.log(obj, '创建参数')
-                var url = window.open('/designer', '_blank')
+                // var url = window.open('/designer', '_blank')
                 this.$axios.post(this.$store.state.port.TeamTemplate,obj).then(res =>{
                     if(res.data == 'NoAuthority') return this.$message('没有权限')
                     // console.log(JSON.parse(res.data))
                     this.dialogSizeVisible = false
                     let data = JSON.parse(res.data)
                     let str = 'DocumentNumber=' + data.DocumentNumber
-                    str = window.btoa(str)
-                    url.location = '/designer/' + str
+					str = window.btoa(str)
+					var a = document.createElement('a')
+					a.target = "_blank"
+					a.href = '/design/' + str;
+					a.click();
+					console.log(a)
+					a = null;
+                    // url.location = '/designer/' + str;
                 })
             }else{
                 console.log('缺少必要参数')

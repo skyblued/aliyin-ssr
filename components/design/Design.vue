@@ -1,6 +1,4 @@
 <template>
-  <no-ssr>
-    
 	<div class="design">
 
 		<header class="header">
@@ -69,7 +67,7 @@
 				<div :class="{'toolface': true, 'active-toggle': !toggle}" ref="toolface">
 					
 				  <transition name="left-show" mode="out-in">
-					<div class="left-slide-show" key="1" v-if="sideTitle == 'temp'">
+					<div class="left-slide-show" key="1" v-if="svgSize && sideTitle == 'temp'">
 						<temp @templatePageReplace="templatePageReplace" :templateInfo="templateInfo"></temp>
 					</div>
 
@@ -866,10 +864,9 @@
 			</div>
 		</transition>
 	</div>
-	</no-ssr>
 </template>
 
-<script src="../components/design/Design.js"></script>
+<script src="./Design.js"></script>
 
 <style lang="scss" scoped>
 .design {

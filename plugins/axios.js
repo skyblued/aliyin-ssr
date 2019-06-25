@@ -8,11 +8,13 @@ export default function ({$axios, store, req}) {
    // 基本配置
 	axios.defaults.timeout = 1000*60*60
 	axios.defaults.baseURL = 'http://api.aliyin.com/api'; //配置接口地址
-	if (store.state.login.token) {
-		axios.defaults.headers['token'] = store.state.login.token;
-	}
 	// 请求回调
-	axios.onRequest(config => {})
+	axios.onRequest(config => {
+		if (store.state.login.token) {
+			config.headers.common['token'] = store.state.login.token;
+		}
+		return config;
+	})
   
 	// 返回回调
 	axios.onResponse(res => {})
