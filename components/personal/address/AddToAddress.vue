@@ -6,11 +6,13 @@
                     <el-option value="请选择"></el-option>
                     <el-option v-for="item in provinceList" :key="item.value" :label="item.RegionName" :value="item.RegionId"></el-option>
                 </el-select>
-                <el-select v-model="form.city" style="width: 130px" @focus="getCityList" @change="handleChangeCity">
+                <!-- @focus="getCityList" -->
+                <el-select v-model="form.city" style="width: 130px" @change="handleChangeCity" v-if="cityList.length">
                     <el-option value="请选择"></el-option>
                     <el-option v-for="item in cityList" :key="item.value" :label="item.RegionName" :value="item.RegionId"></el-option>
                 </el-select>
-                <el-select v-model="form.area" style="width: 130px" @focus="getAreaList" @change="handleChangeArea">
+                <!-- @focus="getAreaList" -->
+                <el-select v-model="form.area" style="width: 130px" @change="handleChangeArea" v-if="areaList.length">
                     <el-option value="请选择"></el-option>
                     <el-option v-for="item in areaList" :key="item.value" :label="item.RegionName" :value="item.RegionId"></el-option>
                 </el-select>
@@ -57,12 +59,13 @@ export default {
             cityId: '',
             areaList: [],
             areaId: '',
-            regionName: []
+            regionName: [],
+            regionId: ''
         }
     },
     methods: {
         handleBlur() {  // 失去焦点验证手机号
-            if(!/^((1[3,5,8][0-9])|(14[5,7])|(17[0,6,7,8])|(19[7]))\d{8}$/.test(this.Phone) ) {
+            if(!/^((1[3-9][0-9])|(14[5,7])|(17[0,6,7,8])|(19[7]))\d{8}$/.test(this.Phone) ) {
                 this.error = '请输入正确的手机号'
             }else{
                 this.error = ''
@@ -74,13 +77,16 @@ export default {
         
         // 获取省份信息
         getProvinceList() {
-            this.$axios.get('/regions').then(res => {
+            this.$http.get('/regions').then(res => {
                 //console.log(res.data)
                 this.provinceList = res.data
             })
         },
         handleChange(val) {
+            if(val == '请选择') return
             this.provinceId = val
+            this.regionId = val
+            this.getCityList()
             this.form.city = '请选择'
             this.form.area = '请选择'
             var j = 0
@@ -89,13 +95,20 @@ export default {
                     j = i
                 }
             }
-            this.regionName.push(this.provinceList[j].RegionName)
+            if(this.regionName.length == 0) {
+                this.regionName.push(this.provinceList[j].RegionName)
+            }else if(this.regionName.length == 1){
+                this.regionName.splice(0,1,this.provinceList[j].RegionName)
+            }else{
+                this.regionName.splice(0,1,this.provinceList[j].RegionName)
+                this.regionName.splice(1)
+            }
         },
         // 获取城市信息列表
         getCityList() {
             if(this.provinceId){
-                this.$axios.get('/regions/?id=' + this.provinceId).then(res => {
-                    //console.log(res.data)
+                this.$http.get('/regions/?id=' + this.provinceId).then(res => {
+                    // console.log(res.data)
                     this.cityList = res.data
                 })
             }else{
@@ -103,7 +116,13 @@ export default {
             }
         },
         handleChangeCity(val) {
+            if(val == '请选择') {
+                this.regionName.splice(1,1)
+                return 
+            }
             this.cityId = val
+            this.regionId = val
+            this.getAreaList()
             this.form.area = '请选择'
             var j = 0
             for(var i=0;i<this.cityList.length;i++){
@@ -111,13 +130,20 @@ export default {
                     j = i
                 }
             }
-            this.regionName.push(this.cityList[j].RegionName)
+            if(this.regionName.length == 1) {
+                this.regionName.push(this.cityList[j].RegionName)
+            }else if(this.regionName.length == 2){
+                this.regionName.splice(1,1,this.cityList[j].RegionName)
+            }else{
+                this.regionName.splice(1,1,this.cityList[j].RegionName)
+                this.regionName.splice(2)
+            }
         },
         // 获取地区信息列表
         getAreaList() {
             if(this.provinceId && this.cityId){
-                this.$axios.get('/regions/?id=' + this.cityId).then(res => {
-                    //console.log(res.data)
+                this.$http.get('/regions/?id=' + this.cityId).then(res => {
+                    // console.log(res.data)
                     this.areaList = res.data
                 })
             }else{
@@ -125,19 +151,27 @@ export default {
             }
         },
         handleChangeArea(val) {
-            //console.log(val)
+            if(val == '请选择') {
+                this.regionName.splice(2,1)
+                return 
+            }
             this.areaId = val
+            this.regionId = val
             var j = 0
             for(var i=0;i<this.areaList.length;i++){
                 if(val == this.areaList[i].RegionId){
                     j = i
                 }
             }
-            this.regionName.push(this.areaList[j].RegionName)
+            if(this.regionName.length == 2) {
+                this.regionName.push(this.areaList[j].RegionName)
+            }else{
+                this.regionName.splice(2,1,this.areaList[j].RegionName)
+            }
         },
 
         handleAdd() {
-            if(this.form.province == '请选择' && this.form.city == '请选择' && this.form.area == '请选择'){
+            if(this.form.province == '请选择' || this.form.city == '请选择'){
                 this.$message({type: 'warning', message: '请填写收货区域'})
                 return
             }
@@ -159,31 +193,26 @@ export default {
                 'CelPhone': this.Phone,
                 'TelPhone': '',
                 'EmailAddress': '',
-                'RegionId': this.areaId,
+                'RegionId': this.regionId,
                 'RegionFullName': str,
                 'Address': this.form.address,
                 'Zipcode': '',
                 'IsDefault': this.form.checked,
-                'TeamNum': sessionStorage['teamNum']
+                'TeamNum': localStorage['teamNum']
             }
-            console.log(this.form.checked)
             let config = {
                 headers:{'Content-Type': 'application/json'}
             }
-            this.$axios.post('/shipaddress', obj, config).then(response => {
+            this.$http.post('/shipaddress', obj, config).then(response => {
+                if(JSON.stringify(response.data) == '{}') return
                 console.log(response.data)
-                if(JSON.stringify(response.data) == '{}'){
-                    return
-                }else{
-                    this.$message({type: 'success', message: '添加成功'})
-                    this.$store.commit('setDialogAdd', false)
-                    this.$emit('setAddress')
-                }
+                this.$store.commit('setDialogAdd', false)
+                this.$message({type: 'success', message: '添加成功'})
+                this.$emit('setAddress')
             })
         },
         handleCancel() {
             this.$store.commit('setDialogAdd', false)
-            this.form = {}
         }
     },
     mounted() {
@@ -191,7 +220,7 @@ export default {
     },
     watch: {
         Phone() {
-            if(!/^((1[3,5,8][0-9])|(14[5,7])|(17[0,6,7,8])|(19[7]))\d{8}$/.test(this.Phone) ) {
+            if(!/^((1[3-9][0-9])|(14[5,7])|(17[0,6,7,8])|(19[7]))\d{8}$/.test(this.Phone) ) {
                 this.form.phone = -1
             }else{
                 this.form.phone = 1

@@ -4,6 +4,7 @@ export const state = () => ({
 	signType: 'wxpage',
 	loginShow: false,
 	userName: '', // 用户名
+	avatar: '',   // 用户头像
 })
 
 export const mutations = {
@@ -21,5 +22,8 @@ export const mutations = {
 	},
 	setUserName(state, msg) {
 		state.userName = msg
+	},
+	setAvatar(state,msg) {
+		state.avatar = msg
 	}
 }

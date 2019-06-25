@@ -1,7 +1,7 @@
 <template>
     <div id="material">
         <div class="material">
-            <el-form :inline="true" class="form-inline">
+            <!-- <el-form :inline="true" class="form-inline">
                 <el-form-item label="产品分类: ">
                     <el-select v-model="formInline.product" clearable class="select">
                         <el-option v-for="(item,index) in productList" :key="index" :label="item.ClassName" :value="item.ClassNum"></el-option>
@@ -31,11 +31,11 @@
                 <el-form-item>
                     <div class="screen" @click="getMaterialList">筛选</div>
                 </el-form-item>
-            </el-form>
+            </el-form> -->
             <div class="material-list">
                 <div class="material-item">
-                    <div class="material-block" @click="dialogMaterialVisible = true">
-                        <img class="block-img" :src="$store.state.port.staticPath + '/img/personal/qyadd_blue_icon.png'" alt="">
+                    <div class="material-block add" @click="dialogMaterialVisible = true">
+                        <img class="block-img" src="/img/personal/qyadd_blue_icon.png" alt="">
                     </div>
                     <div class="material-title">
                         <span>添加素材</span>
@@ -49,7 +49,7 @@
                         class="upload-demo"
                         ref="upload"
                         drag
-                        action="http://v1.yinbuting.cn/api/TeamMaterial"
+                        :action="$store.state.netServer + '/TeamMaterial'"
                         :on-preview="handlePreview"
                         :on-remove="handleRemove"
                         :onSuccess="uploadSuccess"
@@ -60,15 +60,23 @@
                         :data="paramsData"
                         :headers="myHeader"
                         :before-upload="beforeAvatarUpload"
-                        accept=".jpg,.png"
+                        accept="image/*"
                         multiple>
                         <!-- <i class="el-icon-upload"></i> -->
-                        <img class="el-icon-upload" :src="$store.state.port.staticPath + '/img/personal/qyadd_icon.png'" alt="">
+                        <img class="el-icon-upload" src="/img/personal/qyadd_icon.png" alt="">
                         <div class="el-upload__text">选择素材，支持PNG、JPG格式 文件最大20MB</div>
                     </el-upload>
-                    <div v-if="logoFlag" class="progress-bar progress-bar-striped active" :style="{width: logoUploadPercent + '%'}">{{logoUploadPercent+ '%'}}</div>
+                    <div id="loading" v-if="loading">
+                        <div class="loader-inner ball-beat">
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                        </div>
+                    </div>
+                    <div v-if="success" style="font-size: 18px;color: #745bff">上传成功</div>
+                    <!-- <div v-if="logoFlag" class="progress-bar progress-bar-striped active" :style="{width: logoUploadPercent + '%'}">{{logoUploadPercent+ '%'}}</div> -->
                     <div class="footer">
-                        <el-button type="primary" @click="handleUpload">确定上传</el-button>
+                        <el-button class="sure-btn" @click="handleUpload">确定上传</el-button>
                         <el-button @click="dialogMaterialVisible = false">取 消</el-button>
                     </div>
                 </el-dialog>
@@ -77,14 +85,14 @@
                         <img class="image" :src="$store.state.port.imgBaseUrl+item.FilePath" alt="">
                         <div class="material-block-mask">
                             <div data-tip="删除" class="block-delete" @click="open(i)">
-                                <img :src="$store.state.port.staticPath + '/img/personal/delete_icon.png'" alt="">
+                                <img src="/img/personal/delete_icon.png" alt="">
                             </div>
                         </div>
                     </div>
                     <div class="material-title">
                         <p class="title"><span></span></p>
                         <p class="tips">
-                            <span>公众号首图二维码</span>
+                            <!-- <span>公众号首图二维码</span> -->
                             <span>{{item.AddTime && item.AddTime.split('T')[0]}}</span>
                         </p>
                     </div>
@@ -113,14 +121,14 @@ export default {
                 date: ''
             },
             productList: [],  // 产品分类列表
-            teamNum: sessionStorage.getItem('teamNum'),
+            teamNum: localStorage['teamNum'],
             dialogMaterialVisible: false,
             fileList: [],
             imgUrl: '',
             materialList: [],
             serviceForm: {
                 TypeNum: 1,
-                TeamNum: sessionStorage.getItem('teamNum'),
+                TeamNum: localStorage['teamNum'],
                 TypeCategoryNum: 11,
                 IsPublic: 1
             },
@@ -153,20 +161,11 @@ export default {
                     }
                 }
             },
+            loading: false,
+            success: false
         }
     },
     methods: {
-        // 分页
-        handleSizeChange(val) {
-            console.log(`每页 ${val} 条`);
-            this.page.pageSize = val
-            this.getMaterialList()
-        },
-        handleCurrentChange(val) {
-            console.log(`当前页: ${val}`);
-            this.page.currentPage = val
-            this.getMaterialList()
-        },
         beforeAvatarUpload(file) {  
             const isLt2M = file.size <  1024 * 1024 * 20;
             if (!isLt2M) {
@@ -175,14 +174,16 @@ export default {
             return isLt2M;
         },
         uploadSuccess (response, file, fileList) {
-            console.log('上传文件', response)
+            console.log('上传文件', JSON.parse(response))
             if(response == 'NoAuthority'){
                 this.$message({type: 'error', message: '您没有权限无法上传'})
                 this.dialogMaterialVisible = false
                 this.logoFlag = false
             }else{
-                this.imgUrl = JSON.parse(response).key
+                this.imgUrl = JSON.parse(response).key || JSON.parse(response).svgpath
                 this.logoFlag = true
+                this.loading = false
+                this.success = true
                 //this.logoUploadPercent = 100
                 this.page.totalRecords = this.page.totalRecords + 1
             }
@@ -194,8 +195,9 @@ export default {
         progress(event, file, fileList) {
             console.log(event,file)
             this.logoFlag = true;   
-            this.logoUploadPercent = parseInt(event.percent.toFixed(0))
-            //this.logoUploadPercent = parseInt((event.loaded / event.total * 100).toFixed(0))
+            this.loading = true
+            //this.logoUploadPercent = parseInt(event.percent.toFixed(0))
+            this.logoUploadPercent = parseInt((event.loaded / event.total * 100).toFixed(0))
         },
         handleRemove(file, fileList) {
             console.log(file, fileList);
@@ -204,23 +206,24 @@ export default {
             console.log(file);
         },
         handleUpload() {
+            if(!this.imgUrl) return this.$message.warning('请先上传文件')
             this.dialogMaterialVisible = false
             this.logoFlag = false
+            this.success = false
             this.materialList.unshift({FilePath:this.imgUrl})
             this.getMaterialList()
             this.$refs.upload.clearFiles();
         },
-        // 根据日期查询素材
-        handleBlur() {},
         // 获取团队专属素材列表
         getMaterialList() {
             var url = '/TeamMaterials?TeamNum='+this.teamNum+'&pageIndex='+this.page.currentPage + '&IsPublic='+1
             this.$axios.get(url).then((res) => {
+                if(res.data == '暂无数据') return console.log('没有数据')
                 console.log(JSON.parse(res.data))
                 this.materialList = JSON.parse(res.data).Data
                 var data = JSON.parse(res.data)['X-Pagination']
                 this.page.totalRecords = data.TotalCount
-                this.page.pageSize = Math.ceil(data.TotalCount / data.TotalPages)
+                // this.page.pageSize = Math.ceil(data.TotalCount / data.TotalPages)
                 this.TotalPages = data.TotalPages
             })
         },
@@ -229,7 +232,8 @@ export default {
             this.$confirm('是否删除该素材?', '提示', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
-                type: 'warning'
+                type: 'warning',
+                lockScroll: false
             }).then(() => {
                 var formData = new FormData(); 
                 formData.append("TeamNum", this.teamNum);
@@ -280,7 +284,8 @@ export default {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
+
 #material{
     width: 100%;
     padding: 30px 0;
@@ -317,7 +322,6 @@ export default {
         box-shadow: 0 1px 4px 0 rgba(0,0,0,.08);
         transition: all .3s;
         cursor: pointer;
-        //margin-right: 20px;
         margin-bottom: 21px;
         &:hover{
             box-shadow: 0 4px 15px rgba(0,0,0,.2);
@@ -327,9 +331,11 @@ export default {
             width: 100%;
             height: 212px;
             position: relative;
+            background:rgba(203,216,226,1);
             .image{
                 width: 100%;
                 height: 100%;
+                object-fit: contain;
             }
             .material-block-mask{
                 position: absolute;
@@ -338,7 +344,9 @@ export default {
                 width: 100%;
                 height: 100%;
                 background:rgba(0,0,0,.2);
-                display: none;
+                // display: none;
+                opacity: 0;
+                transition: opacity .4s ease;
                 .block-delete{
                     width:35px;
                     height:35px;
@@ -402,9 +410,10 @@ export default {
     }
 }
 .material-item:hover .material-block .material-block-mask{
-    display: block;
+    // display: block;
+    opacity: 1;
 }
-.material-item .material-block:first-child{
+.material-item .add{
     background:rgba(203,216,226,1);
     .block-img{
         position: absolute;
@@ -426,14 +435,15 @@ export default {
 
 
 // 上传素材弹出框
-.material .el-dialog{
+.material /deep/ .el-dialog{
     width: 630px;
     height: 471px;
     border-radius:10px;
+    text-align: center;
     .el-dialog__header{
         padding: 25px 20px 0;
         line-height: 21px;
-        font-size:23px;
+        font-size: 23px;
         font-family:MicrosoftYaHei-Bold;
         font-weight:bold;
         color:rgba(51,51,51,1);
@@ -453,51 +463,50 @@ export default {
             }
         }
     }
-}
-.material .el-dialog .el-dialog__header .el-dialog__title{
-    font-size:23px;
-    font-family:MicrosoftYaHei-Bold;
-    font-weight:bold;
-    color:rgba(51,51,51,1);
-    margin-left: 244px;
-}
-.material .el-dialog__body{
-    padding: 13px 35px;
-}
-.material .el-dialog__body .upload-demo .el-upload-dragger{
-    background:rgba(236,236,236,1);
-    border-radius:5px;
-    border: 0;
-    width: 558px;
-    height: 222px;
-    margin-bottom: 20px;
-}
-.el-icon-upload{
-    margin: 53px auto 32px;
-}
-.el-upload__text{
-    width:246px;
-    height:45px;
-    font-size:16px;
-    font-family:MicrosoftYaHei;
-    font-weight:400;
-    color:rgba(153,153,153,1);
-    line-height:28px;
-    margin: 0 auto;
-}
-.footer{
-    text-align: center;
-    margin-top: 64px;
-    .el-button{
-        width: 179px;
-        height: 48px;
+    .el-dialog__body{
+        padding: 13px 35px;
+        .el-icon-check{
+            color: $color;
+        }
+        .upload-demo .el-upload-dragger{
+            background:rgba(236,236,236,1);
+            border-radius:5px;
+            border: 0;
+            width: 558px;
+            height: 222px;
+            margin-bottom: 20px;
+            .el-upload__text{
+                width:246px;
+                height:45px;
+                font-size:16px;
+                font-family:MicrosoftYaHei;
+                font-weight:400;
+                color:rgba(153,153,153,1);
+                line-height:28px;
+                margin: 0 auto;
+            }
+        }
+        .footer{
+            text-align: center;
+            margin-top: 64px;
+            .sure-btn{
+                background: $color;
+                color: rgba(255,255,255,1);
+                &:hover{
+                    background: $color;
+                    color: rgba(255,255,255,1);
+                }
+            }
+            .el-button{
+                width: 179px;
+                height: 48px;
+            }
+            .el-button+.el-button{
+                margin-left: 31px;
+            }
+        }
     }
-    .el-button+.el-button{
-        margin-left: 31px;
-    }
 }
-
-
 
 // 上传进度条
 .progress-bar{

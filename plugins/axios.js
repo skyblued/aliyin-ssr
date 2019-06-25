@@ -1,5 +1,6 @@
 export default function ({$axios, store, req}) {
 	let axios = $axios;
+	
 	if (!store.state.login.token && store.$cookiz) store.commit('login/addToKen', store.$cookiz.getAll().token || '');
 	if (store.state.login.token) {
 		axios.defaults.withCredentials = false;
@@ -10,6 +11,7 @@ export default function ({$axios, store, req}) {
 	axios.defaults.baseURL = 'http://api.aliyin.com/api'; //配置接口地址
 	// 请求回调
 	axios.onRequest(config => {
+		console.log(store.$cookiz.getAll().token)
 		if (store.state.login.token) {
 			config.headers.common['token'] = store.state.login.token;
 		}

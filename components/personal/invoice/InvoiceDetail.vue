@@ -9,25 +9,29 @@
                 <div class="content-header">
                     <div class="header-left">
                         <p>订单号: {{item.OrderCode}}</p>
-                        <p class="total">总额: {{item.OrderAmount}}</p>
-                        <p>应付: <span style="color: rgba(255,0,0,1);">{{item.OrderAmount}}</span></p>
+                        <p class="total">总额: ￥{{invoiceInfo.Amount && invoiceInfo.Amount.toFixed(2)}}</p>
+                        <p>应付: <span style="color: rgba(255,0,0,1);">￥{{item.OrderAmount && item.OrderAmount.toFixed(2)}}</span></p>
                     </div>
                     <p>{{item.OrderTime && item.OrderTime.split('T').join(' ')}}</p>
                 </div>
                 <div class="orderInfo-list">
                     <div class="orderInfo-item" v-for="(items,index) in item.OrderInfo.OrderItems" :key="index">
                         <div class="orderInfo-thumb">
-                            <img :src="$store.state.port.imgBaseUrl+items.ThumbnailsUrl" alt="">
+                            <div class="orderInfo-thumb-wrap">
+                                <div class="thumbnail" v-if="items.FilePath.indexOf('.png') > -1" :style="{'background-image': `url(${$store.state.port.imgBaseUrl + items.FilePath})`}"></div>
+                                <div class="thumbnail" v-else :style="{'background-image': `url(${items.ThumbnailsUrl.indexOf('aliyin') > -1 ? items.ThumbnailsUrl : $store.state.port.imgBaseUrl+items.ThumbnailsUrl})`}"></div>
+                            </div>
                             <div class="orderInfo-tip">
                                 <p>名称: <span>{{items.Name}}</span></p>
                                 <p>规格: <span>{{items.AttributeNames}}</span></p>
-                                <p>工艺: <span>{{items.CraftNames}}</span></p>
+                                <p v-if="items.CraftNames">工艺: <span>{{items.CraftNames}}</span></p>
+                                <p v-if="items.SizeName">尺寸: <span>{{items.SizeName}}</span></p>
                             </div>
                         </div>
                         <div class="orderInfo-name">印刷订单</div>
                         <div class="orderInfo-file">
                             <div class="upload-file" v-if="items.FileName == ''">
-                                <img :src="$store.state.port.staticPath + '/img/print/xqy_scwj_icon.png'" alt="">
+                                <img src="/img/print/xqy_scwj_icon.png" alt="">
                                 <span>上传文件</span>
                             </div>
                             <div v-else>
@@ -35,7 +39,7 @@
                             </div>
                         </div>
                         <div class="orderInfo-number">{{items.Quantity + items.Unit}}</div>
-                        <div style="color: rgba(255, 1, 1, 1)">{{items.Amount}}</div>
+                        <div style="color: rgba(255, 1, 1, 1)">￥{{items.Amount && items.Amount.toFixed(2)}}</div>
                         <div class="orderInfo-state">印刷完成</div>
                     </div>
                 </div>
@@ -61,9 +65,13 @@
                         <span v-else-if="invoiceInfo.InvoiceStatus == '-2'" style="color:rgba(255,0,0,1)">已拒绝</span>
                         <span v-else>取消</span>
                     </p>
-                    <p>
+                    <p v-if="invoiceInfo.MakeType == '0'">
                         <span class="info-title">收货地址: </span>
                         <span>{{item.OrderInfo.ShipName}} {{item.OrderInfo.ShipCellPhone}} {{item.OrderInfo.ShipRegion}} {{item.OrderInfo.ShipAddress}}</span>
+                    </p>
+                    <p v-else>
+                        <span class="info-title">邮箱: </span>
+                        <span>{{invoiceInfo.Email}}</span>
                     </p>
                     <p>
                         <span class="info-title">物流信息: </span>
@@ -156,15 +164,33 @@ export default {
         }
         .orderInfo-list{
             background:rgba(244,244,244,1);
+            .orderInfo-thumb-wrap{
+                display: inline-block;
+                width:90px;
+                height:90px;
+                background:rgba(213,221,227,1);
+                border-radius:5px;
+                margin-right: 25px;
+                .thumbnail{
+                    display: inline-block;
+                    width: 80%;
+                    height: 100%;
+                    background-size: contain;
+                    background-position: 50%;
+                    background-repeat: no-repeat;
+                }
+            }
         }
         .content-info{
             padding: 30px;
             p{
                 line-height: 48px;
+                color:rgba(51,51,51,1);
                 .info-title{
                     display: inline-block;
-                    width: 80px;
+                    width: 72px;
                     margin-right: 28px;
+                    color: rgba(102,102,102,1);
                 }
                 .download{
                     display: inline-block;

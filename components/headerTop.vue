@@ -10,7 +10,9 @@
             <div class="loginout-btn" v-if="userName">
                 <nuxt-link to="/account/center"><span class="label-item-name">嗨，{{userName}}</span></nuxt-link>
                 <i class="label-line"></i>
-                <span class="item" @click="handleClick">会员中心</span>
+                <nuxt-link to="/personal">
+                    <span class="item">会员中心</span>
+                </nuxt-link>
                 <i class="label-line"></i>
                 <span class="item" @click="handleToDesigner">设计师入口</span>
                 <i class="label-line"></i>
@@ -46,7 +48,7 @@ export default {
     methods: {
         // 打开登录弹出框
         handleClick() {  // 进入会员中心
-            this.$router.push('/personal/create')
+            // this.$router.push('/personal/create')
         },
         handleToDesigner() {
             if(this.$store.state.isLogin){

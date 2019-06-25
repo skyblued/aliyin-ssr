@@ -1,14 +1,15 @@
 <template>
     <div id="member">
         <div class="member">
+            <!-- :row-style="{height: '82px'}" -->
             <el-table
                 :data="tableData"
-                :row-style="{height: '82px'}"
                 :row-class-name="tableRowClassName"
                 :default-sort = "{prop: 'identity', order: 'ascending'}">
                 <el-table-column label="头像">
                     <template slot-scope="scope">
-                        <img class="avatar" :src="scope.row.avatar" alt="">
+                        <img v-if="scope.row.avatar != 'null' && $store.state.avatar != ''" class="avatar" :src="scope.row.avatar.indexOf('http') > -1 ? scope.row.avatar :$store.state.port.imgBaseUrl + scope.row.avatar" alt="">
+                        <img v-else class="avatar" src="/img/personal/avatar_icon.png" alt="">
                     </template>
                 </el-table-column>
                 <el-table-column
@@ -31,13 +32,13 @@
                     <template slot-scope="scope">
                         <div v-if="identity == true" class="manage">
                             <div class="remove-btn" v-if="scope.row.identity == '2'" @click="handleDelete(scope.row.id)">
-                                <img :src="$store.state.port.staticPath + '/img/personal/delete_icon.png'" alt="">
+                                <img src="/img/personal/delete_icon.png" alt="">
                                 移除
                             </div>
                             <div class="identity-btn" @click="handleAuthority(scope.row.id)" v-if="scope.row.identity == '2'">权限设置</div>
                             <el-dialog title="成员权限设置" :visible.sync="dialogVisible" :lock-scroll="false" top="10vh"> 
                                 <div class="authority" v-for="(item,index) in list" :key="index">
-                                    <div>{{item.Name}}</div>
+                                    <div>{{item.Name}}</div>    
                                     <div class="check-item" v-for="(tmp,i) in item.SonList" :key="i" @click="handleSet({index:index,i:i,num:tmp.Num})">
                                         <img :src="tmp.Check == false ? image:src" alt="">
                                         <span>{{tmp.Name}}</span>
@@ -58,7 +59,7 @@
 export default {
     data () {
         return {
-            teamNum: sessionStorage.getItem('teamNum'),
+            teamNum: localStorage['teamNum'],
             tableData: [],
             dialogVisible: false,
             list: [],
@@ -202,7 +203,7 @@ export default {
     user-select: none;
 }
 .member{
-    min-width: 960px;
+    // min-width: 960px;
     margin: 0 auto;
     .header{
         background:rgba(255,255,255,1);
@@ -247,7 +248,7 @@ export default {
 
 
 .member /deep/ .el-table{
-    width:1380px;
+    // min-width: 960px;
     height:807px;
     background:rgba(255,255,255,1);
     box-shadow:0px 0px 20px 1px rgba(203,211,217,0.3);

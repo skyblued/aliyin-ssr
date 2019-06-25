@@ -7,8 +7,8 @@
             <div class="qrcode" v-if="qrcode">
                 <img class="qrcode-img" :src="Code" alt="">
                 <p>
-                    <img :src="$store.state.port.staticPath + '/img/personal/wechat.png'" alt="">
-                    <span>使用微信扫一扫上传手机图片</span>
+                    <img src="/img/personal/wechat.png" alt="">
+                    <span>使用微信扫一扫</span>
                 </p>
             </div>
             <div class="link" v-if="link">
@@ -23,8 +23,8 @@
                 <!-- <span v-if="success">{{linkurl}}</span> -->
             </div>
             <div class="phone" v-if="phone">
-                <el-input v-model="input" class="input" placeholder="输入手机号码、邮箱添加团队成员" @blur="detection"></el-input>
-                <span style="color: red">{{error}}</span>
+                <el-input v-model="input" class="input" placeholder="输入手机号码、邮箱添加团队成员" @focus="error = ''" @blur="detection"></el-input>
+                <span class="error-tips">{{error}}</span>
                 <div class="send-btn" @click="handleSend">发送邀请短信</div>
             </div>
         </div>
@@ -35,7 +35,7 @@
 export default {
     data () {
         return {
-            teamNum: sessionStorage.getItem('teamNum'),
+            teamNum: localStorage['teamNum'],
             activeIndex: 0,
             btnList: [{
                 id: '1',
@@ -203,6 +203,7 @@ export default {
             font-weight:400;
             color:rgba(153,153,153,1);
             text-align: left;
+            margin-top: 18px;
         }
         .copy-btn{
             width: 132px;
@@ -220,9 +221,12 @@ export default {
     }
     .phone{
         margin-top: 37px;
-        .input .el-input__inner{
-            height: 48px;
-            line-height: 48px;
+        position: relative;
+        .error-tips{
+            position: absolute;
+            top: 48px;
+            left: 0;
+            color: rgba(255,0,0,1);
         }
         .send-btn{
             width: 167px;
@@ -238,5 +242,10 @@ export default {
             margin-top: 39px;
         }
     }
+}
+
+.add-member /deep/ .phone .el-input__inner, .el-input{
+    height: 48px;
+    line-height: 48px;
 }
 </style>

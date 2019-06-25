@@ -50,22 +50,27 @@
                         <div class="orderInfo-list">
                             <div class="orderInfo-item" v-for="(items, index) in item.OrderItems" :key="index">
                                 <div class="orderInfo-thumb">
-                                    <img :src="$store.state.port.imgBaseUrl+items.ThumbnailsUrl" alt="">
+                                    <div class="orderInfo-thumb-wrap">
+                                        <div class="thumbnail" v-if="items.FilePath.indexOf('.png') > -1" :style="{'background-image':`url(${$store.state.port.imgBaseUrl + items.FilePath})`}"></div>
+                                        <div class="thumbnail" :style="{'background-image': `url(${items.ThumbnailsUrl.indexOf('aliyin') > -1 ? items.ThumbnailsUrl : $store.state.port.imgBaseUrl+items.ThumbnailsUrl})`}"></div>
+                                    </div>
                                     <div class="orderInfo-tip">
                                         <p>名称: <span>{{items.Name}}</span></p>
                                         <p>规格: <span>{{items.AttributeNames}}</span></p>
-                                        <p>工艺: <span>{{items.CraftNames}}</span></p>
+                                        <p v-if="items.CraftNames">工艺: <span>{{items.CraftNames}}</span></p>
+                                        <p v-if="items.SizeName">尺寸: <span>{{items.SizeName}}</span></p>
                                     </div>
                                 </div>
                                 <div class="orderInfo-name">印刷订单</div>
                                 <div class="orderInfo-file">
-                                    <div class="upload-file">
-                                        <img :src="$store.state.port.staticPath + '/img/print/xqy_scwj_icon.png'" alt="">
+                                    <div class="upload-file" v-if="!items.FileName">
+                                        <img src="/img/print/xqy_scwj_icon.png" alt="">
                                         <span>上传文件</span>
                                     </div>
+                                    <span v-else @click="handleDownload(items)" title="点击可下载文件">{{items.FileName}}</span>
                                 </div>
                                 <div class="orderInfo-number">{{items.Quantity + items.Unit}}</div>
-                                <div style="color: rgba(255, 1, 1, 1)">{{items.Amount && items.Amount.toFixed(2)}}</div>
+                                <div style="color: rgba(255, 1, 1, 1)">￥{{items.Amount && items.Amount.toFixed(2)}}</div>
                                 <div class="orderInfo-state">印刷完成</div>
                             </div>
                         </div>
@@ -77,7 +82,7 @@
                         <span>已选订单数<span style="color: rgba(0, 131, 233, 1);margin-left: 5px;">{{orders}}</span>，订单总金额: <span style="color: rgba(255, 0, 0, 1)">{{orderTotal && orderTotal.toFixed(2)}}</span></span>
                     </div>
                     <div class="apply-block">
-                        <HomePagination :Page="page" />
+                        <HomePagination :Page="page" v-if="page.totalRecords > 10" />
                     </div>
                 </div>
                 <div class="line"></div>
@@ -86,7 +91,8 @@
                         <p class="invoice-rise-title">发票抬头</p>
                         <div class="rise-list">
                             <div :class="['rise-item', activeIndex == i ? 'active' : '']" v-for="(item,i) in invoiceList" :key="i" @click="handleChooseInvoice(i)">
-                                <i class="modify" @click.stop="handleModifyInvoice(item)"></i>
+                                <i class="delete-icon" title="删除" @click.stop="handleDelete(item,i)"></i>
+                                <i class="modify" @click.stop="handleModifyInvoice(item)" title="修改"></i>
                                 <p>{{item.InvoiceTitle}}</p>
                                 <p>{{item.RegisterNo}}</p>
                                 <p v-if="item.MakeType == '1'">电子发票</p>
@@ -95,20 +101,21 @@
                             </div>
                             <div class="rise-add-item" @click="handleAddInvoice">
                                 <img src="/img/personal/add_gray_icon.png" alt="">
-                                <span>添加新地址</span>
+                                <span>添加新发票抬头</span>
                             </div>
                         </div>
-                        <el-dialog title="添加发票抬头" :visible.sync="$store.state.dialogAddInvoice" :close-on-click-modal="false">
+                        <el-dialog title="添加发票抬头" :visible.sync="$store.state.dialogAddInvoice" :close-on-click-modal="false" :lock-scroll="false">
                             <AddInvoice @getInvoice="getInvoice"></AddInvoice>
                         </el-dialog>
-                        <el-dialog title="修改发票抬头" :visible.sync="$store.state.dialogModifyInvoice" :close-on-click-modal="false">
+                        <el-dialog title="修改发票抬头" :visible.sync="$store.state.dialogModifyInvoice" :close-on-click-modal="false" :lock-scroll="false">
                             <ModifyInvoice @getInvoice="getInvoice" :id="InvoiceId"></ModifyInvoice>
                         </el-dialog>
                     </div>
                     <div class="invoice-address" v-if="invoiceType == 0">
                         <p class="invoice-address-title">收件地址</p>
                         <div class="address-list">
-                            <div :class="['rise-item', Index == i ? 'active' : '']" v-for="(item,i) in addressList" :key="i" @click="handleChooseAddress(i)">
+                            <div :class="['rise-item', item.IsDefault ? 'active' : '']" v-for="(item,i) in addressList" :key="i" @click="handleChooseAddress(i)">
+                                <i class="delete-icon"></i>
                                 <i class="modify" @click.stop="handleModifyAddress(item)"></i>
                                 <p class="full-name">{{item.ShipName}}</p>
                                 <p>{{item.CelPhone}}</p>
@@ -120,16 +127,16 @@
                             </div>
                         </div>
                     </div>
-                    <el-dialog title="添加收货地址" :visible.sync="$store.state.dialogAdd" :close-on-click-modal="false" :modal-append-to-body="false">
+                    <el-dialog title="添加收货地址" :visible.sync="$store.state.dialogAdd" :close-on-click-modal="false" :modal-append-to-body="false" :lock-scroll="false">
                         <AddToAddress @setAddress="getAddress"></AddToAddress>
                     </el-dialog>
-                    <el-dialog title="修改地址" :visible.sync="$store.state.dialogModify" :close-on-click-modal="false">
+                    <el-dialog title="修改地址" :visible.sync="$store.state.dialogModify" :close-on-click-modal="false" :lock-scroll="false">
                         <ModifyAddress :id="shipId"></ModifyAddress>
                     </el-dialog>
                     <div class="sureBtn" @click="handleOpenInvoice">确认提交开票申请</div>
                 </div>
             </div>
-            <div v-else class="error-tips">
+            <div v-if="!orderList.length && !show" class="error-tips">
                 <img src="/img/error/ku.png" alt="">
                 <p>暂无可开票订单</p>
             </div>
@@ -138,6 +145,7 @@
 </template>
 
 <script>
+import svgToPng from 'save-svg-as-png'
 import HomePagination from '@/components/home/HomePagination.vue'
 import AddToAddress from '@/components/personal/address/AddToAddress.vue'
 import ModifyAddress from '@/components/personal/address/ModifyAddress.vue'
@@ -194,6 +202,7 @@ export default {
             orderTotal: 0,  // 订单总金额
             ordercode: [],  // 开票订单列表
             invoiceType: '',  // 发票类型  
+            show: true
         }
     },
     methods: {
@@ -253,14 +262,39 @@ export default {
             var url = '/InvoiceOrder?StartTime=' + this.formInline.startTime + '&EndTime=' + this.formInline.endTime + '&OrderCode=' + this.formInline.code
             this.$axios.get(url).then(res => {
                 if(res == undefined) return console.log('没有数据')
-                //console.log(res.data)
+                console.log(res.data)
+                if(res.data.length == 0) this.show = false
                 this.orderList = res.data
+                if(this.orderList.length > 0) this.show = false
                 this.page.totalRecords = res.data.length
 
                 for (let i = 0; i < this.orderList.length; i++) {
                     this.checkedId.push(i)
                 }
             })
+        },
+
+        // 下载文件
+        handleDownload(items){
+            var url = items.FilePath.split('.')[1]
+            if(url == 'zip'){
+                window.open(this.$store.state.port.imgBaseUrl + items.FilePath)
+            }
+
+            var canvas = document.createElement('canvas');
+            var img = new Image();
+            img.crossOrigin = 'anonymous';
+            img.onerror = function () {
+                return 
+            };
+            img.onload = function () {
+                canvas.width = img.width;
+                canvas.height = img.height;
+                canvas.getContext('2d').drawImage(img, 0, 0);
+                
+                svgToPng.download(items.FileName, canvas.toDataURL('image/png'))
+            };
+            img.src = this.$store.state.port.imgBaseUrl + items.FilePath;
         },
 
 
@@ -271,11 +305,14 @@ export default {
         // 开发票
         handleOpenInvoice() {
             new Promise((resolve, reject) => {
-                let order = this.ordercode.join(',')
+                console.log(this.ordercode)
+                let order = this.ordercode.join(',') + ','
                 if(order == '') {
                     this.$message({type: 'warning', message: '请先选择订单'})
                     return 
                 }
+                if(this.invoiceList.length == 0) return this.$message({type: 'warning', message: '请先填写发票抬头'})
+                // if(this.addressList) return this.$message({type: 'warning', message: '请先填写地址'})
                 let addressId;
                 if (this.invoiceType == 0) addressId = this.shipId
                 else addressId = ''
@@ -283,6 +320,7 @@ export default {
                 formData.append('OrderCodes', order);
                 formData.append('IncoiveID', this.InvoiceId);
                 formData.append('AddressID', addressId);
+                console.log(order, this.InvoiceId, addressId)
                 let config = {
                     headers:{'Content-Type': 'multipart/form-data'}
                 }
@@ -299,8 +337,8 @@ export default {
 
         // 获取收件地址
         getAddress() {
-            this.$axios.get('/shipaddresses?TeamNum=' + sessionStorage['teamNum']).then(res =>{
-                if(!res.data) return console.log('没有数据')
+            this.$axios.get('/shipaddresses?TeamNum=' + localStorage['teamNum']).then(res =>{
+                if(!res.data.length) return console.log('没有数据')
                 //console.log(res.data)
                 this.addressList = res.data
                 this.shipId = res.data[0].ShippingId
@@ -308,10 +346,16 @@ export default {
         },
         // 选择地址
         handleChooseAddress(i) {
-            this.Index = i
+            this.addressList.forEach((item,index) => {
+                item.IsDefault = false
+                if(index == i) {
+                    this.addressList[i].IsDefault = true
+                }
+            })
         },
         // 修改地址
         handleModifyAddress(item) {
+
             this.shipId = item.ShippingId
             this.$store.commit('setDialogModify', true)
         },
@@ -319,15 +363,15 @@ export default {
         // 获取发票抬头
         getInvoice() {
             var formData = new FormData()
-            formData.append('TeamNum', sessionStorage['teamNum']);
+            formData.append('TeamNum', localStorage['teamNum']);
             formData.append('pageSize', 12);
             formData.append('pageIndex', 0);
             let config = {
                 headers:{'Content-Type': 'multipart/form-data'}
             }
             this.$axios.post('/TeamInvoices', formData, config).then(res => {
-                if(res == undefined) return 
-                //console.log(JSON.parse(res.data))
+                if(!JSON.parse(res.data).Data.length) return console.log('没有数据')
+                console.log(JSON.parse(res.data))
                 var data = JSON.parse(res.data).Data
                 this.invoiceList = data
                 this.InvoiceId = data[0].Id
@@ -336,7 +380,6 @@ export default {
         },
         // 选择发票抬头
         handleChooseInvoice(i) {
-            //console.log(i)
             this.activeIndex = i
             this.invoiceType = this.invoiceList[i].MakeType
         },
@@ -350,6 +393,35 @@ export default {
         handleModifyInvoice(item) {
             this.InvoiceId = item.Id
             this.$store.commit('setDialogModifyInvoice', true)
+        },
+        // 删除发票抬头
+        handleDelete(item,i) {
+            this.$confirm('是否删除该发票?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning',
+                lockScroll: false
+            }).then(() => {
+                var formData = new FormData()
+                formData.append('Id', item.Id);
+                let config = { 
+                    headers:{'Content-Type': 'multipart/form-data'}
+                }
+                this.$axios.delete('/TeamInvoice', {data: formData}, config).then(res => {
+                    //console.log(res)
+                    if(res.data == true){
+                        this.$message({type: 'success',message: '删除成功'})
+                        this.tableData.splice(i,1)
+                    }else{
+                        this.$message({type: 'error',message: '删除失败'})
+                    }
+                })
+            }).catch(() => {
+                this.$message({
+                    type: 'info',
+                    message: '取消删除'
+                });          
+            });
         }
     },
     mounted() {
@@ -509,15 +581,15 @@ export default {
             color:rgba(102,102,102,1);
             .active{
                 border: 1px solid $color;
-                &::before{
-                    content: '';
-                    position: absolute;
-                    top: 11px;
-                    right: 15px;
-                    background-image: url(/img/personal/Modify_icon.png);
-                    width: 20px;
-                    height: 20px;
-                }
+                // &::before{
+                //     content: '';
+                //     position: absolute;
+                //     top: 11px;
+                //     right: 15px;
+                //     background-image: url(/img/personal/Modify_icon.png);
+                //     width: 20px;
+                //     height: 20px;
+                // }
             }
             .invoice-rise{
                 .invoice-rise-title{
@@ -573,10 +645,12 @@ export default {
     border:1px solid rgba(229,229,229,1);
     border-radius:5px;
     height: 128px;
+    min-width: 240px;
     line-height: 25px;
     text-align: left;
-    padding: 16px 65px 0 20px;
+    padding: 16px 20px 0 20px;
     margin-right: 35px;
+    margin-bottom: 15px;
     cursor: pointer;
     position: relative;
     font-size: 14px;
@@ -584,7 +658,6 @@ export default {
         border: 1px solid $color;
     }
     .modify{
-        display: inline-block;
         position: absolute;
         top: 11px;
         right: 15px;
@@ -593,7 +666,16 @@ export default {
         height: 20px;
         display: none;
     }
-    &:hover .modify{
+    .delete-icon{
+        position: absolute;
+        top: 11px;
+        right: 35px;
+        background-image: url(/img/desicon/delete_small_blue_icon.png);
+        width: 20px;
+        height: 20px;
+        display: none;
+    }
+    &:hover .modify, &:hover .delete-icon{
         display: block; 
     }
 }
@@ -601,8 +683,9 @@ export default {
     border:1px solid rgba(229,229,229,1);
     border-radius:5px;
     height: 128px;
+    width: 240px;
     text-align: center;
-    padding: 33px 84px 0;
+    padding-top: 30px;
     cursor: pointer;
     &:hover{
         border:1px solid $color;

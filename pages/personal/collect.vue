@@ -4,7 +4,7 @@
             <el-form :inline="true" class="form-inline">
                 <el-form-item label="产品分类: ">
                     <el-select v-model="formInline.product" clearable class="select">
-                        <el-option label="全部" value="0"></el-option>
+                        <el-option label="全部场景" value="0"></el-option>
                         <el-option v-for="(item,index) in productList" :key="index" :label="item.ClassName" :value="item.ClassNum"></el-option>
                     </el-select>
                 </el-form-item>
@@ -31,22 +31,29 @@
                 </el-form-item>
                 <div class="screen" @click="getCollect">筛选</div>
             </el-form>
-            <div class="waterfall-list" v-loading="loading">
+            <div id="Loading" v-if="loading">
+                <div class="loader-inner ball-beat">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+            </div>
+            <div class="waterfall-list" v-if="list.length" ref="box">
                 <div class="waterfall-item" v-for="(item,i) in list" :key="i">
                     <div class="waterfall-block">
-                        <div class="waterfall-item-wrap">
-                            <img class="image" :src="$store.state.port.imgBaseUrl+item.FacePicture">
+                        <div class="waterfall-item-wrap" @click="handleJump(i)">
+                            <img @load="waterfall" class="image" :src="$store.state.port.imgBaseUrl+item.FacePicture">
                             <div class="img-mask">
-                                <div class="tooltip" data-tip="取消" @click="open(i)">
-                                    <img class="liketemplate" :src="$store.state.port.staticPath + '/img/home/collect_s_icon_hl.png'" alt="">
+                                <div class="tooltip" data-tip="取消" @click.stop="open(i)">
+                                    <img class="liketemplate" src="/img/home/collect_s_icon_hl.png" alt="">
                                 </div>
-                                <div class="again" @click="handleJump(i)">立即制作</div>
+                                <!-- <div class="again" @click="handleJump(i)">立即制作</div> -->
                             </div>
                         </div>
                         <div class="waterfall-item-title">
                             <div class="title">
                                 <!-- <div contenteditable="true" v-if="item.Name !== ''">{{item.Name}}</div> -->
-                                <span v-if="item.Name !== ''">{{item.Name}}</span>
+                                <span v-if="item.Name !== ''" :title="item.Name">{{item.Name}}</span>
                                 <span v-else>未定义</span>
                             </div>
                             <div class="tips">
@@ -57,12 +64,13 @@
                     </div>
                 </div>
             </div> 
-            <div class="block" v-if="list.length">
+            <div class="block" v-if="list.length && page.totalRecords > 24">
                 <HomePagination :Page="page" @getTempList="getCollect" />
             </div>
-            <div v-if="show || !list.length" class="to-create">
+            <div v-if="!list.length && !loading" class="to-create">
+                <img src="/img/error/ku.png" alt="">
                 <p>您还没有收藏任何模板</p>
-                <el-button type="primary" @click="handleToDesign">立即去收藏</el-button>
+                <el-button class="to-collect" @click="handleToDesign">立即去收藏</el-button>
             </div>
         </div>
     </div>
@@ -74,7 +82,7 @@ export default {
     data() {
       return {
         formInline: {
-          product: '',
+          product: '0',
           startTime: '',
           endTime: ''
         },
@@ -82,14 +90,13 @@ export default {
         page: {
             currentPage: 1,  // 当前页
             totalRecords: 0,   // 总条数
-            pageSize: null,    // 每页个数
+            pageSize: 24,    // 每页个数
         },
-        teamNum: sessionStorage.getItem('teamNum'),
+        teamNum: null,
         productList: [],
         startTime: '',
         endTime: '',
         loading: true,
-        show: false,
         pickerOptions0: {
             disabledDate: (time) => {
                 if (this.formInline.endTime) {
@@ -114,25 +121,57 @@ export default {
       }
     },
     methods: {
-        // 没有收藏记录跳转到模板中心
-        handleToDesign() {
-            this.$router.push('/tempcenter')
+        waterfall() {
+            if(!this.$refs.box) return
+            var box = this.$refs.box
+            var items = box.children
+            var gap = 20
+
+            var pageWindex = box.offsetWidth;
+            var itemWidth = items[0].offsetWidth;
+            var columns = parseInt(pageWindex / (itemWidth + gap));
+            var arr = []
+            for(var i=0;i<items.length;i++) {
+                if(i<columns){
+                    // 2- 确定第一行
+                    items[i].style.top = '25px';
+                    items[i].style.left = (itemWidth + gap) * i + 'px';
+                    arr.push(items[i].offsetHeight);
+                } else {
+                    // 其他行
+                    // 3- 找到数组中最小高度  和 它的索引
+                    var minHeight = arr[0];
+                    var index = 0;
+                    for (var j = 0; j < arr.length; j++) {
+                        if (minHeight > arr[j]) {
+                            minHeight = arr[j];
+                            index = j;
+                        }
+                    }
+                    // 4- 设置下一行的第一个盒子位置
+                    // top值就是最小列的高度 + gap
+                    items[i].style.top = arr[index] + gap + 25 + 'px';
+                    // left值就是最小列距离左边的距离
+                    items[i].style.left = items[index].offsetLeft + 'px';
+                    // 5- 修改最小列的高度 
+                    // 最小列的高度 = 当前自己的高度 + 拼接过来的高度 + 间隙的高度
+                    arr[index] = arr[index] + items[i].offsetHeight + gap;
+                }
+            }
+            var max = Math.max.apply(null,arr)
+            this.$refs.box.style.height = max + 100 + 'px';
         },
 
-        handleSizeChange(val) {
-            console.log(`每页 ${val} 条`);
-            this.page.pageSize = val
-            this.getCollect()
-        },
-        handleCurrentChange(val) {
-            console.log(`当前页: ${val}`);
-            this.page.currentPage = val
-            this.getCollect()
+
+
+        // 没有收藏记录跳转到模板中心
+        handleToDesign() {
+            this.$router.push('/templateList')
         },
 
         // 获取全部收藏记录列表
         getCollect() { 
-            let pageIndex = this.page.currentPage
+            this.list = []
             let product;
             if(this.formInline.product == 0){
                 product = 0
@@ -147,17 +186,21 @@ export default {
                 this.endTime = this.formInline.endTime
             }
 
-            var url = '/FavoritedTemplates?TeamNum=' + this.teamNum + '&pageIndex=' + pageIndex + '&productcategory=' + product + '&startTime=' + this.startTime + '&endTime=' + this.endTime
+            var url = '/FavoritedTemplates?TeamNum=' + this.teamNum + '&pageIndex=' + this.page.currentPage + '&productcategory=' + product + '&startTime=' + this.startTime + '&endTime=' + this.endTime + '&pageSize=' + this.page.pageSize
             this.$axios.get(url).then(res => {
+                if(res.data.Data == null) {
+                    this.loading = false
+                    return console.log('没有数据')
+                }
                 console.log(res.data)
-                this.loading = false
-                if(res.data.Data == null){
-                    this.show = true
-                    return 
+                if(res.data.Data.length == 0){
+                    this.loading = false
+                    this.$refs.box.style.height = '0'
+                    return
                 }
                 this.list = res.data.Data
+                this.loading = false
                 this.page.totalRecords = res.data['X-Pagination'].TotalCount
-                this.page.pageSize = Math.ceil(res.data['X-Pagination'].TotalCount / res.data['X-Pagination'].TotalPages)
             })
         },
         // 取消收藏
@@ -166,7 +209,8 @@ export default {
             this.$confirm('是否取消收藏该模板?', '提示', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
-                type: 'warning'
+                type: 'warning',
+                lockScroll: false
             }).then(() => {
                 var formData = new FormData(); 
                 formData.append("TeamNum", this.teamNum);
@@ -187,10 +231,10 @@ export default {
             });
         },
         // 跳转到模板详情页
-        handleJump(i) {
-            //console.log(this.list[i].TemplateNumber)
-            this.$router.push({path: '/detail', query: {t: this.list[i].TemplateNumber}})
-        },
+        // handleJump(i) {
+        //     //console.log(this.list[i].TemplateNumber)
+        //     this.$router.push({path: '/detail', query: {t: this.list[i].TemplateNumber}})
+        // },
     },
     filters: {
         ToSplit(time) {
@@ -200,10 +244,16 @@ export default {
         }
     },
     mounted() {
+        this.teamNum = localStorage['teamNum']
         this.getCollect()
         this.$axios.get('/ProductCategories').then(res => {
             //console.log(res)
             this.productList = res.data
+        })
+
+        // 监听页面尺寸改变时触发
+        window.onresize = (() => {
+            this.waterfall()
         })
     },
     components: {
@@ -213,13 +263,14 @@ export default {
 </script>
 
 <style lang="scss">
+
 #collect{
     width: 100%;
     padding: 45px 63px;
     user-select: none;
 }
 .collect{
-    min-width: 1200px;
+    min-width: 960px;
     margin: 0 auto;
     .waterfall-list .waterfall-item .img-mask .tooltip{
         line-height: 42px;
@@ -227,7 +278,25 @@ export default {
     .block{
         margin-top: -20px;
     }
+    .to-collect{
+        height: 40px;
+        line-height: 40px;
+        padding: 0 15px;
+        background: $color;
+        color: rgba(255,255,255,1);
+        &:hover{
+            background: $color;
+            color: rgba(255,255,255,1);
+        }
+    }
 }
-
+.waterfall-item-title .title span{
+    display: inline-block;
+    width: 150px;
+    min-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
 </style>
 

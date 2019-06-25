@@ -4,8 +4,8 @@
             <div class="invoice-info-header">
                 <p>发票抬头</p>
                 <div class="add-invoice" @click="handleAdd">添加发票</div>
-                <el-dialog title="添加发票抬头" :visible.sync="$store.state.dialogAddInvoice" :close-on-click-modal="false">
-                    <AddInvoice @getInvoice="getInvoiceList"></AddInvoice>
+                <el-dialog title="添加发票抬头" :visible.sync="$store.state.dialogAddInvoice" :close-on-click-modal="false" :lock-scroll="false">
+                    <AddInvoice v-if="$store.state.dialogAddInvoice" @getInvoice="getInvoiceList"></AddInvoice>
                 </el-dialog>
             </div>
 
@@ -13,28 +13,28 @@
                 :data="tableData"
                 :row-class-name="tableRowClassName">
                 <el-table-column
-                    label="发票抬头"
-                    min-width="220">
+                    label="发票抬头">
+                    <!-- min-width="220" -->
                     <template slot-scope="scope">
                         <div v-if="scope.row.taxType == '0'" class="rise">
-                            <span class="putong">普</span>
-                            <span class="dianzi" v-if="scope.row.makeType == '1'">电</span>
-                            <span class="zhi" v-if="scope.row.makeType == '0'">纸</span>
+                            <span class="putong icon">普</span>
+                            <span class="dianzi icon" v-if="scope.row.makeType == '1'">电</span>
+                            <span class="zhi icon" v-if="scope.row.makeType == '0'">纸</span>
                             <span v-if="scope.row.customType == '0'">{{scope.row.rise}}</span>
                             <span v-if="scope.row.customType == '1'">{{scope.row.rise}}</span>
                         </div>
-                        <div v-else class="rise">
-                            <span class="zhuan">专</span>
+                        <!-- <div v-else class="rise">
+                            <span class="zhuan icon">专</span>
                             <span>{{scope.row.rise}}</span>
-                        </div>
+                        </div> -->
                     </template>
                 </el-table-column>
                 <el-table-column
                     prop="number"
-                    label="纳税人识别号"
-                    width="132">
+                    label="纳税人识别号">
+                    <!-- width="132" -->
                 </el-table-column>
-                <el-table-column
+                <!-- <el-table-column
                     prop="address"
                     label="注册地址"
                     min-width="210">
@@ -48,26 +48,26 @@
                     prop="bank"
                     label="银行名称"
                     width="82">
-                </el-table-column>
-                <el-table-column
+                </el-table-column> -->
+                <!-- <el-table-column
                     prop="account"
                     label="银行账号"
                     width="170">
-                </el-table-column>
+                </el-table-column> -->
                 <el-table-column
-                    label="邮箱"
-                    width="155">
+                    label="邮箱">
+                    <!-- width="155" -->
                     <template slot-scope="scope">
                         <span>{{scope.row.email}}</span>
                     </template>
                 </el-table-column>
                 <el-table-column
-                    label="操作"
-                    width="115">
+                    label="操作">
+                    <!-- width="115" -->
                     <template slot-scope="scope">
                         <div class="edit" @click.stop="handleModify(scope.row)">编辑</div> 
-                        <el-dialog title="修改发票抬头" :visible.sync="$store.state.dialogModifyInvoice" :close-on-click-modal="false">
-                            <ModifyInvoice @getInvoice="getInvoiceList" :id="InvoiceId"></ModifyInvoice>
+                        <el-dialog title="修改发票抬头" :visible.sync="$store.state.dialogModifyInvoice" :close-on-click-modal="false" :lock-scroll="false">
+                            <ModifyInvoice v-if="$store.state.dialogModifyInvoice" @getInvoice="getInvoiceList" :id="InvoiceId"></ModifyInvoice>
                         </el-dialog>
                         <div class="delete" @click="handleDelete(scope.row.id,scope.$index)">删除</div>
                     </template>
@@ -97,7 +97,7 @@ export default {
         // 获取发票列表
         getInvoiceList() {
             var formData = new FormData()
-            formData.append('TeamNum', sessionStorage['teamNum']);
+            formData.append('TeamNum', localStorage['teamNum']);
             formData.append('pageSize', 12);
             formData.append('pageIndex', 0);
             let config = {
@@ -131,7 +131,8 @@ export default {
             this.$confirm('是否删除该发票?', '提示', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
-                type: 'warning'
+                type: 'warning',
+                lockScroll: false
             }).then(() => {
                 var formData = new FormData()
                 formData.append('Id', id);
@@ -220,7 +221,7 @@ export default {
             border-radius:5px;
             color:rgba(51,51,51,1);
             cursor: pointer;
-            margin-bottom: 8px;
+            margin: 0 auto 10px;
         }
         .delete{
             text-align: center;
@@ -231,6 +232,7 @@ export default {
             border-radius:5px;
             color: rgba(255,255,255,1);
             cursor: pointer;
+            margin: 0 auto;
         }
         .regaddress{
             line-height: 30px;
@@ -248,21 +250,20 @@ export default {
     padding: 0;
     .cell{
         padding: 15px 0;
-        .putong{
+        .rise .icon{
             display: inline-block;
-            background:rgba(51,151,230,1);
-            border-radius:2px;
             width: 22px;
             height: 22px;
+        }
+        .putong{
+            background:rgba(51,151,230,1);
+            border-radius:2px;
             color: rgba(255,255,255,1);
             margin-right: 10px;
         }
         .zhi{
-            display: inline-block;
             background:rgba(243,152,0,1);
             border-radius:2px;
-            width: 22px;
-            height: 22px;
             color: rgba(255,255,255,1);
             margin-right: 23px;
         }
@@ -272,18 +273,12 @@ export default {
             line-height: 22px;
         }
         .dianzi{
-            display: inline-block;
-            width: 22px;
-            height: 22px;
             margin-right: 23px;
             color: rgba(255,255,255,1);
             border-radius:2px;
             background:rgba(17,177,96,1);
         }
         .zhuan{
-            display: inline-block;
-            width: 22px;
-            height: 22px;
             margin-right: 23px;
             margin-left: 32px;
             color: rgba(255,255,255,1);

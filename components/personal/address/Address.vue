@@ -4,8 +4,8 @@
             <div class="address-header">
                 <p>收货地址</p>
                 <div class="add-to-address" @click="handleAdd">添加地址</div>
-                <el-dialog title="添加收货地址" :visible.sync="$store.state.dialogAdd" :close-on-click-modal="false" :modal-append-to-body="false">
-                    <AddToAddress @setAddress="getAddressList"></AddToAddress>
+                <el-dialog title="添加收货地址" :visible.sync="$store.state.dialogAdd" :close-on-click-modal="false" :modal-append-to-body="false" :lock-scroll="false">
+                    <AddToAddress v-if="$store.state.dialogAdd" @setAddress="getAddressList"></AddToAddress>
                 </el-dialog>
             </div>
             <el-table
@@ -22,7 +22,6 @@
                     width="135">
                 </el-table-column>
                 <el-table-column
-                    prop="region"
                     label="地区"
                     min-width="230">
                     <template slot-scope="scope">
@@ -52,8 +51,8 @@
                     </template>
                 </el-table-column>
             </el-table>
-            <el-dialog title="修改地址" :visible.sync="$store.state.dialogModify" :close-on-click-modal="false">
-                <ModifyAddress v-if="shipId" :id="shipId"></ModifyAddress>
+            <el-dialog title="修改地址" :visible.sync="$store.state.dialogModify" :close-on-click-modal="false" :lock-scroll="false">
+                <ModifyAddress v-if="$store.state.dialogModify" :id="shipId" @setAddress="getAddressList"></ModifyAddress>
             </el-dialog>
         </div>
     </div>
@@ -81,26 +80,28 @@ export default {
         handleChange(row) {  // 设为默认地址
             console.log(row)
             row.isdefault = !row.isdefault
-            var obj = {
-                'ShippingId': row.id,
-                'IsDefault': row.isdefault
+            if(row.isdefault == true) {
+                var obj = {
+                    'ShippingId': row.id,
+                    'IsDefault': row.isdefault
+                }
+                let config = {
+                    headers:{'Content-Type': 'application/json'}
+                }
+                this.$http.put('shipaddress', obj, config).then(res => {
+                    console.log(res.data)
+                })
             }
-            let config = {
-                headers:{'Content-Type': 'application/json'}
-            }
-            this.$axios.put('shipaddress', obj, config).then(res => {
-                console.log(res.data)
-            })
         },
 
         // 获取收货地址列表
         getAddressList() {
-            this.$axios.get('/shipaddresses?TeamNum=' + sessionStorage['teamNum']).then(res => {
+            this.$http.get('/shipaddresses?TeamNum=' + localStorage['teamNum']).then(res => {
                 console.log(res.data)
                 var list = []
                 for(var i=0;i<res.data.length;i++){
                     var obj = {}
-                    obj.region = res.data[i].RegionFullName
+                    obj.region = res.data[i].ProvinceCity
                     obj.name = res.data[i].ShipName
                     obj.phone = res.data[i].CelPhone
                     obj.address = res.data[i].Address
@@ -116,14 +117,15 @@ export default {
             this.$confirm('是否删除该地址?', '提示', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
-                type: 'warning'
+                type: 'warning',
+                lockScroll: false
             }).then(() => {
                 var formData = new FormData()
                 formData.append('Id', id);
                 let config = { 
                     headers:{'Content-Type': 'multipart/form-data'}
                 }
-                this.$axios.delete('/shipaddress', {data: formData}, config).then(res => {
+                this.$http.delete('/shipaddress', {data: formData}, config).then(res => {
                     //console.log(res)
                     if(res.data == true){
                         this.$message({type: 'success',message: '删除成功'})
@@ -200,9 +202,9 @@ export default {
             cursor: pointer;
         }
         .operation-btn{
-            display: flex;
+            // display: flex;
             line-height: 34px;
-            width: 185px;
+            width: 82px;
             margin: 0 auto;
             div{
                 height: 34px;
@@ -215,7 +217,7 @@ export default {
             .edit{
                 border:1px solid rgba(210,210,210,1);
                 color:rgba(51,51,51,1);
-                margin-right: 21px;
+                margin-bottom: 10px;
             }
             .delete{
                 background:rgba(255,87,87,1);
