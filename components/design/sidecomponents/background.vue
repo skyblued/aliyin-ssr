@@ -6,18 +6,14 @@
             <!-- 本地背景图片上传 -->
             <div class="background-upload-file">
                 <div class="local">
-                    <div class="upload-btn upload-text" @click="uploadFile()" v-if="progress.show">本地上传</div>
-                    <div class="upload-btn upload-progress" v-else>
-                        <div class="upload-animate">
-                            <div class="progress-bar progress-bar-striped active" :style="{width: progress.w || 0}">
-                                {{progress.w}}
-                            </div>
-                        </div>
-                    </div> 
-                    <input ref="uploadBackground" type="file" @change="handleUpload($event)" multiple>
+                    <div class="upload-btn upload-text" @click="uploadFile()">本地上传</div>
+                    <input ref="uploadBackground" type="file" accept="image/*" @change="handleUpload($event)" multiple>
                 </div>
             </div>
         </div>
+		<div v-if="progress.show" style="height: 40px; text-align:center">
+			<img style="height:100%;vertical-align: middle;" src="https://aliyinstatic.oss-cn-shenzhen.aliyuncs.com/img/loading.gif" alt="">
+		</div>
 		<transition name="fade" mode="out-in">
 			<template v-if="backgroundType">
 				<!-- 纯色背景 -->
@@ -45,12 +41,18 @@
 						<div>当前模板颜色 : </div>
 						<div>
 							<el-color-picker v-model="color5" @active-change="handleChange"></el-color-picker>
+							<div class="color-list-item" 
+								v-for="(item, index) in useColor" :key="index" 
+								:style="{background: item}"
+								@click="selectBg(item)"
+							></div>
 						</div>
 					</div>
 					<!-- 最近使用颜色 -->
 					<div class="current-tempcolor">
 						<div>预设颜色 : </div>
 						<div class="color-area">
+							<div class="color-block pick-icon" @click="setshowPickColor"></div>
 							<div class="color-block" v-for="(item, index) in colorBackground" :key="index">
 								<div class="color-item" :style="{'background': item.bg}" @click="selectBg(item.bg)"></div>
 							</div>
@@ -61,7 +63,16 @@
 			</template>
 			<!-- 图片背景 -->
 			<template v-else>
-				<Share @getMore="getMore" key="1" :selectContentList="backgroundList" @handleChangeBackground="handleChangeBackground"></Share>
+				<div :style="{top: `${progress.show ? 94 : 54}px`}" key="2" ref="backgroundImage" class="backgroundImage" @scroll="getMore" >
+					<div v-for="(item, index) of backgroundList"
+						:key="index"
+						class="column-item">
+							<img @load="handleWaterfall"
+								class="img-mash" draggable="false" 
+								@click="handleChangeBackground(item)" 
+								:src="$store.state.port.imgBaseUrl + item.FilePath + (item.Svgtext == '' ? '!w300.src' : '')" alt="">
+					</div>
+				</div>
 			</template>
 		</transition>
 			
@@ -70,19 +81,29 @@
 </template>
 
 <script>
-
+import {getImagesArr} from '@/assets/utils'
+import { setWaterfall } from "@/assets/commonJS.js";
 import Share from '@/components/design/share.vue'
 export default {
-	props: ["pageIndex"],
+	props: {
+		useColor: { // 使用过的颜色
+			type: Array
+		},
+		fontColorSelect: String
+	},
 	components: {
 		Share,
 	},
 	name: 'background',
 	data () {
 		return {
-			page: 0,
+			params: { // 获取背景数据参数
+				pageIndex: 1,
+				TypeCategoryNum: 0,
+				pageSize: 30
+			},
             backgroundType: 'pure',
-			color5: 'rgba(255, 69, 0, 0.68)',
+			color5: this.fontColorSelect,
 			// 团队专属颜色
 			myColor: null,
 			colorBackground: [
@@ -100,11 +121,13 @@ export default {
 			],
 			// 背景表现列表
 			MaterialCategories: [],
+			loadingIcon: true,
+			baseLine: '',
 			backgroundList: [],
-			fileImage: '',
+			waterfallList: [], // 瀑布流
 			// 上传进度条
 			progress: {
-				show: true, w: 0
+				show: false, w: 0
 			}
 		}
 	},
@@ -114,14 +137,18 @@ export default {
          * @param {String} type 背景类型
          */
         handleToggleType (type) {
-            this.backgroundType = type
+			this.backgroundType = type
+			type == 'pure' ? this.getData() : ''
+		},
+		handleWaterfall() { // 瀑布流
+			setWaterfall(this.$refs.backgroundImage)
 		},
 		/**
 		 * 纯色背景
 		 */
 		// 1. 获取团队专属颜色
 		getTeamColors () {
-			let TeamNum = sessionStorage['teamNum']
+			let TeamNum = localStorage['teamNum']
 			this.$axios.get(this.$store.state.port.TeamColors + `?TeamNum=${TeamNum}`)
 				.then(res => {
 					if(!res.data) return
@@ -138,7 +165,7 @@ export default {
 		handleUpload (e) {
 			let file = this.$refs.uploadBackground.files[0];
 			let formdata = new FormData()
-			let teamNum = sessionStorage['teamNum']
+			let teamNum = localStorage['teamNum']
 			formdata.append('TeamNum', teamNum)
 			formdata.append('TypeNum', 0)
 			formdata.append('TypeCategoryNum', 0)
@@ -153,12 +180,13 @@ export default {
 					this.$set(this.progress, 'w', w)
 				}
 			}
-			this.progress.show = false
+			this.progress.show = true
 			this.$axios.post(this.$store.state.port.TeamMaterial, formdata, config)
 					.then(res =>{
 						this.$set(this.progress, 'w', '100%')
-						this.progress.show = true
-						let data = JSON.parse(res.data);
+						this.progress.show = false
+						let data = res.data;
+							data = typeof data == 'object' ? data : JSON.parse(data)
 						this.$message({ message: '上传成功', type: 'success'});
 						this.progress.w = 0
 						if(data.status == 'ok') {
@@ -166,8 +194,7 @@ export default {
 							this.handleChangeBackground(obj)
 						}
 					}).catch(err => {
-						this.progress.show = true
-						this.progress.w = 0
+						this.progress.show = false
 						this.$message({ message: '上传失败', type: 'warning'});
 						console.log(err)
 					})
@@ -182,14 +209,43 @@ export default {
 
 		},
 		// 获取背景图片数据
-		getData (Num = 0 ) {
-			this.getTeamColors()
-			this.$axios.get(this.$store.state.port.MaterialInfos + `?TypeNum=11&TypeCategoryNum=${Num}&pageIndex=${this.page}`).then(res => {
-				let data = JSON.parse(res.data).Data
-				this.backgroundList = this.backgroundList.concat(data);
-                if (this.page > 1) return
-                this.getMore()
+		getData () {
+			this.params.pageIndex = 1
+			this.backgroundList = []
+			this.baseLine = ''
+			this.getBackgroundData().then(data => {
+				this.backgroundList = data.Data
 			})
+		},
+		getBackgroundData () {
+			this.loadingIcon = true;
+			return new Promise((resolve, reject) => {
+				this.$axios.get(this.$store.state.port.MaterialInfos + `?TypeNum=11&TypeCategoryNum=${this.params.TypeCategoryNum}&pageIndex=${this.params.pageIndex}&pageSize=${this.params.pageSize}`).then(res => {
+					this.loadingIcon = false;
+					let data = res.data;
+						data = typeof data == 'object' ? data : JSON.parse(data)
+					resolve(data)
+				})
+			})
+		},
+		// 加载更多背景图片数据
+		getMore (e) {
+			if (this.baseLine) return
+			let uploading = this.$refs.backgroundImage;
+			let total = uploading.scrollHeight; // 整个文档的高度
+			let viewHeight = uploading.clientHeight; // 可视区域的高度
+			let scrollY = uploading.scrollTop || document.body.scrollTop; // 滚动条滚动的距离
+			this.mouseTop = scrollY
+			this.params.pageSize = 10
+			if (viewHeight + scrollY >= total) {
+				this.params.pageIndex++;
+				console.log(this.params.pageIndex)
+				this.getBackgroundData().then(data => {
+					this.backgroundList = this.backgroundList.concat(data.Data)
+					if (this.params.pageIndex >= data['X-Pagination'].TotalPages) this.baseLine = '我是有底线的'
+				})
+			}
+			
 		},
 		/**
 		 * 传给父组件图片src
@@ -198,7 +254,7 @@ export default {
 			let src = {};
 			src.msg = obj.Svgtext || obj.FilePath
 			if(src.msg !== obj.Svgtext) {
-				src.msg = '//img.aliyin.com/' + src.msg + '!w800.src';
+				src.msg = 'http://img.aliyin.com/' + src.msg + '!w800.src';
 				src.type = 'image'
 			} else {
 				src.type = 'svg'
@@ -206,12 +262,7 @@ export default {
 			
 			this.$emit('handleChangeBackground', src)
 		},
-		// 加载更多背景图片数据
-		getMore (e) {
-			console.log('sdf')
-			this.page++
-			this.getData()
-		},
+		
 		// 选择颜色上传给父组件
 		selectBg (color) {
 			let obj = {background: color, type: 'color'}
@@ -222,12 +273,20 @@ export default {
 			let obj = {background: color, type: 'color'}
 			this.$emit('handleChangeBackground', obj);
 		},
+		setshowPickColor() { // 开启吸管
+			this.$emit('setShowPickColor')
+		},
 	},
 	mounted () {
-
 		this.getData();
-		this.getMaterialCategories ()
+		this.getTeamColors();
+		this.getMaterialCategories();
 	},
+	watch: {
+		fontColorSelect(val) {
+			this.color5 = val;
+		}
+	}
 }
 </script>
 
@@ -236,6 +295,7 @@ export default {
 .background {
 	width: 100%;
 	height: 100%;
+	position: relative;
 
 .background-type {
     padding-left: 10px;
@@ -278,22 +338,23 @@ export default {
 			display: flex;
 			flex-wrap: wrap;
 			width: 100%;
-			.color-list-item {
-				width: 26px;
-				height: 26px;
-				margin-right: 10px;
-    			margin-bottom: 10px;
-				border-radius:3px;
-				transition: all .3s;
-				cursor: pointer;
-				&:hover{
-					transform: scale(1.1);
-					box-shadow: 0 1px 8px 2px rgba(0, 0, 0, 0.3);
-				}
-			}
+			
 		}
 	}
-	
+	.color-list-item {
+		display: inline-block;
+		width: 26px;
+		height: 26px;
+		margin: 5px;
+		border-radius:3px;
+		transition: all .3s;
+		box-shadow: 0 0 1px 1px rgba(0, 0, 0, 0.2);
+		cursor: pointer;
+		&:hover{
+			transform: scale(1.1);
+			box-shadow: 0 0px 5px 2px rgba(0, 0, 0, 0.3);
+		}
+	}
 	.current-tempcolor {
 		padding-top: 10px;
 		.color-area{
@@ -301,15 +362,20 @@ export default {
 			flex-wrap: wrap;
 			width: 100%;
 			padding-top: 10px;
+			& .color-block:first-child .color-item{
+				border: 1px solid rgba(0, 0, 0, .2);
+			}
 			.color-block{
 				width: 26px;
 				height: 26px;
 				margin-right: 10px;
 				margin-bottom: 10px;
+				
 				.color-item{
 					width: 100%;
 					height: 100%;
 					border-radius:3px;
+					border: 1px solid #ccc;
 					transition: all .3s;
 					cursor: pointer;
 					&:hover{
@@ -339,7 +405,7 @@ export default {
 			overflow: hidden;
 		}
 		.upload-text {
-			background: rgb(29,133,204);
+			background: $color;
 		}
 		.upload-progress {
 			background: rgba(0,0,0, .3);
@@ -357,6 +423,42 @@ export default {
 			display: none;
 		}
 	}
+}
+.backgroundImage {
+	position: absolute;  
+	width: 100%; 
+	bottom: 0px;
+	overflow-y: auto;
+}
+.column-item {
+	  position: absolute;
+	  width: 98px;
+      padding: 3px;
+      font-size: 0;
+      box-sizing: border-box;
+      transition: all .3s ease;
+	  cursor: pointer;
+      img {
+        max-width: 100%;
+      }
+	  &:hover .del-icon,&:hover .leftPanel-common-results-item-collect {
+		  display: block;
+	  }
+	  & .collect-active {
+			background-image: url(/img/desicon/matter/collect_red_icon.png)
+		}
+	&:hover .img-mash {
+		background-color: rgba(0, 0, 0, .2);
+	}
+    }
+.pick-icon {
+	border: 1px solid #ccc;
+	border-radius: 3px;
+	background-image: url(/img/desicon/topTool/pick.png);
+	background-size: 50%;
+	background-repeat: no-repeat;
+	background-position: 50%;
+	cursor: pointer;
 }
 
 .progress-bar{
@@ -386,5 +488,14 @@ export default {
 	background-position: 0 0;
 }
 }
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: all 0.1s;
+}
+.fade-enter,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>

@@ -1,49 +1,29 @@
 <template>
     <div class="matter" ref="matter">
-		<div class="temp-search" ref="search">
-			<input v-model="keyword" class="temp-search-input" @keyup="enterUp" type="text" placeholder="请输入素材关键字">
-			<span v-if="!keyword" class="temp-search-icon" @click="searchMatter"></span>
-			<span v-else class="temp-search-icon-close" @click="resultShowMore"></span>
-		</div>
-		<div class="leftPanel-material-results-types" v-if="!resultShowMoreOff && !isSearchType">
-			<div class="results-types-title">
-				<div>{{resultsTypesTitle}}</div>
-				<div class="result-close" @click="resultShowMore"></div>
-			</div>
-			<div class="results-types-tag">
-				<span>分类 : </span>
-				<div class="result-tag" @click="setTagShow">
-					<div class="result-tag-group">{{keyWords}}</div>
-					<div :class="{'result-tag-show': true, 'result-tag-show-active': tagShow} ">
-						<div :class="{'show-item': true, 'show-item-active': tagItemShow == 0 ? true : false}" @click="setKeyWords({Num:0,TypeCategoryName: '全部'})">全部</div>
-						<div :class="{'show-item': true, 'show-item-active': tagItemShow == item.Num ? true : false}" v-for="(item,i) in materialCategories" :key="i" @click="setKeyWords(item)" :title="item.TypeCategoryName || item.TypeName">{{item.TypeCategoryName || item.TypeName}}</div>
-					</div>
-				</div>
-			</div>
-		</div>
-        <div class="matter-content"  @scroll="getMore" ref="matterContent">
+		
+        <div class="matter-content"  ref="matterContent">
 			<!-- :duration="{ enter: 200, leave: 200 }"  -->
-			<!-- <transition name="fade" mode="out-in"> -->
+			<transition name="fade" mode="out-in">
 				<div key="type" class="show-animation" v-if="resultShowMoreOff">
 					<!-- 个人收藏和购买 -->
 					<div class="leftPanel-material-block leftPanel-material-content-block" data-title="团队素材">
 						<div class="leftPanel-material-block-con">
 							<div class="team-matter picture-filter"></div>
-							<div class="team-matter show-bg" @click="getMatter"></div>
+							<div class="team-matter show-bg" @click="getMatter('myMatter')"></div>
 						</div>
 						<div class="leftPanel-material-block-text"><span v-html="identity == 1 ? '我的素材' : '团队素材'"></span></div>
 					</div>
 					<div v-if="!identity" class="leftPanel-material-block leftPanel-material-content-block" data-title="团队LOGO">
 						<div class="leftPanel-material-block-con">
 							<div class="team-logo picture-filter"></div>
-							<div class="team-logo show-bg" @click="getMaterialCategories(1, '团队LOGO')"></div>
+							<div class="team-logo show-bg" @click="getMatter('logo')"></div>
 						</div>
 						<div class="leftPanel-material-block-text"><span>团队LOGO</span></div>
 					</div>
 					<div class="leftPanel-material-block leftPanel-material-content-block" data-title="收藏夹">
 						<div class="leftPanel-material-block-con">
 							<div class="collect-store picture-filter"></div>
-							<div class="collect-store show-bg" @click="getMaterialCategories(1, '收藏夹')"></div>
+							<div class="collect-store show-bg" @click="getMatter('collect')"></div>
 						</div>
 						<div class="leftPanel-material-block-text"><span>收藏夹</span></div>
 					</div>
@@ -51,41 +31,86 @@
 					<div class="leftPanel-material-cutout-rule leftPanel-material-content-block"></div>
 					<!-- 素材分类 -->
 					<div class="leftPanel-material-block leftPanel-material-content-block" v-for="(item,index) in materialTypes" :key="index" :data-title="item.TypeName" >
-						<div class="leftPanel-material-block-con" @click="getMaterialCategories(item.Num, item.TypeName)">
+						<div class="leftPanel-material-block-con" @click="getMaterialCategories(item)">
 							<div :style="{'background-image': `url(//img.aliyin.com//${item.ImageUrl})`}" class="item-icon-group show-bg"></div>
 						</div>
 						<div class="leftPanel-material-block-text"><span>{{item.TypeName}}</span></div>
 					</div>
 				</div>
 				
-				<div key="content" :style="{'padding-top': isSearchType ? 0 : ''}" v-if="!resultShowMoreOff" class="leftPanel-material-results" ref="results">
+				<div key="content" v-else class="leftPanel-material-results" ref="results">
 					
-					<div class="leftPanel-material-results-results" ref="list">
-						<div class="leftPanel-common-results-item" v-for="(item,index) in selectContentList" :key="index">
-							<div class="container-noStyle">
-								<img draggable="false" @mousedown="setCopyBox($event, item)" @load="handlewaterfall" @click="handleCreateImage($event, item)" :src="$store.state.port.imgBaseUrl + item.FilePath + (item.Svgtext == '' ? '!w300.src': '')" title="点击添加">
-								
-								<div title="收藏" class="leftPanel-common-results-item-collect"></div>
-								<div class="leftPanel-common-results-item-showMore">
-									<p>
-										<span>素材ID：</span><span style="user-select:text">2131</span>
-									</p>
-									<p>
-										<span>关键词：</span><span>箭头 指向 目标 方向 三角形 形状 拉伸</span>
-									</p>
+					<!-- 搜索 -->
+					<div class="temp-search" ref="search" v-if="!isFile">
+						<input v-model="params.keyWords" class="temp-search-input" @keyup="enterUp" type="text" placeholder="请输入素材关键字">
+						<span class="temp-search-icon" @click="searchMatter"></span>
+					</div>
+					<!-- 筛选 -->
+					<div class="leftPanel-material-results-types">
+						<div class="results-types-title">
+							<div>{{resultsTypesTitle}}</div>
+							<div class="result-close" @click="resultShowMore"></div>
+						</div>
+						<div class="results-types-tag" v-if="!isFile">
+							<span>分类 : </span>
+							<div class="result-tag" @click="setTagShow">
+								<div class="result-tag-group">{{keyWords}}</div>
+								<div :class="{'result-tag-show': true, 'result-tag-show-active': tagShow} ">
+									<div :class="{'show-item': true, 'show-item-active': tagItemShow == 0 ? true : false}" @click="setKeyWords({Num:0,TypeCategoryName: '全部'})">全部</div>
+									<div :class="{'show-item': true, 'show-item-active': tagItemShow == item.Num ? true : false}" v-for="(item,i) in materialCategories" :key="i" @click="setKeyWords(item)" :title="item.TypeCategoryName || item.TypeName">{{item.TypeCategoryName || item.TypeName}}</div>
 								</div>
 							</div>
 						</div>
-						<div v-if="moreLoading" style="width: 100%;height:30px;margin-top: 100px;margin-bottom: 200px; text-align: center">
-							<img style="height:100%;vertical-align: middle;" src="https://aliyinstatic.oss-cn-shenzhen.aliyuncs.com/img/loading.gif" alt="">
+					</div>
+					<!-- 列表 -->
+					<div :style="{top: isFile == '' ? '160px' : '60px'}" class="content-list" ref="contentList" @scroll="getMore">
+						<div class="items" ref="itemsList" v-if="resultsTypesTitle != '高清图片'">
+							
+							<div class="items-item" v-for="(item, index) of selectContentList" :key="index"
+								@click="handleCreateImage(item)" 
+							>
+								<img 
+									@load="getSvgContent"
+									:style="{'object-fit': resultsTypesTitle != '几何形状' ? 'contain' : 'fill'}"
+									draggable="false" 
+									@mousedown="getPosDown"
+									@mousemove="setPosMove($event, item)"
+									@mouseup="oldPos.off = false"
+									@error="imgError"
+									:src="$store.state.port.imgBaseUrl + item.FilePath + (item.FilePath.indexOf('.svg') != -1 ? '' : '!w300.src')" alt="">
+								<div class="item-collect" v-if="resultsTypesTitle != '团队素材' && resultsTypesTitle != '收藏夹' && resultsTypesTitle != '我的素材'  && resultsTypesTitle != '团队LOGO'">
+									<div @click="collectMatter(item,index)" title="收藏" :class="{'leftPanel-common-results-item-collect': 1, 'collect-active': item.IsFavorited}"></div>
+								</div>
+							</div> 
 						</div>
-						<div v-if="noMatter" style="position: absolute; bottom: 0; width: 100%; text-align: center">素材完善中</div>
+						<div v-else ref="list" class="parent-list">
+							
+							<div v-for="(item, index) of selectContentList"
+							:key="index"
+							@mousedown="setCopyBox($event, item)"
+							class="column-item">
+								<img 
+									@load="handlewaterfall" 
+									class="img-mash" draggable="false" 
+									@click.stop="handleCreateImage(item)"
+									@error="imgError"
+									:src="$store.state.port.imgBaseUrl + item.FilePath + (item.FilePath.indexOf('.svg') != -1 ? '' : '!w300.src')" alt="">
+								<div>
+									<div @click="collectMatter(item,index)" title="收藏" :class="{'leftPanel-common-results-item-collect': 1, 'collect-active': item.IsFavorited}"></div>
+								</div>
+							</div>
+						</div>
+						<div v-if="loadingIcon || baseLine" style="width: 100%;text-align:center;padding: 50px 0;">
+							<img v-if="loadingIcon" style="height: 40px;" src="//static.aliyin.com/img/loading.gif" title="加载中..." alt="加载中...">
+							<span style="font-size: 14px;">{{baseLine}}</span>
+						</div>
+						<div v-if="!totalCount" style="text-align:center;padding: 50px 0;"><img style="width: 50%;" src="/img/error/ku.png" title="空空如也" alt="空空如也"></div>
+					
 					</div>
 					
 				</div>
-			<!-- </transition> -->
+			</transition>
 			
-			<!-- <Loading :moreShow=""></Loading> -->
 			
 			
         </div>
@@ -97,41 +122,41 @@ import { setWaterfall } from "@/assets/commonJS.js";
 import Share from "@/components/design/share.vue";
 import Loading from "@/components/design/loading.vue";
 export default {
+  name: "matter",
   components: {
     Share,
     Loading
   },
   props: ["copyBox", "pageIndex"],
   data() {
-	let identity =  this.$route.params.t;
-	let TeamNum = sessionStorage['teamNum'] || 0;
-    	identity = window.atob(identity).split('=')[0] == 'TemplateNumber' ? true : false
-    let getloadUrl =
-      identity
-        ? this.$store.state.port.DesignerMaterials +
-		  `?SubStatus=0&AudStatus&StarTime&EndTime&TypeNum&TypeCateNum&Keywords`
-        : this.$store.state.port.TeamMaterials +
-          `?IsPublic=0`
+    let identity = this.$route.params.t;
+    let TeamNum = localStorage["teamNum"] || 0;
+    identity =
+      window.atob(identity).split("=")[0] == "TemplateNumber" ? true : false;
+    let getloadUrl = identity
+      ? this.$store.state.port.DesignerMaterials +
+        `?SubStatus=0&AudStatus&StarTime&EndTime&TypeNum&TypeCateNum&Keywords`
+      : this.$store.state.port.TeamMaterials + `?IsPublic=1`;
     return {
+      loadingIcon: true, // 加载样式
       // 设计者身份
       identity,
       // 获取素材接口
       getloadUrl,
       // 固定显示
       fixedShow: false,
-      isFile: false, // 是否文件夹
-	  page: 0, // 分页页码
-	  keyword: '', // 搜索关键字
-	  TeamNum: sessionStorage['teamNum'],// 当前团队编号
-	  searchPage: 0, // 无类型搜索素材
-	  isSearchType: false, // 是否搜索状态
-	  isHttpOk: true, // 避免重复请求
+      isFile: "", // 是否文件夹
+      baseLine: "", // 没有更多
+      page: 0, // 分页页码
+      keyword: "", // 搜索关键字
+      TeamNum: localStorage["teamNum"], // 当前团队编号
+      searchPage: 0, // 无类型搜索素材
       // 当前选中类型
       type: "",
       // 加载更多
-	  moreShow: false,
-	  moreLoading: false, // 加载动画
-	  noMatter: false, // 没有素材了
+      moreShow: false,
+      moreLoading: false, // 加载动画
+      noMatter: false, // 没有素材了
       /**
        * 样式切换类
        */
@@ -140,36 +165,55 @@ export default {
       textBlockSelected: 0, // 选中标签样式切换
       tagShow: false,
       tagItemShow: 0,
-      /**
-       * 页面数据获取
-       * @materialTypes // 材料分类
-       * @selectTextBlockList 选中材料标签列表
-       * @selectContentList 具体内容 图片、图标 列表
-       */
+
+      params: {
+        // 筛选素材的参数
+        TypeNum: null,
+        TypeCategoryNum: 0,
+        pageIndex: 1,
+        pageSize: 30,
+        keyWords: ""
+      },
       //	1.材料分类
       materialTypes: [],
       // 2.材料分类标签列表
       materialCategories: [],
       //3.具体内容 图片、图标、
       selectContentList: [],
+      waterfallList: [], // 瀑布流
       // 4. 关键词分类
       keyWords: "全部",
       // 选中元素
-      ele: null,
+	  ele: null,
+	  oldPos: {
+		  x: 0,
+		  y: 0,
+		  z:0,
+		  off: false
+	  },
       // 结果显示类别名称
-      resultsTypesTitle: ""
+      resultsTypesTitle: "",
+      source: null, // 请求资源源头用于取消请求
+      totalCount: 1 // 总的数据
     };
   },
   methods: {
+    imgError(err) {
+	  // 上传图片有问题
+	  err && err.target.parentNode.setAttribute('style', 'display: none')
+    },
     /* 所有的css样式切换功能 ↓*/
     // 获取标签
     resultShowMore() {
-	  this.resultShowMoreOff = true;
-	  this.isSearchType = false
-	  this.selectContentList = [];
-	  this.page = 0;
-	  this.type = ''
-	  this.keyword = ''
+      this.resultShowMoreOff = true;
+      this.isFile = "";
+      this.selectContentList = [];
+      this.params.pageIndex = 1;
+      this.params.TypeCategoryNum = 0;
+      this.params.keyWords = "";
+      this.tagShow = false;
+      this.baseLine = "";
+      this.keyWords = "全部";
     },
     // 显示更多标签
     setTagShow() {
@@ -179,211 +223,360 @@ export default {
     selectTextBlockListIndex({ index, item }) {
       // console.log(index, item)
       this.textBlockSelected = index;
-      this.getSelectContentList({TypeNum: item.TypeNum, num: item.Num});
+      this.getSelectContentList({ TypeNum: item.TypeNum, num: item.Num });
+	},
+    getSvgContent(e) {
+	  // 获取svg内容
+	  let list = this.$refs.itemsList.childNodes,
+			src = e.path[0].src;
+		if (src.lastIndexOf('.svg') > -1) {
+			fetch(src).then(response => response.text())
+			.then(data => {
+				list.forEach((div, index) => {
+					if (div == e.path[0].parentNode) {
+						this.selectContentList[index].Svgtext = data
+					}
+				})
+			})
+		}	
     },
     // 内容瀑布流设置
     handlewaterfall() {
-	  let node = this.$refs.list,
-	  	height = node.offsetHeight
-	  this.$refs.results['style']['height'] = height + 'px'
-      setWaterfall(node, 5, 20);
+      let node = this.$refs.list;
+      setWaterfall(node);
     },
     /* 所有的css样式切换功能 ↑*/
 
-	/*  发送ajax获取数据方法 ↓ */
-	getMatter () { // 根据身份选择获取素材
-		if (this.page == 0) {
-			this.selectContentList = []
-		}; // 重置素材详情列表
-		this.isFile = true; // 选择文件夹
-		this.resultShowMoreOff = false
-		this.moreLoading = true;
-		if (this.identity) {
-			this.getDeisgnerMatter()
-			this.resultsTypesTitle = '我的素材'
-		} else {
-			this.getTeamMatter()
-			this.resultsTypesTitle = '团队素材'
-		}
-	},
-	getDeisgnerMatter() {// 获取设计师素材列表
-		let url = this.getloadUrl + `&pageIndex=${this.page}&pageSize=40`
-		this.$axios.get(url)
-		.then(res => {
-			this.moreLoading = false;
-			if (res.data == "") return console.log("没有数据");
-			let data = JSON.parse(res.data);
-			if (data.Data.length < 1) this.noMatter = true
-			else this.noMatter = false
-			this.selectContentList = this.selectContentList.concat(data.Data);
-		});
-    },
-	getTeamMatter() {// 团队素材
-		let url = this.getloadUrl + `&TeamNum=${this.TeamNum}&pageIndex=${this.page}&pageSize=40`
-      	this.$axios.get(url)
-        .then(res => {
-			this.moreLoading = false;
-			if (!res) return console.log("没有数据");
-			let data = JSON.parse(res.data);
-			if (data.Data.length < 1) this.noMatter = true
-			else this.noMatter = false
-			this.selectContentList = this.selectContentList.concat(data.Data);
+    /*  发送ajax获取数据方法 ↓ */
+    getMatter(type) {
+      // 根据身份选择获取素材
+
+      this.loadingIcon = true;
+      this.selectContentList = [];
+      this.params.pageIndex = 1;
+      this.isFile = type; // 选择文件夹
+      this.resultShowMoreOff = false;
+      if (type == "myMatter") {
+        if (this.identity) {
+          this.resultsTypesTitle = "我的素材";
+          this.getDeisgnerMatter().then(res => {
+            // console.log(res);
+            this.selectContentList = res.Data;
+          });
+        } else {
+          this.resultsTypesTitle = "团队素材";
+          this.getTeamMatter().then(res => {
+            // console.log(res);
+            this.selectContentList = res.Data;
+          });
+        }
+      } else if (type == "logo") {
+        this.getTeamLogo().then(data => {
+          if (typeof data == "object") {
+          }
+          this.selectContentList = data;
         });
-	},
-	 // 获取所有的素材分类, 类型
+      } else if (type == "collect") {
+        this.getCollect().then(data => {
+          this.selectContentList = data.data;
+        });
+      }
+    },
+    getDeisgnerMatter() {
+      // 获取设计师素材列表
+
+      return new Promise((resolve, reject) => {
+        let url =
+          this.getloadUrl +
+          `&pageIndex=${this.params.pageIndex}&pageSize=${
+            this.params.pageSize
+          }`;
+        this.$axios.get(url).then(res => {
+          let data = res.data;
+          if (!data || data == "[]") data = [];
+          else data = JSON.parse(data);
+          resolve(data);
+        });
+      });
+    },
+    getTeamMatter() {
+      // 团队素材
+
+      this.resultShowMoreOff = false;
+      return new Promise((resolve, reject) => {
+        let url =
+          this.getloadUrl +
+          `&TeamNum=${this.TeamNum}&pageIndex=${
+            this.params.pageIndex
+          }&pageSize=${this.params.pageSize}`;
+        this.$axios.get(url).then(res => {
+          this.loadingIcon = false;
+          let data = res.data;
+          data = typeof data == "object" ? data : JSON.parse(data);
+          resolve(data);
+        });
+      });
+    },
+    getTeamLogo() {
+      // LOGO
+      this.resultsTypesTitle = "团队LOGO";
+      this.resultShowMoreOff = false;
+      return new Promise((resolve, reject) => {
+        let url = `TeamLogos?TeamNum=${this.TeamNum}&IsPublic=1`;
+        this.$axios.get(url).then(res => {
+          let data = res.data;
+          this.loadingIcon = false;
+          data = typeof data == "object" ? data : JSON.parse(data);
+          resolve(data);
+        });
+      });
+    },
+    getCollect() {
+      // 获取素材收藏夹
+      this.resultsTypesTitle = "收藏夹";
+      this.resultShowMoreOff = false;
+      return new Promise((resolve, reject) => {
+        let url = `FavoritedMaterials?TypeNum=0&TypeCategoryNum=0&pageIndex=${
+          this.params.pageIndex
+        }&pageSize=${this.params.pageSize}`;
+        this.$axios.get(url).then(res => {
+          this.loadingIcon = false;
+          let data = res.data;
+          data = typeof data == "object" ? data : JSON.parse(data);
+          resolve(data);
+        });
+      });
+    },
+
     getMaterialTypes() {
+      // 获取所有的素材分类, 类型
       this.$axios.get(this.$store.state.port.MaterialTypes).then(res => {
-        // console.log(res);
         this.materialTypes = res.data;
       });
     },
-    // 获取当前素材分类的所有标签
-    getMaterialCategories(n, title) {
-		this.fixedShow = true;
-		this.resultsTypesTitle = title;
-		this.type = n;
-		this.page = 0;
-		this.moreShow = true;
-		this.isSearchType = false;
-		this.isFile = false;
-		this.$axios
-			.get(this.$store.state.port.MaterialCategories + `?TypeNum=${n}`)
-			.then(res => {
-			if (!res.data) return;
-			this.materialCategories = res.data;
-			this.getSelectContentList({TypeNum: n});
-			});
+
+    getMaterialCategories(item) {
+      // 获取当前素材分类的所有标签
+      this.params.TypeNum = item.Num;
+      this.resultsTypesTitle = item.TypeName;
+      this.source = item.ID;
+      let id = item.ID;
+      this.getLabel().then(res => {
+        // 获取label
+        if (!res.data) return console.log("没有返回数据");
+        this.resultShowMoreOff = false;
+        this.materialCategories = res.data;
+        // if (this.source) this.source.cancel('这里你可以输出一些信息，可以在catch中拿到')
+        // this.source = this.$axios.CancelToken.source()
+        // console.log(this.source)
+        this.getContentList(id).then(res => {
+          if (!res) return;
+          let data = res.Data;
+          this.totalCount = res["X-Pagination"].TotalCount;
+          this.selectContentList = data;
+        });
+      });
     },
-	/**根据当前选中类别获取具体内容数据
-	 * TypeNum类型, page页码, Num, size页大小
-	 */
-    getSelectContentList({TypeNum, page = 0, Num = 0, size =30}) {
-	  // console.log(TypeNum, Num)
-	  this.moreLoading = true;
-	  this.searchPage = 0; // 重置无类型素材页码
-	  this.isHttpOk = false
-	  this.resultShowMoreOff = false;
-      this.$axios
-        .get(
+    getLabel() {
+      // 获取标签
+
+      return new Promise((resolve, reject) => {
+        let url =
+          this.$store.state.port.MaterialCategories +
+          `?TypeNum=${this.params.TypeNum}`;
+        this.$axios
+          .get(url)
+          .then(res => resolve(res))
+          .catch(err => reject(err));
+      });
+    },
+    getContentList(id) {
+      // 获取内容
+
+      this.loadingIcon = true;
+      return new Promise((resolve, reject) => {
+        let url =
           this.$store.state.port.MaterialInfos +
-            `?TypeNum=${TypeNum}&TypeCategoryNum=${Num}&pageIndex=${page}&pageSize=${size}&keyword=${this.keyword}`
-        )
-        .then(res => {
-			this.moreLoading = false;
-			this.isHttpOk = true;
-			this.moreShow = false;
-			let data = JSON.parse(res.data).Data;
-			if (data.length < 1) this.noMatter = true
-			else this.noMatter = false
-			this.selectContentList = this.selectContentList.concat(data);
-        }).catch(err => {this.isHttpOk = true})
+          `?TypeNum=${this.params.TypeNum}&TypeCategoryNum=${
+            this.params.TypeCategoryNum
+          }&pageIndex=${this.params.pageIndex}&pageSize=${
+            this.params.pageSize
+          }&KeyWords=${this.params.keyWords}`;
+        this.$axios
+          .get(url)
+          .then(res => {
+            this.loadingIcon = false;
+            let data = res.data;
+            data = typeof data == "object" ? data : JSON.parse(data);
+            if (this.source != id) resolve(false);
+            else resolve(data);
+          })
+          .catch(err => resolve(err));
+      });
     },
-    // 使用关键词搜索
     setKeyWords(item) {
-		// 样式切换
-		this.tagItemShow = item.Num;
-		// 设置关键词并查找
-		this.keyWords = item.TypeCategoryName;
-		this.page = 0;
-		let num = item.Num;
-		this.selectContentList = [];
-		this.getSelectContentList({TypeNum: this.type, page: this.page, num, size: 30});
-		
-	},
-	searchMatter () { // 使用主页面搜索框搜索素材
-		if (!this.type) {
-			this.resultShowMoreOff = false;
-			this.isSearchType = true;
-			this.moreLoading = true;
-			this.isHttpOk = false
-			if (this.page == 0) this.selectContentList = []
-			this.materialCategories = this.materialTypes
-			let url = this.$store.state.port.MaterialInfos +
-				`?TypeNum=0&TypeCategoryNum=0&pageIndex=${this.page}&pageSize=30&KeyWords=${this.keyword}`
-			this.$axios.get(url)
-			.then(res => {
-				this.isHttpOk = true
-				this.moreLoading = false;
-				if (res.data == '') return console.log('没有数据返回')
-				let data = JSON.parse(res.data)
-				// console.log(data.Data)
-				if (data.Data.length < 1) this.noMatter = true
-				else this.noMatter = false
-				this.selectContentList = this.selectContentList.concat(data.Data) 
-			})
-		} else {
-			if (this.keyword != '') this.selectContentList = []
-			this.getSelectContentList({TypeNum: this.type, page: this.page})
-		}
-		
-	},
-	getMore () { // 加载更多
-		let uploading = this.$refs.matterContent;
-			let total = uploading.scrollHeight; // 整个文档的高度
-			let viewHeight = document.documentElement.clientHeight; // 可视区域的高度
-			let scrollY = uploading.scrollTop || document.body.scrollTop; // 滚动条滚动的距离
-			this.mouseTop = scrollY
-			if (viewHeight + scrollY >= total - 72 && !this.noMatter) {
-				if (!this.isHttpOk) return
-				this.page++;
-				if (!this.isSearchType) {
-					if (this.isFile) {
-						this.getMatter();
-					} else {
-						this.getSelectContentList({TypeNum: this.type, page: this.page, size: 10});
-					}
-				} else {
-					this.searchPage++
-					this.searchMatter()
-				}
-			}
-		
-	},
+      // 使用label搜索
+      let id = this.source;
+      this.tagItemShow = item.Num; // 样式切换
+      this.loadingIcon = true;
+      this.selectContentList = []; // 初始化内容
+      this.params.pageIndex = 1; // 初始化页码
+      this.baseLine = "";
+      this.keyWords = item.TypeCategoryName; // 设置关键词并查找
+      this.params.TypeCategoryNum = item.Num;
+      this.getContentList(id).then(res => {
+        if (!res) return;
+        let data = res.Data;
+        this.totalCount = res["X-Pagination"].TotalCount;
+        this.selectContentList = data;
+      });
+    },
+    searchMatter() {
+      // 使用搜索框搜索素材
+      let id = this.source;
+      this.loadingIcon = true;
+      this.selectContentList = [];
+      this.getContentList(id).then(res => {
+        if (!res) return;
+        this.totalCount = res["X-Pagination"].TotalCount;
+        this.selectContentList = res.Data;
+      });
+    },
+    getMore() {
+      // 加载更多
+      let id = this.source;
+      let uploading = this.$refs.contentList,
+        total = uploading.scrollHeight, // 整个文档的高度
+        viewHeight = uploading.clientHeight, // 可视区域的高度
+        scrollY = uploading.scrollTop || document.body.scrollTop; // 滚动条滚动的距离
+      if (viewHeight + scrollY >= total && !this.baseLine) {
+        this.params.pageIndex++;
+        if (this.isFile == "") {
+          this.getContentList(id).then(res => {
+            if (!res) return;
+            if (this.selectContentList.length == res["X-Pagination"].TotalCount)
+              return (this.baseLine = "我是有底线的");
+            this.selectContentList = this.selectContentList.concat(res.Data);
+          });
+        } else if (this.isFile == "myMatter") {
+          if (this.identity) {
+            this.resultsTypesTitle = "我的素材";
+            this.getDeisgnerMatter().then(res => {
+              if (!res) return;
+              if (res.Data.length == 0) this.baseLine = "我是有底线的";
+              this.selectContentList = this.selectContentList.concat(res.Data);
+            });
+          } else {
+            this.resultsTypesTitle = "团队素材";
+            this.getTeamMatter().then(res => {
+              if (!res) return;
+              if (res.Data.length == 0) this.baseLine = "我是有底线的";
+              this.selectContentList = this.selectContentList.concat(res.Data);
+            });
+          }
+        } else if (this.isFile == "logo") {
+          this.getTeamLogo().then(res => {
+            if (!res) return;
+            if (res.Data.length == 0) this.baseLine = "我是有底线的";
+            this.selectContentList = this.selectContentList.concat(res.Data);
+          });
+        } else if (this.isFile == "collect") {
+          this.getCollect().then(res => {
+            if (!res) return;
+            if (res.Data.length == 0) this.baseLine = "我是有底线的";
+            this.selectContentList = this.selectContentList.concat(res.Data);
+          });
+        }
+      }
+    },
+    collectMatter(item, i) {
+      // 收藏素材
+      let url = "/FavoritedMaterial",
+        config = {
+          headers: { "Content-Type": "multipart/form-data" }
+        },
+        formdata = new FormData();
+      formdata.append("materialnum", item.Num);
+      if (item.IsFavorited) {
+        this.$axios.delete(url, { data: formdata }).then(res => {
+          let data = res.data;
+          if (data.state == "Success") {
+            item.IsFavorited = false;
+            this.$message({ type: "warning", message: "取消收藏" });
+          }
+        });
+      } else {
+        this.$axios.post(url, formdata).then(res => {
+          let data = res.data;
+          if (data.state == "Success") {
+            item.IsFavorited = true;
+            this.$message({ type: "success", message: "收藏成功" });
+          }
+        });
+      }
+    },
 
     /*  将图片路径上行给父组件 */
-    handleCreateImage(e, obj) {
-      let result = this.checkedType(obj);
-      this.$emit("handleAdd", result);
+    handleCreateImage(obj) {
+	//   let result = 
+	  this.checkedType(obj).then(result => {
+		  this.$emit("handleAdd", result);
+	  });
     },
-    // 检测当前元素类型
+
     checkedType(obj) {
-      let src, type;
-      if (obj.TypeNum != 1) {
-        if (obj.Svgtext != "") {
-          src = obj.Svgtext;
-          type = "svg";
-        } else {
-		  src = this.$store.state.port.imgBaseUrl + obj.FilePath + "!w300.src";
-		  let image = document.createElement('img')
-		  image.setAttribute('src', this.$store.state.port.imgBaseUrl + obj.FilePath + "!w800.src");
-		  image.onload = () => {
-			image = null
-		  }
-          type = "image";
-        }
-      } else {
-        src = obj.Svgtext;
-        type = "adsorb";
-      }
-      return { src, type };
+      // 检测当前元素类型
+    //   console.log(obj)
+		return new Promise((resolve, reject) => {
+			let src, type;
+			if (obj.TypeNum != 1) {
+				if (obj.FilePath.lastIndexOf('.svg') > -1) {
+				  	src = obj.Svgtext;
+					type = "svg";
+				} else {
+					src = this.$store.state.port.imgBaseUrl + obj.FilePath + "!w300.src";
+					let image = document.createElement("img");
+					image.setAttribute("src",this.$store.state.port.imgBaseUrl + obj.FilePath + "!w800.src");
+					image.onload = () => {image = null; };
+					type = "image";
+				}
+			} else {
+				src = obj.Svgtext;
+				type = "adsorb";
+			}
+			resolve({src, type})
+		})
     },
-    // 获取当前元素的位置和大小
+	getPosDown(e) {
+		this.oldPos.x = e.clientX;
+		this.oldPos.y = e.clientY;
+		this.oldPos.off = true
+	},
+	setPosMove(e, item) {
+		if (!this.oldPos.off) return
+		if (Math.abs(e.clientX - this.oldPos.x) > 5 || Math.abs(e.clientX - this.oldPos.y) > 5) {
+			this.setCopyBox(e,item)
+			this.oldPos.off = false
+		}
+	},
     setCopyBox(e, item) {
-      let ele = e.target,
-        x = e.clientX - e.offsetX,
-		y = e.clientY - e.offsetY, 
-		w = ele.offsetWidth, 
-		h = ele.offsetHeight;
-      let cx = e.clientX, cy = e.clientY;
-      let result = this.checkedType(item);
-      let src = this.$store.state.port.imgBaseUrl + item.FilePath + "!w300.src";
-      this.$emit("setCopyBox", {result, x, y, w, h, src, cx, cy});
-      this.ele = ele;
-	},
-	enterUp (e) {
-		if (e.code == 'Enter' || e.code == 'NumpadEnter')
-			this.searchMatter()
-	},
+      // 获取当前元素的位置和大小
+        let ele = e.target,
+            x = e.clientX - e.offsetX,
+            y = e.clientY - e.offsetY,
+            w = ele.offsetWidth,
+            h = ele.offsetHeight;
+        let cx = e.clientX,
+            cy = e.clientY;
+        this.checkedType(item).then(result => {
+            let src = this.$store.state.port.imgBaseUrl + item.FilePath + (item.Svgtext == "" ? "!w300.src" : "");
+            this.$emit("setCopyBox", { result, x, y, w, h, src, cx, cy ,item, ele});
+
+        });
+    },
+    enterUp(e) {
+      if (e.code == "Enter" || e.code == "NumpadEnter") this.searchMatter();
+    }
   },
   computed: {
     position() {
@@ -393,27 +586,9 @@ export default {
     }
   },
   mounted() {
-    /**
-     * 获取后台数据
-     */
-    // 1.所有的素材分类
-    this.getMaterialTypes();
-    // 3.素材分类内容数据
-	// this.getSelectContentList();
+    this.getMaterialTypes(); // 1.所有的素材分类
   },
-  destroyed() {
-  },
-  watch: {
-    // 监控当前元素的值
-    copyBox() {
-      // console.log(this.copyBox)
-      if (this.copyBox) {
-        this.ele.style.display = "none";
-      } else {
-        this.ele.style.display = "block";
-      }
-    },
-  }
+  destroyed() {},
 };
 </script>
 
@@ -427,27 +602,20 @@ $hoverColor: #00c1de;
   position: relative;
   .matter-content {
     width: 100%;
-	height: 100%;
-    padding-top: 72px;
-  	overflow-y: scroll;
+    height: 100%;
   }
-  .matter-content .search-active {
-    position: fixed;
-    top: 50px;
-    left: 60px;
-    width: 296px;
-  }
+
   .temp-search {
-    position: absolute;
-    top: 0;
-    width: 89%;
-    padding: 15px;
+    position: relative;
+    width: 100%;
+    padding: 10px;
     background: #fff;
     z-index: 9;
     .temp-search-input {
-      width: 77%;
+      width: 100%;
       height: 42px;
       border: 1px solid rgba(220, 220, 220, 1);
+      border-radius: 5px;
       background-color: transparent;
       padding: 0 50px 0 20px;
       outline: none;
@@ -455,52 +623,54 @@ $hoverColor: #00c1de;
     }
     .temp-search-icon {
       position: absolute;
-      right: 30px;
-      top: 28px;
+      right: 22px;
+      top: 22px;
       display: inline-block;
       width: 18px;
       height: 18px;
       background: url(/img/search_icon.png) no-repeat 50%;
       cursor: pointer;
     }
-	.temp-search-icon-close {
-		position: absolute;
-		right: 30px;
-		top: 28px;
-		display: inline-block;
-		width: 20px;
-      	height: 20px;
-		transform: rotate(45deg);
-		cursor: pointer;
-		&:hover::before, &:hover::after{
-			background: $color;
-		}
-		&::before {
-			content: '';
-			position: absolute;
-			top: 50%;
-			display: inline-block;
-			width: 100%;
-			height: 1px;
-			background: #ccc;
-			border-radius: 5px;
-		}
-		&::after {
-			content: '';
-			position: absolute;
-			left: 50%;
-			display: inline-block;
-			width: 1px;
-			height: 100%;
-			background: #ccc;
-			border-radius: 5px;
-		}
-	}
+    .temp-search-icon-close {
+      position: absolute;
+      right: 30px;
+      top: 28px;
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      transform: rotate(45deg);
+      cursor: pointer;
+      &:hover::before,
+      &:hover::after {
+        background: $color;
+      }
+      &::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        display: inline-block;
+        width: 100%;
+        height: 1px;
+        background: #ccc;
+        border-radius: 5px;
+      }
+      &::after {
+        content: "";
+        position: absolute;
+        left: 50%;
+        display: inline-block;
+        width: 1px;
+        height: 100%;
+        background: #ccc;
+        border-radius: 5px;
+      }
+    }
   }
 }
 .show-animation {
+  padding-top: 10px;
+  width: 100%;
   overflow: hidden;
-  transition: 1s;
 }
 .leftPanel-material-content-block {
   // 公共
@@ -588,21 +758,18 @@ $hoverColor: #00c1de;
   // 材料块里面的容器
   width: 100%;
   height: 100%;
-  padding-top: 98px;
   position: relative;
 }
 // 标签列表
 .leftPanel-material-results-types {
-  position: absolute;
-  top: 74px;
-  width: 326px;
+  width: 100%;
   z-index: 9;
-//   box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.16);
   background: #fff;
   .results-types-title {
     height: 50px;
     line-height: 50px;
     font-size: 16px;
+    font-weight: bold;
     margin: 0 20px;
     border-bottom: 1px solid $line;
     position: relative;
@@ -716,15 +883,12 @@ $hoverColor: #00c1de;
 }
 // 获取的结果内容区域
 .leftPanel-material-results-results {
-  min-height: 100%;
-  margin-top: 10px;
   margin-left: 10px;
-  margin-bottom: 150px;
   position: relative;
 }
 .leftPanel-common-results-item {
   position: absolute;
-  width: 88px;
+  width: 30%;
   transition: 1s;
   cursor: pointer;
   .container-noStyle {
@@ -732,95 +896,105 @@ $hoverColor: #00c1de;
     height: 100%;
     position: relative;
     overflow: hidden;
-    transition: 1s;
+    transition: 0.3s;
+    &::after {
+      display: none;
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 5px;
+      z-index: 1;
+      pointer-events: none;
+    }
     img {
       width: 100%;
       height: auto;
-      transition: 0.3s;
-      &:hover {
-        transform: scale(1.1);
-      }
-    }
-    &:hover .leftPanel-common-results-item-dots,
-    &:hover .leftPanel-common-results-item-collect {
       display: block;
     }
   }
-}
-.leftPanel-common-results-item-dots {
-  //显示详细信息开关
-  display: none;
-  position: absolute;
-  width: 16px;
-  height: 16px;
-  left: 6px;
-  bottom: 6px;
-  border-radius: 50%;
-  background: #f6f6f6;
-  transition: background 0.2s ease;
-  border: 1px solid #e7e7e7;
-  &::after {
-    content: "";
+  &:hover .leftPanel-common-results-item-collect,
+  &:hover .container-noStyle::after {
     display: block;
-    width: 14px;
-    height: 14px;
-    transition: background 0.1s ease;
-    background: url(/img/LeftPanel3dot.svg) no-repeat;
+  }
+  & .collect-active {
+    background-image: url(/img/desicon/matter/collect_red_icon.png);
   }
 }
 .leftPanel-common-results-item-collect {
   // 是否收藏
-  width: 16px;
-  height: 16px;
+  width: 20px;
+  height: 20px;
   position: absolute;
   bottom: 6px;
   right: 6px;
   border-radius: 50%;
-  padding: 2px;
   border: 1px solid #e7e7e7;
   display: none;
-  background: #fff;
+  background-color: #fff;
+  background-image: url(/img/desicon/matter/collect_gray_icon.png);
+  background-size: 100%;
+  background-repeat: no-repeat;
+  z-index: 2;
   cursor: pointer;
-  &::after {
-    content: "";
-    display: block;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 14px;
-    height: 13px;
-    background: url(/img/islike.svg) no-repeat 0 0;
-    background-size: 14px auto;
-  }
 }
-.leftPanel-common-results-item-collect.active::after {
-  background: url(/img/islike.svg) no-repeat 0 -14px;
-  background-size: 14px auto;
-}
-.leftPanel-common-results-item-showMore {
-  // 详细信息: 素材标号,关键词
+.content-list {
   position: absolute;
-  left: 0;
-  width: 280px;
-  overflow: hidden;
-  background: #fff;
-  z-index: 99;
-  box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.04);
-  padding: 8px;
-  text-align: left;
-  p {
-    line-height: 20px;
-    font-size: 14px;
-    span {
-      color: #4a4a4a;
-      display: block;
-      width: 200px;
-      float: left;
+  width: 100%;
+  bottom: 0;
+  overflow-y: auto;
+  .parent-list {
+    width: 100%;
+  }
+  .column-item {
+    position: absolute;
+    width: 98px;
+    padding: 2px;
+    font-size: 0;
+    box-sizing: border-box;
+    transition: all 0.1s ease;
+    cursor: pointer;
+    img {
+      max-width: 100%;
     }
-    span:first-child {
-      width: 60px;
-      color: #9b9b9b;
+    &:hover .del-icon,
+    &:hover .leftPanel-common-results-item-collect {
+      display: block;
+    }
+    & .collect-active {
+      background-image: url(/img/desicon/matter/collect_red_icon.png);
+    }
+    &:hover .img-mash {
+      background-color: rgba(0, 0, 0, 0.2);
+    }
+  }
+  .items {
+    padding-left: 15px;
+    width: 100%;
+    .items-item {
+      display: inline-block;
+      width: 94px;
+      height: 94px;
+      margin-right: 7px;
+      padding: 10px;
+      margin-bottom: 10px;
+      background: #f4f4f4;
+      cursor: pointer;
+      position: relative;
+      &:hover .leftPanel-common-results-item-collect {
+        display: block;
+      }
+      & .collect-active {
+        background-image: url(/img/desicon/matter/collect_red_icon.png);
+      }
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+      }
     }
   }
 }
