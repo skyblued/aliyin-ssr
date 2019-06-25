@@ -505,7 +505,7 @@ export default {
             let config = {
                 headers:{'Content-Type': 'multipart/form-data'}
             }
-            // var url = window.open('/designer', '_blank')
+            // var url = window.open('/design', '_blank')
             this.$axios.post('/CopyTemplate', formData, config).then(res => {
                 if(res.data == '') return console.log('没有返回')
                 // console.log(res.data)
@@ -516,7 +516,6 @@ export default {
 					a.href = '/design/' + str;
 					a.click();
 					a = null;
-                // url.location = '/designer/' + str
             })
         },
 
