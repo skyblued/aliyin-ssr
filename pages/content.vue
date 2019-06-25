@@ -42,23 +42,20 @@ export default {
 			$axios.get(store.state.port.Advertise + '?ID=136'),
 			$axios.get('/Articles')
         ])
+        for(var i =0;i<FooterArticle.data.length;i++) {
+            if(query.id == FooterArticle.data[i].ClassID) {
+                contentList = FooterArticle.data[i].Content
+            }
+        }
 		return {
 			qrcode: FooterCode.data.Advertisements[0].FileUrl,
             articleList: FooterArticle.data,
             contentList
         }
     },
-    mounted() {
-        for(var i=0;i<this.articleList.length;i++) {
-            if(this.$route.query.id == this.articleList[i].ClassID) {
-                this.contentList = this.articleList[i].Content
-            }
-        }
-    },
     methods: {
         handleChoose(i) {
             this.contentList = this.articleList[i].Content
-            console.log(this.contentList)
         }
     },
     computed: {

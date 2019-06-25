@@ -2,13 +2,15 @@
     <div class="about-us">
         <div class="about-header">
             <div class="header-tabs">
-                <div :class="{'tab-menu':true, active: path == item.ContentID}" v-for="(item,i) in contentList" :key="i" @click="handleChoose(item,i)">
-                    <span>{{item.Title}}</span>
-                </div>
+                <nuxt-link v-for="(item,i) in contentList" :key="i" :to="`/content?id=${item.ClassID}&contentId=${item.ContentID}`">
+                    <div :class="{'tab-menu':true, active: path == item.ContentID}" @click="handleChoose(i)">
+                        <span>{{item.Title}}</span>
+                    </div>
+                </nuxt-link>
             </div>
         </div>
         <div class="about-content" v-if="contentList.length && contentList[index].Description">
-            <p v-html="contentList.length && contentList[index].Description"></p>
+            <div v-html="contentList.length && contentList[index].Description"></div>
         </div>
     </div>
 </template>
@@ -22,24 +24,12 @@ export default {
     },
     props: ['contentList'],
     methods: {
-        handleChoose(item,i) {
+        handleChoose(i) {
             this.index = i
-            let id = item.ClassID
-            let contentId = item.ContentID
-            this.$router.push({path: this.$route.fullPath, query: {id: id,contentId: contentId}})
         }
     },
     mounted() {
         window.scrollTo(0,0)
-    },
-    watch: {
-        contentList() {
-            for(var i=0;i<this.contentList.length;i++) {
-                if(this.$route.query.contentId == this.contentList[i].ContentID) {
-                    this.index = i
-                }
-            }
-        }
     },
     computed: {
         path() {

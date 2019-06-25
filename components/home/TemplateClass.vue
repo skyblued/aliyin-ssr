@@ -17,7 +17,7 @@
             <div class="class-level-item-label">
                 <div class="level-tips">
 					<nuxt-link v-for="(tmp,id) in SecondList" :key="id"
-						:to="`/templatecenter?id=${tmp.TypeId}&n=${tmp.FromClass}&title=${ClassName}&subtitle=${tmp.TypeName}`"
+						:to="`templateList/templateCenter?id=${tmp.TypeId}&n=${tmp.FromClass}&title=${ClassName}&subtitle=${tmp.TypeName}`"
 					>
 						<div class="level-tips-item" >
 							<div class="tips-icon-wrap">

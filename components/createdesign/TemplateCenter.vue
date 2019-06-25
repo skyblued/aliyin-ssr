@@ -70,8 +70,8 @@
                 </div>
             </div>
 
-            <div class="template-center-list" ref="box" :style="{height: height == '' ? '400px' : height + 'px'}" v-if="templateList.length">
-                <div class="template-center-item" v-if="sizeList.length">
+            <div class="template-center-list" ref="box" :style="{height: height == '' ? '400px' : height + 'px'}">
+                <div class="template-center-item">
                     <div class="template-center-block">
                         <div @click="handleCreatTemplate" class="modal-block-img-wrap" :style="{height: height == '' ? '300px' : height + 'px'}">
                             <div class="empty">
