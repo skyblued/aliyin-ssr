@@ -81,8 +81,8 @@
 </template>
 
 <script>
-import {getImagesArr} from '@/assets/utils'
-import { setWaterfall } from "@/assets/commonJS.js";
+import {getImagesArr} from '@/assets/js/utils.js'
+import { setWaterfall } from "@/assets/js/commonJS.js";
 import Share from '@/components/design/share.vue'
 export default {
 	props: {

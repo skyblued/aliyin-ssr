@@ -118,7 +118,7 @@
 </template>
 
 <script>
-import { setWaterfall } from "@/assets/commonJS.js";
+import { setWaterfall } from "@/assets/js/commonJS.js";
 import Share from "@/components/design/share.vue";
 import Loading from "@/components/design/loading.vue";
 export default {

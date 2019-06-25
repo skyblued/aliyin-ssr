@@ -25,12 +25,9 @@
 import * as THREE from 'three'
 import OrbitControls from 'three-orbitcontrols';
 import {OBJLoader, MTLLoader, OBJMTLLoader} from "three-obj-mtl-loader";
-import Stats from 'stats-js'
 
 
-import { ModelThree, ModelObj, ModelStl, ModelCollada, ModelGltf } from 'vue-3d-model' 
 export default {
-	components: { ModelThree, ModelObj, ModelStl, ModelCollada, ModelGltf },
 	props: {
 		modelData: {
 			type: Object

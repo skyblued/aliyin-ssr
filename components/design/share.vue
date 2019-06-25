@@ -16,7 +16,7 @@
 </template>
 
 <script>
-import { setWaterfall } from "@/assets/commonJS.js";
+import { setWaterfall } from "@/assets/js/commonJS.js";
 export default {
 	props: ['selectContentList'],
 	data () {

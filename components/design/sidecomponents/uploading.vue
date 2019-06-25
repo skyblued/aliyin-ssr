@@ -68,7 +68,7 @@
 </template>
 
 <script>
-import ImagesLayout from '@/assets/imagesLayout.js'
+import ImagesLayout from '@/assets/js/imagesLayout.js'
 export default {
 	name: 'uploading',
     
