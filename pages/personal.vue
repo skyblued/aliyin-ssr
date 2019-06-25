@@ -116,15 +116,14 @@
 </template>
 
 <script>
+import Header from '@/components/personal/Header'
 export default {
     asyncData({app, store}) {
-        console.log(app.$cookiz)
+        // console.log(app.$cookiz)
         store.commit('login/addToKen', store.$cookiz.getAll().token)
     },
     data () {
-        
         return {
-            // avatar: localStorage['avatar'],
             teamname: null,
             username: null,
             show: null,
@@ -138,7 +137,6 @@ export default {
             this.show = this.$route.fullPath.indexOf('account') > -1 ? '' : 'toggle'
             this.asideTitle = this.$route.fullPath.indexOf('account') > -1 ? 'center' : ''
             this.$store.commit('login/setAvatar', localStorage['avatar'])
-            console.log(this.asideTitle)
         },
 
         setData(val){
@@ -198,6 +196,9 @@ export default {
             return sessionStorage['teamType']
         }
     },
+    components: {
+        Header
+    }
 }
 </script>
 
