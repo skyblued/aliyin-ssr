@@ -1,6 +1,5 @@
 <template>
   <no-ssr>
-    
 	<div class="design">
 
 		<header class="header">
@@ -866,9 +865,8 @@
 			</div>
 		</transition>
 	</div>
-	</no-ssr>
+  </no-ssr>
 </template>
-
 <script src="../components/design/Design.js"></script>
 
 <style lang="scss" scoped>

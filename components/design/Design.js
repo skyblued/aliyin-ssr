@@ -55,6 +55,19 @@ export default {
 		DownloadWait,
 		Psd,
 	},
+	asyncData({isDev, route, store, env, params, query, req, res, redirect, error}) {
+		console.log(store.state.login)
+	},
+	validate({ params, query, redirect }) {
+		// console.log(params)
+		if (params.t) {
+			return true
+		} else {
+			redirect('/')
+
+		} // 参数无效，Nuxt.js 停止渲染当前页面并显示错误页面
+		
+	},
 	data() {
 	
 		return {
