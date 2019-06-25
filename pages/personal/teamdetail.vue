@@ -3,37 +3,32 @@
         <div class="team-detail">
             <div class="team-header">
                 <div class="team-tabs">
-                    <div class="team-tab" @click="handleToggle('TeamInfo')">
+                    <!-- <div class="team-tab" @click="handleToggle('TeamInfo')">
                         <span :class="asideTitle == 'TeamInfo' ? 'active' : ''">团队信息</span>
-                        <i v-if="asideTitle == 'TeamInfo'"></i>
-                    </div>
-                    <div class="team-tab" @click="handleToggle('Member')">
+                    </div> -->
+                    <!-- <div class="team-tab" @click="handleToggle('Member')">
                         <span :class="asideTitle == 'Member' ? 'active' : ''">团队成员</span>
-                        <i v-if="asideTitle == 'Member'"></i>
+                    </div> -->
+                    <div class="team-tab" @click="handleToggle('TeamTemplet')">
+                        <span :class="asideTitle == 'TeamTemplet' ? 'active' : ''">通用模板</span>
                     </div>
                     <div class="team-tab" @click="handleToggle('TeamVi')">
-                        <span :class="asideTitle == 'TeamVi' ? 'active' : ''">团队VI</span>
-                        <i v-if="asideTitle == 'TeamVi'"></i>
-                    </div>
-                    <div class="team-tab" @click="handleToggle('TeamTemplet')">
-                        <span :class="asideTitle == 'TeamTemplet' ? 'active' : ''">团队模板</span>
-                        <i v-if="asideTitle == 'TeamTemplet'"></i>
+                        <span :class="asideTitle == 'TeamVi' ? 'active' : ''">品牌VI</span>
                     </div>
                     <div class="team-tab" @click="handleToggle('Material')">
-                        <span :class="asideTitle == 'Material' ? 'active' : ''">团队素材</span>
-                        <i v-if="asideTitle == 'Material'"></i>
+                        <span :class="asideTitle == 'Material' ? 'active' : ''">常用素材</span>
                     </div>
                 </div>
-                <div v-if="asideTitle == 'Member'" class="add-member-btn" @click="dialogAddVisible = true">添加成员</div>
+                <!-- <div v-if="asideTitle == 'Member'" class="add-member-btn" @click="dialogAddVisible = true">添加成员</div> -->
                 <el-dialog :visible.sync="dialogAddVisible" :close-on-click-modal="false" title="添加成员">
                     <AddMember></AddMember>
                 </el-dialog>
             </div>
 
             <div class="team-content">
-                <div v-if="asideTitle == 'TeamInfo'">
+                <!-- <div v-if="asideTitle == 'TeamInfo'">
                     <TeamInfo></TeamInfo>
-                </div>
+                </div> -->
                 <div v-if="asideTitle == 'Member'">
                     <Member></Member>
                 </div>
@@ -61,7 +56,7 @@ import AddMember from '@/components/personal/teamDetail/AddMember.vue'
 export default {
     data () {
         return {
-            asideTitle: 'TeamInfo',
+            asideTitle: 'TeamTemplet',
             dialogAddVisible: false
         }
     },
@@ -108,9 +103,9 @@ export default {
             color: rgba(255,255,255,1);
             padding: 0 22px 0 23px;
             cursor: pointer;
-            &:hover{
-                background: #0893ff;
-            }
+            // &:hover{
+            //     background: #0893ff;
+            // }
         }
         .team-tabs{
             display: flex;
@@ -121,12 +116,14 @@ export default {
                 text-align: center;
                 line-height: 76px;
                 cursor: pointer;
-                color: rgba(102,102,102,1);
+                color: rgba(153,153,153,1);
+                font-size: 18px;
                 margin-right: 44px;
                 &:hover{
                     color: $color;
                 }
-                i{
+                &:hover::before{
+                    content: '';
                     background-image: url(/img/personal/line_icon.png);
                     position: absolute;
                     bottom: 0;
@@ -137,6 +134,15 @@ export default {
             }
             .active{
                 color: $color;
+                &::before{
+                    content: '';
+                    background-image: url(/img/personal/line_icon.png);
+                    position: absolute;
+                    bottom: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 4px;
+                }
             }
         }
     }
@@ -167,6 +173,9 @@ export default {
                 }
             }
         }
+    }
+    .el-dialog__body{
+        padding: 32px 58px;
     }
 }
 </style>

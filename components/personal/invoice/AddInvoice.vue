@@ -1,14 +1,14 @@
 <template>
     <div id="add-invoice">
-        <div class="invoice-type">
+        <!-- <div class="invoice-type">
             <div :class="['type-btn', activeIndex == '1' ? 'active' : '']" @click="handleToggle('1')">增值税普通发票</div>
             <div :class="['type-btn', activeIndex == '2' ? 'active' : '']" @click="handleToggle('2')">增值税专用发票</div>
-        </div>
+        </div> -->
         <div class="invoice-content">
             <div class="common" v-if="activeIndex == '1'">
                 <el-form :model="form">
                     <el-form-item label="开具方式: ">
-                        <el-radio v-model="form.mode" label="电子发票"></el-radio>
+                        <el-radio v-model="form.mode" label="增值税普通发票(电子发票)"></el-radio>
                     </el-form-item>
                     <el-form-item label="开具类型: ">
                         <el-radio-group v-model="form.custom" @change="handleChangeCustom">
@@ -51,7 +51,7 @@
 
             <div slot="footer" class="dialog-footer">
                 <div class="sure-btn" @click="handleAddInvoice">确定添加</div>
-                <div class="cancel-btn">取消添加</div>
+                <div class="cancel-btn" @click="handleCancel">取消添加</div>
             </div>
         </div>
     </div>
@@ -62,7 +62,7 @@ export default {
     data () {
         return {
             form: {
-                mode: '电子发票',
+                mode: '增值税普通发票(电子发票)',
                 custom: '公司',
                 rise: '',
                 number: '',
@@ -164,7 +164,7 @@ export default {
             formData.append('Bank', this.form.name);
             formData.append('BankNo', this.form.account);
             formData.append('Phone', this.Phone);
-            formData.append('TeamNum', sessionStorage['teamNum']);
+            formData.append('TeamNum', localStorage['teamNum']);
             //console.log(this.taxType,this.makeType,this.customId,title,this.form.email,this.form.number,this.form.name,this.form.account,this.form.phone)
             let config = {
                 headers:{'Content-Type': 'multipart/form-data'}
@@ -179,6 +179,9 @@ export default {
                     this.$emit('getInvoice')
                 }
             }) 
+        },
+        handleCancel() {
+            this.$store.commit('setDialogAddInvoice', false)
         }
     },
     watch: {
@@ -217,7 +220,7 @@ export default {
     }
     .invoice-content{
         .common{
-            padding: 58px 38px 38px;
+            padding: 0 38px 38px;
         }
         .el-form-item{
             display: flex;

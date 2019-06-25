@@ -7,14 +7,14 @@
             </div>
             <div class="logo-img">
                 <div class="logo-item" @click="dialogLogoVisible = true">
-                    <img class="upload-img" :src="$store.state.port.staticPath + '/img/personal/upload_sc_icon.png'" alt="">
+                    <img class="upload-img" src="/img/personal/upload_sc_icon.png" alt="">
                     <span class="logo-name">上传</span>
                 </div>
                 <div v-for="(item,i) in logoList" :key="i" class="logo-item">
                     <div class="logo-img-wrap">
                         <img :src="$store.state.port.imgBaseUrl+item.FilePath">
-                        <div class="logo-mask">
-                            <span @click="open1(i)">删除</span>
+                        <div class="logo-mask" @click="open1(i)">
+                            <span>删除</span>
                         </div>
                     </div>
                     <span class="logo-name"></span>
@@ -23,29 +23,30 @@
                     title="上传专用LOGO"
                     :lock-scroll="false"
                     :close-on-click-modal="false"
+                    :before-close="close"
                     :visible.sync="dialogLogoVisible">
                     <el-upload
                         class="upload-demo"
                         ref="upload"
                         drag
-                        action="http://v1.yinbuting.cn/api/TeamLogo"
+                        :action="$store.state.netServer + '/TeamLogo'" 
                         :on-preview="handlePreview"
                         :on-remove="handleRemove"
                         :onSuccess="uploadSuccess"
                         :onError="uploadError"
                         :on-progress="progress"
-                        :show-file-list="false"
+                        :show-file-list="true"
                         list-type="picture"
                         :data="paramsData"
                         :headers="myHeader"
                         :before-upload="beforeAvatarUpload"
-                        accept=".jpg,.png,.psd,.svg,.cdr"
+                        accept=".jpg,.jpeg,.png,.psd,.svg,.cdr"
                         multiple>
                         <!-- <i class="el-icon-upload"></i> -->
-                        <img class="el-icon-upload" :src="$store.state.port.staticPath + '/img/personal/qyadd_icon.png'" alt="">
+                        <img class="el-icon-upload" src="/img/personal/qyadd_icon.png" alt="">
                         <div class="el-upload__text">选择素材，支持PNG、JPG格式 文件最大20MB</div>
                     </el-upload>
-                    <div v-if="logoFlag" class="progress-bar progress-bar-striped active" :style="{width: logoUploadPercent + '%'}">{{logoUploadPercent+ '%'}}<i :class="{'el-icon-check': success == true ? true : false}"></i></div>
+                    <!-- <div v-if="logoFlag" class="progress-bar progress-bar-striped active" :style="{width: logoUploadPercent + '%'}">{{logoUploadPercent+ '%'}}<i :class="{'el-icon-check': success == true ? true : false}"></i></div> -->
                     <div class="dialog-footer">
                         <div class="sure" @click="handleUpload">确定上传</div>
                         <div class="cancel" @click="dialogLogoVisible = false">取消</div>
@@ -60,7 +61,7 @@
             </div>
             <div class="color-info">
                 <div class="color-item" circle @click="dialogColorVisible = true">
-                    <img class="colors" :src="$store.state.port.staticPath + '/img/personal/upload_ys_icon.png'" alt="">
+                    <img class="colors" src="/img/personal/upload_ys_icon.png" alt="">
                     <span style="color: rgba(102,102,102,1);">添加颜色</span>
                 </div>
                 <div v-for="(item,i) in backgroundColor" :key="i" class="color-item">
@@ -83,14 +84,14 @@
                 </el-dialog>
             </div>
         </div>
-        <div class="font">
+        <!-- <div class="font">
             <div class="title">
                 <i></i>
                 <span>我的专有字体</span>
             </div>
             <div class="fonts">
                 <div class="font-btn" @click="handleOpenFont">
-                    <img :src="$store.state.port.staticPath + '/img/personal/upload_wz_icon.png'" alt="">
+                    <img src="/img/personal/upload_wz_icon.png" alt="">
                 </div>
                 <div class="font-item" v-for="(items,index) in teamFontList" :key="index">
                     <div class="font-img-wrap">
@@ -104,7 +105,7 @@
                             <span>字体: </span>
                             <p class="font-input">
                                 <span>{{fontValue}}</span>
-                                <img :src="$store.state.port.staticPath + '/img/home/drop_down.png'" alt="">
+                                <img src="/img/home/drop_down.png" alt="">
                             </p>
                         </div>
                         <div class="font-list" v-if="show">
@@ -141,8 +142,9 @@
                         </div>
                     </div>
                     <el-upload
+                        style="margin-bottom: 20px;"
                         ref="upload"
-                        action="http://v1.yinbuting.cn/api/TeamFonts"
+                        :action="$store.state.netServer + '/TeamFonts'"
                         :on-preview="handlePreviewFont"
                         :onSuccess="uploadFontSuccess"
                         :headers="myHeader"
@@ -150,14 +152,14 @@
                         :data="Data">
                         <el-button size="small" type="primary">点击上传字体</el-button>
                     </el-upload>       
-                    <!-- <input type="file" ref="font" @change="handleFontUpload"> -->
+                    <input type="file" ref="font" @change="handleFontUpload">
                     <div slot="footer" class="dialog-footer">
                         <div class="sure" @click="handleAddFont">确定</div>
                         <div class="cancel" @click="dialogFontVisible = false">取消</div>
                     </div>
                 </el-dialog>
             </div>
-        </div>
+        </div> -->
     </div>
 </template>
 
@@ -166,7 +168,7 @@ export default {
     data () {
         return {
             form: {},
-            teamNum: sessionStorage.getItem('teamNum'),
+            teamNum: localStorage['teamNum'],
             fileList: [],
             visible: false,
             dialogLogoVisible: false,
@@ -177,7 +179,7 @@ export default {
             backgroundColor: [],   // 团队专属颜色列表
             serviceForm: {
                 TypeNum: 15,
-                TeamNum: sessionStorage.getItem('teamNum'),
+                TeamNum: localStorage['teamNum'],
                 TypeCategoryNum: 15
             },
             logoList: [],    // 团队专属logo列表
@@ -202,13 +204,13 @@ export default {
 
         },
         uploadFontSuccess(res,file) {
-            console.log(res, file)
+            // console.log(res, file)
             if(res.status == "Success"){
                 this.$message({type: 'success', message: res.Message})
                 let fontImg = res.imgkey
-                console.log(fontImg, '字体图片')
-                this.teamFontList.unshift({FontThumb: fontImg})
-                console.log(this.teamFontList, '字体列表')
+                // console.log(fontImg, '字体图片')
+                //this.teamFontList.unshift({FontThumb: fontImg})
+                // console.log(this.teamFontList, '字体列表')
                 this.$refs.upload.clearFiles();
                 this.dialogFontVisible = false
                 this.getFontList()
@@ -217,7 +219,7 @@ export default {
             }
         },
         uploadFontError (res, file, fileList) {
-            console.log('上传失败，请重试！', res, file)
+            // console.log('上传失败，请重试！', res, file)
         },
         // handleFontUpload() {
         //     var file = this.$refs.font.files[0]
@@ -270,9 +272,26 @@ export default {
             return isLt2M;
         },
         handleUpload() {
+            if(!this.success) return this.$message.warning('请先上传文件')
+            // var formData = new FormData()
+            // formData.append('TypeNum', 15);
+            // formData.append('TeamNum', this.teamNum);
+            // formData.append('TypeCategoryNum', 15);
+            // formData.append('IsPublic', 1);
+            // formData.append('file', this.logoUrl);
+            // let config = {
+            //     headers:{'Content-Type': 'multipart/form-data'}
+            // }
+            // this.$axios.post('/TeamLogo', formData, config).then(res => {
+            //     console.log(res.data)
+            // })
             this.dialogLogoVisible = false
             this.logoFlag = false
             this.getLogoList()
+            this.$refs.upload.clearFiles();
+        },
+        close() {  // 关闭弹出框之前的回调
+            this.dialogLogoVisible = false
             this.$refs.upload.clearFiles();
         },
         // 删除专属LOGO
@@ -280,7 +299,8 @@ export default {
             this.$confirm('是否删除该LOGO?', '提示', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
-                type: 'warning'
+                type: 'warning',
+                lockScroll: false
             }).then(() => {
                 var url = '/TeamLogo'
                 var formData = new FormData(); 
@@ -307,7 +327,8 @@ export default {
             this.$confirm('是否删除该颜色?', '提示', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
-                type: 'warning'
+                type: 'warning',
+                lockScroll: false
             }).then(() => {
                 var url = '/TeamColor'
                 var formData = new FormData(); 
@@ -328,32 +349,31 @@ export default {
             });
         },
         handleRemove(file, fileList) {
-            console.log(file, fileList);
+            // console.log(file, fileList);
         },
         handlePreview(file) {
-            console.log(file);
+            // console.log(file);
         },
         uploadSuccess (response, file, fileList) {
-            console.log(JSON.parse(response),file)
-            if(JSON.parse(response).status == 'ok'){
-                this.logoUrl = JSON.parse(response).key
+            // console.log(JSON.parse(response), file)
+            if(JSON.parse(response).status == 'success' || JSON.parse(response).status == 'ok'){
+                this.logoUrl = JSON.parse(response).svgpath || JSON.parse(response).key
                 this.logoFlag = true
                 this.logoUploadPercent = 100
                 this.success = true
             }
         },
         uploadError (response, file, fileList) {
-            console.log('上传失败，请重试！',file)
+            // console.log('上传失败，请重试！',file)
         },
         // 文件上传时的函数
         progress(event, file, fileList) {
-            console.log(event,file) 
+            // console.log(event,file) 
             this.logoFlag = true
             this.logoUploadPercent = parseInt(file.percentage.toFixed(0))
             //this.logoUploadPercent = parseInt((event.loaded / event.total * 100).toFixed(0))
         },
         handleAdd() {
-            this.dialogColorVisible = false
             var url = '/TeamColor'
             var formData = new FormData();
             formData.append("TeamNum", this.serviceForm.TeamNum);
@@ -371,7 +391,9 @@ export default {
                     if(res.data == 'AlreadyExist'){
                         alert('已存在')
                     }else if(res.data == 'Success'){
-                        this.backgroundColor.unshift({ColorCode:this.color})
+                        // this.backgroundColor.unshift({ColorCode:this.color})
+                        this.getColorList()
+                        this.dialogColorVisible = false
                     }
                 })
             }
@@ -389,7 +411,7 @@ export default {
         getLogoList() {
             var url = "/TeamLogos?TeamNum=" + this.teamNum + '&IsPublic=' + 1
             this.$axios.get(url).then(res => {
-                //console.log(res.data)
+                // console.log(res.data)
                 this.logoList = res.data
             })
         },
@@ -397,7 +419,7 @@ export default {
         getFontList() {
             var url = '/TeamFonts?TeamNum='+ this.teamNum
             this.$axios.get(url).then(res => {
-                console.log(res.data)
+                // console.log(res.data)
                 this.teamFontList = res.data
             })
         },
@@ -405,7 +427,7 @@ export default {
         handleOpenFont() {
             this.dialogFontVisible = true
             this.$axios.get('/Fonts').then(res => {
-                console.log(res.data)
+                // console.log(res.data)
                 this.fontList = res.data
             })
         },
@@ -442,7 +464,8 @@ export default {
             this.$confirm('是否删除该字体?', '提示', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
-                type: 'warning'
+                type: 'warning',
+                lockScroll: false
             }).then(() => {
                 var url = '/TeamFont'
                 var formData = new FormData(); 
@@ -496,7 +519,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-
+// 
 .team-vi{
     padding: 48px 32px;
     width: 100%;
@@ -551,31 +574,36 @@ export default {
             height: 128px;
         }
         .logo-img-wrap{
+            display: flex;
+            align-items: center;
+            justify-content: center;
             width: 128px;
             height: 128px;
-            padding: 50px 0;
             background: rgba(255,255,255,1);
             position: relative;
             &:hover .logo-mask{
-                display: block;
+                // display: block;
+                height: 34px;
             }
             img{
-                width: 87px;
-                height: 28px;
+                width: 102px;
+                height: 102px;
+                object-fit: contain;
             }
             .logo-mask{
                 width: 100%;
-                height:34px;
+                height:0;
                 line-height: 34px;
                 text-align: center;
-                background:rgba(0,0,0,1);
-                opacity:0.3;
+                background:rgba(0,0,0,.3);
                 font-size:16px;
                 color:rgba(255,255,255,1);
                 position: absolute;
                 bottom: 0;
                 left: 0;
-                display: none;
+                // display: none;
+                transition: all .3s linear;
+                overflow: hidden;
             }
         }
         .logo-name{
@@ -634,9 +662,9 @@ export default {
             border-radius: 5px;
             margin-right: 31px;
             color:rgba(254,254,254,1);
-            &:hover{
-                background: #0893ff;
-            }
+            // &:hover{
+            //     background: #0893ff;
+            // }
         }
         .cancel{
             border: 1px solid rgba(210,210,210,1);
@@ -686,7 +714,8 @@ export default {
         cursor: pointer;
         position: relative;
         &:hover .colors-mask{
-            display: block;
+            // display: block;
+            opacity: 1;
         }
         .colors{
             width: 61px;
@@ -694,7 +723,7 @@ export default {
             border-radius: 50%;
         }
         .colors-mask{
-            width: 100%;
+            width: 61px;
             height: 61px;
             border-radius: 50%;
             background:rgba(0,0,0,.3);
@@ -704,7 +733,9 @@ export default {
             position: absolute;
             top: 0;
             left: 0;
-            display: none;
+            // display: none;
+            opacity: 0;
+            transition: all .2s ease-out;
         }
         span{
             display: block;
@@ -755,7 +786,8 @@ export default {
         width: 100%;
         height: 100%;
         &:hover .font-mask{
-            display: block;
+            // display: block;
+            opacity: 1;
         }
         .font-mask{
             width: 100%;
@@ -766,7 +798,9 @@ export default {
             top: 0;
             left: 0;
             text-align: center;
-            display: none;
+            // display: none;
+            opacity: 0;
+            transition: all .3s ease-in-out;
         }
     }
 }

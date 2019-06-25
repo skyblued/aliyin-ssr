@@ -78,12 +78,13 @@
                         </template>
                     </el-table-column>
                     <el-table-column
-                        label="收货地址"
+                        label="邮箱"
                         min-width="320">
                         <template slot-scope="scope">
                             <p>
-                                <span class="name">{{scope.row.name}}  {{scope.row.phone}}</span>
-                                <span>{{scope.row.address}}  {{scope.row.ries}}</span>
+                                <!-- <span class="name">{{scope.row.name}}  {{scope.row.phone}}</span>
+                                <span>{{scope.row.address}}  {{scope.row.ries}}</span> -->
+                                <span>{{scope.row.email}}</span>
                             </p>
                         </template>
                     </el-table-column>
@@ -107,7 +108,7 @@
                         </template>
                     </el-table-column>
                 </el-table>
-                <div class="invoice-block" v-if="tableData.length">
+                <div class="invoice-block" v-if="tableData.length && page.totalRecords > 10">
                     <HomePagination :Page="page" @getTempList="getInvoiceRecord" />
                 </div>
             </div>
@@ -219,6 +220,7 @@ export default {
                     obj.expressCode = data.Data[i].ExpressCode
                     obj.path = data.Data[i].FilePath
                     obj.id = data.Data[i].ID
+                    obj.email = data.Data[i].Email
                     list[i] = obj
                 }
                 this.tableData = list

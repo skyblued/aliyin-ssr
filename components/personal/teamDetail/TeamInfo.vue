@@ -7,7 +7,7 @@
                 </el-form-item>
                 <el-form-item label="团队logo: " class="upload-logo">
                     <el-upload
-                        action="http://v1.yinbuting.cn/api/UploadToOSS"
+                        action="$store.state.netServer + '/UploadToOSS'"
                         list-type="picture-card"
                         :on-preview="handlePictureCardPreview"
                         :on-remove="handleRemove"
@@ -108,9 +108,9 @@ export default {
                 background: $color;
                 color:rgba(254,254,254,1);
                 margin-right: 21px;
-                &:hover{
-                    background: #0893ff;
-                }
+                // &:hover{
+                //     background: #0893ff;
+                // }
             }
             .cancel{
                 border: 1px solid rgba(210,210,210,1);

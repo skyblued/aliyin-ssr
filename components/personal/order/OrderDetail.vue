@@ -11,19 +11,59 @@
                 <div class="logistics">
                     <div class="logistics-header">
                         <p>订单号: <span>{{orderDeatil.OrderCode}}</span></p>
-                        <div class="logistics-btn">
+                        <div class="logistics-btn" v-if="orderDeatil.PaymentStatus == '0'">
                             <div class="payment" @click="handleToPay">去支付</div>
                             <div class="cancel-order">取消订单</div>
                         </div>
+                        <div v-else>支付完成</div>
                     </div>
                     <div class="logistics-steps">
-                        <div class="logistics-steps-item" v-for="(item,i) in logisticsList" :key="i">
+                        <div class="logistics-steps-item">
                             <div>
-                                <img :src="item.image" alt="">
-                                <p class="logistics-title">{{item.title}}</p>
-                                <p class="logistics-time">{{item.time}}</p>
+                                <img src="/img/personal/logistics/xd_icon_hl.png" alt="">
+                                <p class="logistics-title" style="color: rgba(51,51,51,1)">下单</p>
+                                <!-- <p class="logistics-time">{{orderDeatil.CreatedDate | ToSplit}}</p> -->
                             </div>
-                            <img v-if="i != 5" class="steps" :src="item.stepImg" alt="">
+                            <img class="steps" :src="orderDeatil.PaymentStatus == '0' ? '/img/personal/logistics/arrow_icon.png' : '/img/personal/logistics/arrow_icon_hl.png'" alt="">
+                        </div>
+                        <div class="logistics-steps-item">
+                            <div>
+                                <img :src="orderDeatil.PaymentStatus == '0' ? '/img/personal/logistics/fk_icon.png' : '/img/personal/logistics/fk_icon_hl.png'" alt="">
+                                <p :class="{'logistics-title': true, active: orderDeatil.PaymentStatus != '0'}">付款</p>
+                                <!-- <p class="logistics-time" v-if="orderDeatil.PaymentStatus != '0'">{{orderDeatil.PaymentTime | ToSplit}}</p> -->
+                            </div>
+                            <img class="steps" :src="orderDeatil.OrderStatus == '0' ? '/img/personal/logistics/arrow_icon.png' : '/img/personal/logistics/arrow_icon_hl.png'" alt="">
+                        </div>
+                        <div class="logistics-steps-item">
+                            <div>
+                                <img :src="orderDeatil.OrderStatus == '0' ? '/img/personal/logistics/sh_icon.png' : '/img/personal/logistics/sh_icon_hl.png'" alt="">
+                                <p :class="{'logistics-title': true, active: orderDeatil.OrderStatus != '0'}">审核</p>
+                                <!-- <p class="logistics-time" v-if="orderDeatil.OrderStatus != '0'">{{orderDeatil.ConfirmTime | ToSplit}}</p> -->
+                            </div>
+                            <img class="steps" :src="orderDeatil.PrintStatus == '0' ? '/img/personal/logistics/arrow_icon.png' : '/img/personal/logistics/arrow_icon_hl.png'" alt="">
+                        </div>
+                        <div class="logistics-steps-item">
+                            <div>
+                                <img :src="orderDeatil.PrintStatus == '0' ? '/img/personal/logistics/sc_icon.png' : '/img/personal/logistics/sc_icon_hl.png'" alt="">
+                                <p :class="{'logistics-title': true, active: orderDeatil.PrintStatus != '0'}">生产</p>
+                                <!-- <p class="logistics-time" v-if="orderDeatil.PrintStatus != '0'">{{orderDeatil.DesignTime || orderDeatil.PrintTime | ToSplit}}</p> -->
+                            </div>
+                            <img class="steps" :src="orderDeatil.ShippingStatus == '0' ? '/img/personal/logistics/arrow_icon.png' : '/img/personal/logistics/arrow_icon_hl.png'" alt="">
+                        </div>
+                        <div class="logistics-steps-item">
+                            <div>
+                                <img :src="orderDeatil.ShippingStatus == '0' ? '/img/personal/logistics/fh_icon.png' : '/img/personal/logistics/fh_icon_hl.png'" alt="">
+                                <p :class="{'logistics-title': true, active: orderDeatil.ShippingStatus != '0'}">发货</p>
+                                <!-- <p class="logistics-time" v-if="orderDeatil.ShippingStatus != '0'">{{orderDeatil.ShippingTime | ToSplit}}</p> -->
+                            </div>
+                            <img class="steps" :src="currentDate !== signforTime ? '/img/personal/logistics/arrow_icon.png' : '/img/personal/logistics/arrow_icon_hl.png'" alt="">
+                        </div>
+                        <div class="logistics-steps-item">
+                            <div>
+                                <img :src="currentDate !== signforTime ? '/img/personal/logistics/qs_icon.png' : '/img/personal/logistics/qs_icon_hl.png'" alt="">
+                                <p :class="{'logistics-title': true, active: (currentDate > signforTime) && orderDeatil.ShippingStatus != 0}">签收</p>
+                                <!-- <p class="logistics-time" v-if="currentDate === signforTime">{{signforTime | ToSplit}}</p> -->
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -36,14 +76,18 @@
                         :data="tableData">
                         <el-table-column
                             label="商品信息"
-                            width="321px">
+                            width="450">
                             <template slot-scope="scope">
                                 <div class="orderInfo-thumb">
-                                    <img :src="$store.state.port.imgBaseUrl+scope.row.thumb" alt="">
+                                    <div class="orderInfo-thumb-wrap">
+                                        <div class="thumbnail" v-if="scope.row.filepath.indexOf('.png') > -1" :style="{'background-image': `url(${$store.state.port.imgBaseUrl + scope.row.filepath})`}"></div>
+                                        <div class="thumbnail" v-else :style="{'background-image': `url(${scope.row.thumb.indexOf('aliyin') > -1 ? scope.row.thumb : $store.state.port.imgBaseUrl+scope.row.thumb})`}"></div>
+                                    </div>
                                     <div class="orderInfo-tip">
                                         <p>名称: <span>{{scope.row.name}}</span></p>
                                         <p>规格: <span>{{scope.row.spec}}</span></p>
-                                        <p>工艺: <span>{{scope.row.crafts}}</span></p>
+                                        <p v-if="scope.row.crafts">工艺: <span>{{scope.row.crafts}}</span></p>
+                                        <p v-if="scope.row.size">尺寸: <span>{{scope.row.size}}</span></p>
                                     </div>
                                 </div>
                             </template>
@@ -51,17 +95,25 @@
                         <el-table-column
                             label="文件信息">
                             <template slot-scope="scope">
-                                <div v-if="scope.row.file == ''" class="upload-file">
-                                    <img :src="$store.state.port.staticPath + '/img/print/xqy_scwj_icon.png'" alt="">
-                                    <span>上传文件</span>
+                                <div class="order-file" v-if="scope.row.tempname">
+                                    <span style="cursor: pointer;" title="点击可下载模板文件" @click="handleDown(scope.row)">{{scope.row.tempname}}</span>
                                 </div>
-                                <span v-else>自助设计</span>
+                                <div class="order-file" v-if="!scope.row.tempname">
+                                    <div v-if="scope.row.fileName == ''" class="upload-file" @click="handleUpload(scope.row)">
+                                        <!-- <img src="/img/print/xqy_scwj_icon.png" alt="">
+                                        <span>上传文件</span> -->
+                                    </div>
+                                    <span class="download-name" v-else @click="handleDownload(scope.row)" title="点击可下载文件">
+                                        {{scope.row.fileName}}
+                                        <!-- <img src="/img/print/xqy_refresh_icon.png" alt="" title="重新上传文件" @click.stop="handleUpload(scope.row)"> -->
+                                    </span>
+                                </div>
                             </template>
                         </el-table-column>
-                        <el-table-column
+                        <!-- <el-table-column
                             prop="unitPrice"
                             label="单位(元)">
-                        </el-table-column>
+                        </el-table-column> -->
                         <el-table-column
                             prop="quantity"
                             label="数量">
@@ -69,7 +121,7 @@
                         <el-table-column
                             label="小计(元)">
                             <template slot-scope="scope">
-                                <span style="color: rgba(255,1,1,1)">{{scope.row.total}}</span>
+                                <span style="color: rgba(255,1,1,1)">￥{{scope.row.total}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column
@@ -77,11 +129,15 @@
                             label="状态">
                             <template slot-scope="scope">
                                 <span v-if="scope.row.state == 0">等待印刷</span>
+                                <span v-else-if="scope.row.state == 1">印刷中</span>
                                 <span v-else>印刷完成</span>
                             </template>
                         </el-table-column>
                     </el-table>
                 </div>
+                <el-dialog title="上传文件" :visible.sync="$store.state.dialogUpload" :close-on-click-modal="false" :lock-scroll="false">
+                    <UploadFile @setCartFile="setCartFile"></UploadFile>
+                </el-dialog>
                 <!-- 分割线 -->
                 <div class="line"></div>
                 <!-- 收货信息 -->
@@ -89,7 +145,7 @@
                     <p class="receiving-title">收货信息</p>
                     <div class="receiving-info">
                         <p>收货姓名: <span>{{orderDeatil.ShipName}}</span></p>
-                        <p>收货电话: <span>{{orderDeatil.ShipCellPhone}}</span></p>
+                        <p>收货电话: <span>{{orderDeatil.ShipCellPhone && orderDeatil.ShipCellPhone.toString().replace(/^(\d{3})\d{4}(\d{4})$/, '$1****$2')}}</span></p>
                         <p>收货地址: <span>{{orderDeatil.ShipRegion}} {{orderDeatil.ShipAddress}}</span></p>
                     </div>
                 </div>
@@ -103,11 +159,11 @@
                 <!-- 分割线 -->
                 <div class="line"></div>
                 <!-- 发票信息 -->
-                <div class="invoice">
+                <div class="invoice" v-if="orderDeatil.InvoiceState == '1'">
                     <p class="invoice-title">发票信息</p>
                     <div class="invoice-info">
                         <p>
-                            <span>发票类型: {{orderDeatil.MakeType == '0' ? '纸质发票' : '电子发票'}}</span>
+                            <span>发票类型: <span v-if="orderDeatil.MakeType == '0'">纸质发票</span><span v-if="orderDeatil.MakeType == '1'">电子发票</span></span>
                             <span class="invoice-btn">查看发票</span>
                         </p>
                         <p>发票内容: <span>{{orderDeatil.InvoiceInfo}}</span></p>
@@ -115,21 +171,24 @@
                         <p>纳税识别号: <span>{{orderDeatil.RegisterNo}}</span></p>
                     </div>
                 </div>
+                <div v-else style="padding: 30px;">
+                    没有发票信息<span style="color: rgba(0,131,233,1)">去开票</span>
+                </div>
                 <!-- 分割线 -->
                 <div class="line"></div>
                 <div class="pay-price">
                     <div class="pay-price-info">
                         <p>
                             <span>商品总价:</span>
-                            <span class="price">{{orderDeatil.OrderTotal && orderDeatil.OrderTotal.toFixed(2)}}元</span>
+                            <span class="price">{{orderDeatil.ProductTotal && orderDeatil.ProductTotal.toFixed(2)}}元</span>
                         </p>
                         <p>
                             <span>运费:</span>
-                            <span class="price">+{{0 && orderDeatil.Freight.toFixed(2)}}元</span>
+                            <span class="price">+{{orderDeatil.FreightActual && orderDeatil.FreightActual.toFixed(2) || 0}}元</span>
                         </p>
                         <p>
                             <span>优惠券:</span>
-                            <span class="price">-{{orderDeatil.CouponAmount && orderDeatil.CouponAmount.toFixed(2)}}元</span>
+                            <span class="price">-{{orderDeatil.CouponAmount && orderDeatil.CouponAmount.toFixed(2) || 0}}元</span>
                         </p>
                         <p>
                             <span>活动优惠:</span>
@@ -148,60 +207,18 @@
 </template>
 
 <script>
+import svgToPng from 'save-svg-as-png'
+import UploadFile from '@/components/share/UploadFile.vue'
 export default {
     data() {
         return {
-            logisticsList: [{
-                id: '1',
-                image: '/img/personal/logistics/xd_icon.png',
-                src: '/img/personal/logistics/xd_icon_hl.png',
-                title: '下单',
-                time: '2019-03-23 12:00',
-                stepImg: '/img/personal/logistics/arrow_icon.png',
-                stepSrc: '/img/personal/logistics/arrow_icon_hl.png'
-            },{
-                id: '2',
-                image: '/img/personal/logistics/fk_icon.png',
-                src: '/img/personal/logistics/fk_icon_hl.png',
-                title: '付款',
-                time: '2019-03-23 12:00',
-                stepImg: '/img/personal/logistics/arrow_icon.png',
-                stepSrc: '/img/personal/logistics/arrow_icon_hl.png'
-            },{
-                id: '3',
-                image: '/img/personal/logistics/sh_icon.png',
-                src: '/img/personal/logistics/sh_icon_hl.png',
-                title: '审核',
-                time: '2019-03-23 12:00',
-                stepImg: '/img/personal/logistics/arrow_icon.png',
-                stepSrc: '/img/personal/logistics/arrow_icon_hl.png'
-            },{
-                id: '4',
-                image: '/img/personal/logistics/sc_icon.png',
-                src: '/img/personal/logistics/sc_icon_hl.png',
-                title: '生产',
-                time: '2019-03-23 12:00',
-                stepImg: '/img/personal/logistics/arrow_icon.png',
-                stepSrc: '/img/personal/logistics/arrow_icon_hl.png'
-            },{
-                id: '5',
-                image: '/img/personal/logistics/fh_icon.png',
-                src: '/img/personal/logistics/fh_icon_hl.png',
-                title: '发货',
-                time: '2019-03-23 12:00',
-                stepImg: '/img/personal/logistics/arrow_icon.png',
-                stepSrc: '/img/personal/logistics/arrow_icon_hl.png'
-            },{
-                id: '6',
-                image: '/img/personal/logistics/qs_icon.png',
-                src: '/img/personal/logistics/qs_icon_hl.png',
-                title: '签收',
-                time: '2019-03-23 12:00',
-                stepImg: '/img/personal/logistics/arrow_icon.png',
-                stepSrc: '/img/personal/logistics/arrow_icon_hl.png'
-            }],
             tableData: [],
-            orderDeatil: {}
+            orderDeatil: {},
+            currentDate:'',
+            signforTime: '',
+            itemId: '',
+            filepath: '',
+            filename: ''
         }
     },
     props: ['id'],
@@ -209,6 +226,76 @@ export default {
         handleBack() {  // 返回订单列表页
             this.$emit('setOrder', {msg: 'PrintOrder', id: ''})
         },
+
+        handleUpload(row) {  // 上传文件弹框
+            console.log(row)
+            if(this.orderDeatil.PaymentStatus != '0') return this.$message.warning('该订单已支付无法上传文件')
+            this.itemId = row.itemId
+            this.$store.commit('setDialogUpload', true)
+        },
+        setCartFile(msg) {
+            console.log(msg)
+            this.filepath = msg.path
+            this.filename = msg.name
+            this.$nextTick(() => {
+                this.getUpload()
+            })
+        },   
+        getUpload() { // 确定上传文件
+            var formData = new FormData()
+            formData.append('ItemID', this.itemId);
+            formData.append('FilePath', this.filepath);
+            formData.append('FileName', this.filename);
+            console.log(this.itemId, this.filepath, this.filename, '参数')
+            let config = {
+                headers:{'Content-Type': 'multipart/form-data'}
+            }
+            this.$axios.post('/UploadOrderFile', formData, config).then(res => {
+                console.log(res.data)
+                if(res.data.state == 'ok'){
+                    this.$message.success(res.data.message)
+                    this.getOrderDetail()
+                }else{
+                    this.$message.warning(res.data.message)
+                }
+            })
+        },
+        // 下载文件
+        handleDownload(row) {
+            var url = row.filepath.split('.')[1]
+            if(url == 'zip'){
+                window.open(this.$store.state.port.imgBaseUrl + row.filepath)
+            }
+
+            var canvas = document.createElement('canvas');
+            var img = new Image();
+            img.crossOrigin = 'anonymous';
+            img.onerror = function () {
+                return 
+            };
+            img.onload = function () {
+                canvas.width = img.width;
+                canvas.height = img.height;
+                canvas.getContext('2d').drawImage(img, 0, 0);
+                
+                svgToPng.download(row.fileName, canvas.toDataURL('image/png'))
+            };
+            img.src = this.$store.state.port.imgBaseUrl + row.filepath;
+        },
+        // 下载pdf文件
+        handleDown(row) {
+            console.log(row)
+            if(row.filepath == '') return this.$message.warning('文件正在生成中，请稍后刷新页面再试')
+            this.$axios.get(this.$store.state.port.imgBaseUrl + row.filepath, {responseType: 'blob'})
+            .then(({data}) => {
+                var a = document.createElement('a')
+                a.download = '订单号: ' + this.orderDeatil.OrderCode + ' ' + '子订单号: ' + row.orderId + ' ' + '产品名称: ' + row.typename + ' ' + '报价单名称: ' + row.name + ' ' + '尺寸: ' + row.size + ' ' + '价格: ' + row.total + ' ' + '数量: ' + row.quantity + ' ' + '发货地区: ' + this.orderDeatil.ShipRegion + ' ' + '地址: ' + this.orderDeatil.ShipAddress + ' ' + '收货人: ' + this.orderDeatil.ShipName + ' ' + '电话: ' + this.orderDeatil.ShipCellPhone + ' ' + '模板名称: ' + row.tempname + '.pdf'
+                a.href = URL.createObjectURL(data)
+                a.click()
+                a = null
+            })
+        },
+ 
 
         // 获取单个订单详情
         getOrderDetail() {
@@ -224,21 +311,82 @@ export default {
                     obj.name = data[i].Name
                     obj.spec = data[i].AttributeNames
                     obj.crafts = data[i].CraftNames
-                    obj.unitPrice = data[i].Amount
+                    // obj.unitPrice = data[i].Amount
                     obj.quantity = data[i].Quantity + data[i].Unit
                     obj.total = data[i].Amount
-                    obj.state = data[i].PrintStatus
+                    obj.state = data[i].ItemStatus
+                    obj.fileName = data[i].FileName
+                    obj.filepath = data[i].FilePath
+                    obj.itemId = data[i].ItemId
+                    obj.size = data[i].SizeName
+                    obj.tempname = data[i].DocumentName
+                    obj.orderId = data[i].OrderId
+                    obj.typename = data[i].TypeName
                     list[i] = obj
                 }
                 this.tableData = list
+
+                this.setcurrentDate()
+                this.setSignforDate()
             })
         },
-        handleToPay() {
-            this.$router.push('/cashier')
+        handleToPay() { // 去付款
+            let code = this.orderDeatil.OrderCode
+            this.$router.push({path: '/cashier', query: {code}})
+        },
+
+        setcurrentDate() {  // 获取当前日期
+            var date = new Date()
+            var nowHours = date.getHours();
+            var nowMin = date.getMinutes();
+            var nowSeconds = date.getSeconds();
+            function p(str) {
+                if(str.length<=1){
+                    str='0'+str;
+                }
+                return str
+            }
+            nowHours = p(nowHours)
+            nowMin = p(nowMin)
+            nowSeconds = p(nowSeconds)
+            this.currentDate = date.getFullYear() + '-' + (date.getMonth()+1) + '-' + date.getDate() + ' ' + nowHours + ':' + nowMin + ':' + nowSeconds
+            console.log(this.currentDate)
+        },
+        setSignforDate() {  // 获取签收日期
+            var date = new Date(this.orderDeatil.CreatedDate)
+            var newDate = new Date(date.getFullYear(),date.getMonth(),date.getDate()+15)
+            var year = newDate.getFullYear();
+            var month = newDate.getMonth()+1;
+            var day = newDate.getDate();
+            var hours = newDate.getHours();
+            var min = newDate.getMinutes();
+            var seconds = newDate.getSeconds();
+            function p(str) {
+                if(str.length<=1){
+                    str='0'+str;
+                }
+                return str
+            }
+            hours = p(hours)
+            min = p(min)
+            seconds = p(seconds)
+            newDate = year + '-' + month + '-' + day + ' ' + hours + ':' + min + ':' + seconds
+            this.signforTime = newDate
+            console.log(this.signforTime)
+        }
+    },
+    filters: {
+        ToSplit(time) {
+            if(!time) return
+            time = time.split('T').join(' ')
+            return time
         }
     },
     mounted() {
         this.getOrderDetail()
+    },
+    components: {
+        UploadFile
     }
 }
 </script>
@@ -250,6 +398,35 @@ export default {
     padding: 45px 63px;
     user-select: none;
 }
+.order-detail .el-dialog{
+    width: 630px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: none;
+    .el-dialog__header{
+        padding: 20px 25px 0;
+        line-height: 21px;
+        font-size:23px;
+        font-family:MicrosoftYaHei-Bold;
+        font-weight:bold;
+        color:rgba(51,51,51,1);
+        position: relative;
+        .el-dialog__headerbtn{
+            position: absolute;
+            top: 17px;
+            right: -45px;
+            .el-dialog__close{
+                width: 24px;
+                height: 24px;
+                color: rgba(255,255,255,1);
+            }
+        }
+    }
+    .el-dialog__body{
+        padding: 28px 36px;
+    }
+}
+
 .order-detail{
     min-width: 1200px;
     margin: 0 auto;
@@ -325,6 +502,9 @@ export default {
                         font-size: 16px;
                         margin: 10px 0 5px;
                     }
+                    .active{
+                        color: rgba(51,51,51,1);
+                    }
                     .logistics-time{
                         font-size: 14px;
                     }
@@ -350,6 +530,13 @@ export default {
             .inventory-title{
                 font-size:18px;
                 margin-bottom: 14px;
+            }
+            .el-table .download-name{
+                cursor: pointer;
+                img{
+                    display: inline-block;
+                    vertical-align: middle;
+                }
             }
         }
         .receiving{
@@ -448,19 +635,30 @@ export default {
 }
 .orderInfo-thumb{
     display: flex;
-    img{
+    .orderInfo-thumb-wrap{
         display: inline-block;
-        width: 90px;
-        height: 90px;
+        width:90px;
+        height:90px;
+        background:rgba(213,221,227,1);
+        border-radius:5px;
         margin-right: 25px;
+        text-align: center;
+        .thumbnail{
+            display: inline-block;
+            width: 80%;
+            height: 100%;
+            background-size: contain;
+            background-position: 50%;
+            background-repeat: no-repeat;
+        }
     }
     .orderInfo-tip{
         text-align: left;
-        line-height: 30px;
+        line-height: 23px;
     }
 }
 .upload-file{
-    border:1px solid rgba(254,108,35,1);
+    // border:1px solid rgba(254,108,35,1);
     border-radius:5px;
     text-align: center;
     width: 118px;
@@ -468,7 +666,7 @@ export default {
     line-height: 43px;
     margin-top: 23px;
     margin: 0 auto;
-    cursor: pointer;
+    // cursor: pointer;
     img{
         display: inline-block;
         vertical-align: middle;
