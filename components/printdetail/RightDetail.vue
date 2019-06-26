@@ -217,7 +217,6 @@
 </template>
 
 <script>
-import Cookies from 'js-cookie'
 import HomePagination from '@/components/home/HomePagination.vue'
 import UploadFile from '@/components/share/UploadFile.vue'
 export default {
@@ -607,8 +606,7 @@ export default {
         // 添加到购物车
         handleToCar(type) {
             if(!localStorage['token']) {
-                this.$message({type: 'warning', message: '请先登录'})
-                this.$store.commit('setDialogType', 'login')
+                this.$store.commit('login/toggleShow', true)
                 return 
             }
             if(type) {
@@ -620,7 +618,7 @@ export default {
                         lockScroll: false
                     }).then(() => {
                         this.$store.commit('addShopingCar', this.printprice)
-                        this.$router.push({path: 'submitorder', query: {t: 'order'}})
+                        this.$router.push({path: 'order/submitOrder', query: {t: 'order'}})
                     }).catch(() => {
                         this.$message.warning('已取消选择')
                     })
@@ -628,7 +626,7 @@ export default {
                 }
                 if(this.printprice.FilePath) {
                     this.$store.commit('addShopingCar', this.printprice)
-                    this.$router.push({path: 'submitorder', query: {t: 'order'}})
+                    this.$router.push({path: 'order/submitOrder', query: {t: 'order'}})
                 }
                 if(this.tempNum) {
                     var formData = new FormData()
@@ -638,7 +636,7 @@ export default {
                         if(data.state == 'ok') {
                             this.printprice.DocumentNum = data.msg
                             this.$store.commit('addShopingCar', this.printprice)
-                            this.$router.push({path: 'submitorder', query: {t: 'order'}})
+                            this.$router.push({path: 'order/submitOrder', query: {t: 'order'}})
                         }else{
                             this.$message.warning(data.msg)
                         }

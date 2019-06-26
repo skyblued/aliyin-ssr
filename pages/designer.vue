@@ -52,12 +52,6 @@
 
 <script>
 import Header from '@/components/designer/Header.vue'
-// import desCreate from '@/components/designer/create/Create.vue'
-// import myTemplate from '@/components/designer/mytemplate/MyTemplate.vue'
-// import myMaterial from '@/components/designer/mymaterial/MyMaterial.vue'
-// import earnings from '@/components/designer/myearnings/Earnings.vue'
-// import withdrawRecord from '@/components/designer/withdraw/WithdrawRecord.vue'
-// import MasterTemp from '@/components/designer/MasterTemp.vue'
 export default {
     data () {
         return {
@@ -93,28 +87,11 @@ export default {
     },
     components: {
         Header,
-        // desCreate,
-        // myTemplate,
-        // myMaterial,
-        // earnings,
-        // withdrawRecord,
-        // MasterTemp
     }
 }
 </script>
 
 <style lang="scss" scoped>
-// .designer /deep/ .el-header{
-//     padding: 0;
-// }
-// .designer /deep/ .el-main{
-//     width: 100%;
-//     overflow-y: auto;
-// }
-// .designer{
-//     padding: 0;
-// }
-
 .designer{
     height: 100%;
     user-select: none;
