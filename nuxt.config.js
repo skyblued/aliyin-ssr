@@ -36,6 +36,7 @@ module.exports = {
 		'@/plugins/element-ui',
 		'@/plugins/axios',
 		'@/plugins/ctx-inject',
+		'~/plugins/vue-inject.js',
 		{src: '@/plugins/needWindow', ssr: false}
 	],
 	/*

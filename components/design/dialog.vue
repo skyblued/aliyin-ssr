@@ -409,6 +409,8 @@ export default {
 					// console.log(this.printprice, '添加参数')
 					new Promise((resolve,reject) => {
 						this.$store.commit('addShopingCar', this.printprice)
+						let cook = this.$myParseCookie(this.$store.state.productionObj)
+						this.$cookies.set('myCar', cook, {path: '/'}) 
 						resolve(true)
 						}).then(res => {
 						if (res) {
