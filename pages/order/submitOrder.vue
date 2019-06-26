@@ -106,7 +106,7 @@
                     </el-table-column>
                 </el-table>
             </div>
-            <el-dialog title="上传文件" :visible.sync="$store.state.dialogUpload" :close-on-click-modal="false" :lock-scroll="false">
+            <el-dialog title="上传文件" :visible.sync="$store.state.port.dialogUpload" :close-on-click-modal="false" :lock-scroll="false">
                 <UploadFile @setCartFile="getCartFile"></UploadFile>
             </el-dialog>
             <p class="title">优惠券</p>
@@ -339,7 +339,7 @@ export default {
         },
 
         handleBackCart() {  // 返回购物车
-            this.$router.push('/cart')
+            this.$router.push('/order/shoppingCart')
         },
         handleToPay() {  // 立即下单
             if(this.addressList.length == 0 ){
@@ -396,13 +396,15 @@ export default {
                             })
                             this.orderParam.ShoppingCartItem = this.$store.getters.getProductionObj
                         }
+                        let cook = this.$myParseCookie(this.$store.state.productionObj)
+                        this.$cookies.set('myCar', cook, {path: '/'}) 
                         this.ordercode = res.data.data.OrderCode
                         var formData = new FormData()
                         formData.append('ordercode', res.data.data.OrderCode);
                         this.$axios.put('/SubmitOrder',formData,config).then(res => {
                             
                         })
-                        this.$router.push({path: '/cashier', query: {code: this.ordercode}})
+                        this.$router.push({path: '/order/cashier', query: {code: this.ordercode}})
                     }
                 }).catch((error) => {
                     if(error) {
@@ -466,6 +468,8 @@ export default {
             car.FileName = msg.name
             car.FilePath = msg.path
             this.$store.commit('setShopingCar', {i: this.index, shop: car})
+            let cook = this.$myParseCookie(this.$store.state.productionObj)
+            this.$cookies.set('myCar', cook, {path: '/'}) 
             this.tableData[this.index].fileName = msg.name
         },
 
@@ -738,6 +742,76 @@ export default {
         }
     }
 }
+/*地址样式*/
+.address-list{
+    display: flex;
+    .full-name{
+        font-size: 18px;
+        color: rgba(51,51,51,1);
+        margin-bottom: 10px;
+    }
+    .item-address{
+        line-height: 20px;
+        span{
+            display: block;
+        }
+    } 
+}
+.rise-item{
+    border:1px solid rgba(229,229,229,1);
+    border-radius:5px;
+    height: 128px;
+    min-width: 240px;
+    line-height: 25px;
+    text-align: left;
+    padding: 16px 20px 0 20px;
+    margin-right: 35px;
+    margin-bottom: 15px;
+    cursor: pointer;
+    position: relative;
+    font-size: 14px;
+    &:hover{
+        border: 1px solid $color;
+    }
+    .modify{
+        position: absolute;
+        top: 11px;
+        right: 15px;
+        background-image: url(/img/personal/Modify_icon.png);
+        width: 20px;
+        height: 20px;
+        display: none;
+    }
+    .delete-icon{
+        position: absolute;
+        top: 11px;
+        right: 35px;
+        background-image: url(/img/desicon/delete_small_blue_icon.png);
+        width: 20px;
+        height: 20px;
+        display: none;
+    }
+    &:hover .modify, &:hover .delete-icon{
+        display: block; 
+    }
+}
+.rise-add-item{
+    border:1px solid rgba(229,229,229,1);
+    border-radius:5px;
+    height: 128px;
+    width: 240px;
+    text-align: center;
+    padding-top: 30px;
+    cursor: pointer;
+    &:hover{
+        border:1px solid $color;
+    }
+    img{
+        margin: 0 auto 13px;
+        display: block;
+    }
+}
+
 
 .submit-content /deep/ .el-dialog{
     width: 630px;

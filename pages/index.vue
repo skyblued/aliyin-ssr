@@ -9,6 +9,7 @@
 		<Steps :bannerList="bannerList"></Steps>
 		<TempCommend :label="label"></TempCommend>
 		<Senior></Senior>
+		<ToolsBar></ToolsBar>
 		<Footer :qrcode="qrcode" :articleList="articleList"></Footer>
 	</div>
 </template>
@@ -22,6 +23,7 @@ import Steps from '@/components/home/Steps'
 import TempCommend from '@/components/home/TempCommend'
 import Senior from '@/components/home/Senior'
 import Footer from '@/components/Footer'
+import ToolsBar from '@/components/ToolsBar'
 export default {
 	name: 'home',
 	components: {
@@ -32,7 +34,8 @@ export default {
 		Steps,
 		TempCommend,
 		Senior,
-		Footer
+		Footer,
+		ToolsBar
 	},
 	async asyncData({app, $axios, route, store, query, req, redirect, error}) {
 		

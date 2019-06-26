@@ -21,7 +21,11 @@ export const mutations = {
 	},
 	
 }
-
+export const getters = {
+	getProductionObj: state => { // 获取购物车列表
+		return state.productionObj
+	}
+}
 
 function getCar(str) { // 获取购物车
 	if (!str) return [];

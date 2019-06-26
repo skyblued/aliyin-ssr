@@ -3,6 +3,7 @@
 		<HeaderTop></HeaderTop>
 		<Header id="header" :isFixed="isFixed" :barList="barList" :class="{fixed : isFixed}"></Header>
 		<nuxt-child></nuxt-child>
+		<ToolsBar></ToolsBar>
 		<Footer :qrcode="qrcode" :articleList="articleList"></Footer>
     </div>
 </template>
@@ -11,14 +12,15 @@
 import HeaderTop from '@/components/HeaderTop'
 import Header from '@/components/home/Header'
 import Footer from '@/components/Footer'
+import ToolsBar from '@/components/ToolsBar'
 export default {
     name: 'templatecenter',
     components: {
 		HeaderTop,
 		Header,
-		Footer
-	},
-	
+		Footer,
+		ToolsBar
+    },
     async asyncData({$axios, isDev,route, store, env, params, query, req, res, redirect, error}) {
 		let [AllTemplate, FooterCode, FooterArticle] = await Promise.all([
 			$axios.get(store.state.port.AllTemplate),

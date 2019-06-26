@@ -3,6 +3,7 @@
 		<HeaderTop></HeaderTop>
 		<Header></Header>
 		<nuxt-child></nuxt-child>
+		<ToolsBar></ToolsBar>
 		<Footer :qrcode="qrcode" :articleList="articleList"></Footer>
     </div>
 </template>
@@ -11,12 +12,14 @@
 import HeaderTop from '@/components/HeaderTop'
 import Header from '@/components/home/Header'
 import Footer from '@/components/Footer'
+import ToolsBar from '@/components/ToolsBar'
 export default {
     name: 'print',
     components: {
 		HeaderTop,
 		Header,
-		Footer
+		Footer,
+		ToolsBar
     },
     async asyncData({$axios, isDev,route, store, env, params, query, req, res, redirect, error}) {
 		let [FooterCode, FooterArticle] = await Promise.all([

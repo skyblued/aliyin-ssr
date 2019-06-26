@@ -618,7 +618,9 @@ export default {
                         lockScroll: false
                     }).then(() => {
                         this.$store.commit('addShopingCar', this.printprice)
-                        this.$router.push({path: 'order/submitOrder', query: {t: 'order'}})
+                        let cook = this.$myParseCookie(this.$store.state.productionObj)
+                        this.$cookies.set('myCar', cook, {path: '/'}) 
+                        this.$router.push({path: '/order/submitOrder', query: {t: 'order'}})
                     }).catch(() => {
                         this.$message.warning('已取消选择')
                     })
@@ -626,7 +628,9 @@ export default {
                 }
                 if(this.printprice.FilePath) {
                     this.$store.commit('addShopingCar', this.printprice)
-                    this.$router.push({path: 'order/submitOrder', query: {t: 'order'}})
+                    let cook = this.$myParseCookie(this.$store.state.productionObj)
+                    this.$cookies.set('myCar', cook, {path: '/'}) 
+                    this.$router.push({path: '/order/submitOrder', query: {t: 'order'}})
                 }
                 if(this.tempNum) {
                     var formData = new FormData()
@@ -636,7 +640,9 @@ export default {
                         if(data.state == 'ok') {
                             this.printprice.DocumentNum = data.msg
                             this.$store.commit('addShopingCar', this.printprice)
-                            this.$router.push({path: 'order/submitOrder', query: {t: 'order'}})
+                            let cook = this.$myParseCookie(this.$store.state.productionObj)
+                            this.$cookies.set('myCar', cook, {path: '/'}) 
+                            this.$router.push({path: '/order/submitOrder', query: {t: 'order'}})
                         }else{
                             this.$message.warning(data.msg)
                         }
@@ -644,13 +650,15 @@ export default {
                 }
             }else{
                 this.$store.commit('addShopingCar', this.printprice)
+                let cook = this.$myParseCookie(this.$store.state.productionObj)
+                this.$cookies.set('myCar', cook, {path: '/'}) 
                 this.$confirm('加入购物车成功, 是否去提交订单?', '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
                     type: 'success',
                     lockScroll: false
                 }).then(() => {
-                    this.$router.push('/cart')
+                    this.$router.push('/order/shoppingCart')
                 }).catch(() => {
                     this.$message.warning('已取消选择')
                 })

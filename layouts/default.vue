@@ -7,7 +7,6 @@
 	<transition name="animation-scale">
 		<Login v-if="$store.state.login.loginShow"></Login>
 	</transition>
-	
   </div>
 </template>
 <script>
@@ -17,11 +16,11 @@ export default {
 	components: {
 		Login,
 		
-	}
+  },
 }
 </script>
 
-<style>
+<style lang="scss">
 html {
   /* font-family: 'Source Sans Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI',
     Roboto, 'Helvetica Neue', Arial, sans-serif; */
@@ -71,4 +70,5 @@ html {
   color: #fff;
   background-color: #35495e;
 }
+
 </style>
