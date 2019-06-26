@@ -9,7 +9,8 @@ module.exports = {
 		meta: [
 			{ charset: 'utf-8' },
 			{ name: 'viewport', content: 'width=device-width, initial-scale=1' },
-			{ hid: 'description', name: 'description', content: process.env.npm_package_description || '' }
+			{ hid: 'keywords', name: 'keywords', content: '在线设计工具，在线名片设计工具软件，免费名片模板，广告扇定做，在线印刷报价' },
+			{ hid: 'description', name: 'description', content: '阿里印,海量精美正版模板免费使用，5G云端设计工具免费在线作图,全国联盟工厂就近生产制作，全国任何地方都可接单生产送货，厂价直销，价格一降到底，全国客服热线：4000-975-123。' },
 		],
 		link: [
 			{ rel: 'icon', type: 'image/x-icon', href: '//static.aliyin.com/favicon.ico' },

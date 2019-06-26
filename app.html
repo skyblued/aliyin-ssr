@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html {{ HTML_ATTRS }} lang="en">
+  <head {{ HEAD_ATTRS }}>
+	  {{ HEAD }}
+	  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	  <style>
+	  
+			.compatible-wrap {
+			  width: 640px;
+			  height: 370px;
+			  background-color: #fff;
+			  padding: 58px;
+			  display: flex;
+			}
+		
+		
+			.compatible-wrap__title {
+			  color: #6B6B6B;
+			  font-size: 18px;
+			  margin-left: 20px;
+			  line-height: 1.6;
+			}
+		
+			.compatible-wrap__p {
+			  color: #6B6B6B;
+			  font-size: 14px;
+			  margin-left: 20px;
+			  margin-top: 24px;
+			}
+		
+			.compatible-wrap__button {
+			  width: 174px;
+			  height: 40px;
+			  margin-left: 20px;
+			  background: linear-gradient(112deg,rgba(23,182,255,1) 0%,rgba(96,148,233,1) 40%,rgba(156,54,255,1) 150%); 
+			  line-height: 40px;
+			  border-radius: 3px;
+			  color: #fff;
+			  margin-top: 40px;
+			  outline: none;
+			  border: none;
+			  display: inline-block;
+			  text-align: center;
+			}
+		
+			.compatible-wrap__button:hover{
+			  opacity: 0.6;
+			  cursor: pointer;
+			  color: #fff;
+			}
+		
+			#compatible-wrap {
+			  width: 100%;
+			  height: 100%;
+			  position: fixed;
+			  z-index: 9999999;
+			  top: 0px;
+			  left: 0px;
+			}
+		
+			.compatible-wrap__mask {
+			  width: 100%;
+			  height: 100%;
+			  background-color: rgba(0, 0, 0, 0.7)
+			}
+		
+			.compatible-wrap__wrap {
+			  width: 640px;
+			  height: 370px;
+			  top: 50%;
+			  left: 50%;
+			  position: absolute;
+			  transform: translate(-50%, -50%);
+			}
+		  
+		  </style>
+  </head>
+  <body {{ BODY_ATTRS }}>
+	  {{ APP }}
+	<div id="compatible-wrap" style="display: none">
+		<div class="compatible-wrap__mask"></div>
+		<div class="compatible-wrap__wrap">
+			<div class="compatible-wrap">
+				<div class="compatible-wrap__content">
+					<div class="compatible-wrap__title">
+						呃......很抱歉，检测到您当前浏览器兼容性较差<br>
+						为了保证您有更高品质的使用体验
+					</div>
+					<div class="compatible-wrap__p">若当前为360浏览器，请切换至<a>极速模式</a></div>
+					<div class="compatible-wrap__p">若当前为IE浏览器，请安装最新版的谷歌浏览器 ，体验更流畅</div>
+					<a href="https://dl.softmgr.qq.com/original/Browser/chrome_x32_v74.0.3729.131_installer.exe"
+						id="compatible-wrap__button" class="compatible-wrap__button">升级谷歌浏览器</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script>
+		// 浏览器低版本ie判断
+		(function () {
+		if(navigator.userAgent.toLowerCase().indexOf('msie') != -1) {
+			document.getElementById('compatible-wrap').setAttribute('style', 'display:block')
+		}
+		if (!!window.ActiveXObject || "ActiveXObject" in window){ 
+			document.getElementById('compatible-wrap').setAttribute('style', 'display:block')
+		} 
+		})();
+	</script>
+	<!-- built files will be auto injected -->
+	<script>
+		var  _hmt  =  _hmt  ||  [];
+		(function()  {
+			var  hm  =  document.createElement("script");
+			hm.src  =  "https://hm.baidu.com/hm.js?75f931ea85e3282d0ab132cab256ed1f";
+			var  s  =  document.getElementsByTagName("script")[0];  
+			s.parentNode.insertBefore(hm,  s);
+		})();
+	</script>
+  </body>
+</html>
