@@ -48,7 +48,7 @@
                     </el-form-item>
                 </el-form>
             </div>
-
+            <div class="close-btn" style="top: 0px;right: -50px;" @click="handleCancel"></div>
             <div slot="footer" class="dialog-footer">
                 <div class="sure-btn" @click="handleAddInvoice">确定添加</div>
                 <div class="cancel-btn" @click="handleCancel">取消添加</div>

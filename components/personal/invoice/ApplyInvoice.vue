@@ -104,7 +104,7 @@
                                 <span>添加新发票抬头</span>
                             </div>
                         </div>
-                        <el-dialog title="添加发票抬头" :visible.sync="$store.state.dialogAddInvoice" :close-on-click-modal="false" :lock-scroll="false">
+                        <el-dialog title="添加发票抬头" :visible.sync="$store.state.login.dialogAddInvoice" :close-on-click-modal="false" :lock-scroll="false">
                             <AddInvoice @getInvoice="getInvoice"></AddInvoice>
                         </el-dialog>
                         <el-dialog title="修改发票抬头" :visible.sync="$store.state.login.dialogModifyInvoice" :close-on-click-modal="false" :lock-scroll="false">
@@ -127,10 +127,10 @@
                             </div>
                         </div>
                     </div>
-                    <el-dialog title="添加收货地址" :visible.sync="$store.state.dialogAdd" :close-on-click-modal="false" :modal-append-to-body="false" :lock-scroll="false">
+                    <el-dialog title="添加收货地址" :visible.sync="$store.state.login.dialogAdd" :close-on-click-modal="false" :modal-append-to-body="false" :lock-scroll="false">
                         <AddToAddress @setAddress="getAddress"></AddToAddress>
                     </el-dialog>
-                    <el-dialog title="修改地址" :visible.sync="$store.state.dialogModify" :close-on-click-modal="false" :lock-scroll="false">
+                    <el-dialog title="修改地址" :visible.sync="$store.state.login.dialogModify" :close-on-click-modal="false" :lock-scroll="false">
                         <ModifyAddress :id="shipId"></ModifyAddress>
                     </el-dialog>
                     <div class="sureBtn" @click="handleOpenInvoice">确认提交开票申请</div>
@@ -238,7 +238,7 @@ export default {
             } 
         },
         handleAdd() {  // 添加新地址
-            this.$store.commit('setDialogAdd', true)
+            this.$store.commit('login/setDialogAdd', true)
         },
 
         handleBack() {  // 返回
@@ -357,7 +357,7 @@ export default {
         handleModifyAddress(item) {
 
             this.shipId = item.ShippingId
-            this.$store.commit('setDialogModify', true)
+            this.$store.commit('login/setDialogModify', true)
         },
 
         // 获取发票抬头
@@ -386,13 +386,13 @@ export default {
 
         // 添加发票抬头
         handleAddInvoice() {
-            this.$store.commit('setDialogAddInvoice', true)
+            this.$store.commit('login/setDialogAddInvoice', true)
         },
 
         // 修改发票抬头
         handleModifyInvoice(item) {
             this.InvoiceId = item.Id
-            this.$store.commit('setDialogModifyInvoice', true)
+            this.$store.commit('login/setDialogModifyInvoice', true)
         },
         // 删除发票抬头
         handleDelete(item,i) {
