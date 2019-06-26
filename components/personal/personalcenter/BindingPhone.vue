@@ -85,7 +85,7 @@ export default {
                 return this.$message({type: 'warning', message: '验证码不能为空'})
             } else {
                 var url = '/VerificationCode?flage='+this.flage+'&code='+this.picode;
-                this.$http.get(url).then(res => {
+                this.$axios.get(url).then(res => {
                     console.log(res.data)
                     if(res.data == true){
                         this.sendCode = false
@@ -102,7 +102,7 @@ export default {
                         let config = {
                             headers:{'Content-Type': 'multipart/form-data'}
                         }
-                        this.$http.post('/VerificationCodeMobile', formData, config)
+                        this.$axios.post('/VerificationCodeMobile', formData, config)
                         .then(res => {
                             console.log(res)
                             if (res.data == 'Success') {
@@ -129,7 +129,7 @@ export default {
             let config = {
                 headers:{'Content-Type': 'multipart/form-data'}
             }
-            this.$http.post('/UserBindPhone', formData, config).then(res => {
+            this.$axios.post('/UserBindPhone', formData, config).then(res => {
                 console.log(res.data)
                 if(res.data == true) {
                     sessionStorage.setItem('phone', this.phone)

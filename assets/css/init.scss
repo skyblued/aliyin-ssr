@@ -1,4 +1,4 @@
-
+$color: #745bff; // 主题色rgba(0, 131, 233, 1)
 
 *{
 	box-sizing: border-box;
@@ -244,4 +244,15 @@
             color: rgba(255,255,255,1);
         }
     }
+}
+
+
+/* 设计师申请弹框 */
+.header-top .el-dialog  {
+	border-radius: 10px;
+	.el-dialog__header,
+	.el-dialog__body {
+		padding: 0;
+	}
+	.el-dialog__header {display: none;}
 }

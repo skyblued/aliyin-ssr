@@ -57,7 +57,7 @@ export default {
             let config = {
                 headers:{'Content-Type': 'multipart/form-data'}
             }
-            this.$http.post(url,formData,config).then(res => {
+            this.$axios.post(url,formData,config).then(res => {
                 // console.log(res.data)
                 if(res.data.state == 'Success') {
                     this.$message({type: 'success', message: res.data.message})

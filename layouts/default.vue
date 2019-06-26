@@ -7,13 +7,16 @@
 	<transition name="animation-scale">
 		<Login v-if="$store.state.login.loginShow"></Login>
 	</transition>
+	
   </div>
 </template>
 <script>
 import Login from '@/components/Login'
+
 export default {
 	components: {
-		Login
+		Login,
+		
 	}
 }
 </script>

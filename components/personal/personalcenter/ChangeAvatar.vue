@@ -78,7 +78,7 @@ export default {
             let config = {
                 headers:{'Content-Type': 'multipart/form-data'}
             }
-            this.$http.post('/ChangeHeadPic', formData, config).then(res => {
+            this.$axios.post('/ChangeHeadPic', formData, config).then(res => {
                 console.log(res.data)
                 if(res.data.state == 'ok') {
                     localStorage.setItem('avatar', res.data.path);

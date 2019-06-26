@@ -21,12 +21,22 @@
                 <span class="item" @click="loginOut">注销</span>
             </div>
         </div>
+		<!-- 设计师申请弹框 -->
+		<el-dialog  :visible.sync="dialogApply" top="7vh">
+			<ApplyDesigner :state="state"></ApplyDesigner>
+			<div class="close-btn" style="right: -55px;top: 8px;" @click="dialogApply = false"></div>
+		</el-dialog>
     </div>
 </template>
 
 <script>
+import ApplyDesigner from '@/components/ApplyDesigner'
 export default {
-    name: 'header-top',
+	name: 'header-top',
+	components: {
+        ApplyDesigner,
+        // CreateTeam
+    },
     data() {
         return {
             form: {
@@ -34,7 +44,8 @@ export default {
             },
             isDesigner: '',
             options: [],
-            teamName: '',
+			teamName: '',
+			dialogApply: false, // 设计师申请弹框
             // dialogVisible: false,
             dialogVisibleImg: false,
             dialogImageUrl: '',
@@ -51,24 +62,25 @@ export default {
             // this.$router.push('/personal/create')
         },
         handleToDesigner() {
-            if(this.$store.state.isLogin){
+            if(this.$store.state.login.isLogin){
                 this.$axios.get('/ApplyDesigner').then(res => {
-                    // console.log(res.data)
+                    console.log(res.data)
                     if(res.data.code == '1'){
                         this.$router.push('/designcenter')
                         localStorage.setItem('isDesigner', '1')
-                    }else if(res.data.state == 'withoutapply'){
+                    }else if(res.data.code == '0'){
                         this.state = res.data.state
-                        this.$store.commit('setApplyDesigner', true)
+                       	this.dialogApply = true;
                     }else if(res.data.code == '-1') {
                         this.$message.warning(res.data.msg)
-                        this.$store.commit('setApplyDesigner', true)
+						this.dialogApply = true;
+						console.log(this.dialogApply)
                     }else{
                         this.$message.warning(res.data.msg)
                     }
                 })
             }else{
-                this.$store.commit('setDialogType', 'login')
+                this.$store.commit('login/toggleShow', false);
             }
         },
         // 管理员中心
@@ -117,11 +129,8 @@ export default {
                 "token":window.localStorage.getItem('token')
             }
         }
-    },
-    components: {
-        // ApplyDesigner,
-        // CreateTeam
     }
+    
 }
 </script>
 

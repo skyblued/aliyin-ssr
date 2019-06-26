@@ -1,41 +1,41 @@
 <template>
     <div class="apply-designer">
         <div class="apply-header">
-            <img :src="$store.state.port.staticPath + '/img/home/apply_designer.png'" alt="">
+            <img src="/img/home/apply_designer.png" alt="">
         </div>
         <div class="apply-body">
             <div class="apply-step">
                 <div class="step-line"></div>
                 <div class="steps">
                     <div class="step active">1</div>
-                    <div :class="{'step': true, 'active' : step2 == true || step3 == true}">2</div>
-                    <div :class="{'step': true, 'active' : step3 == true}">3</div>
+                    <div :class="{'step': true, 'active' : step2 == true || step3}">2</div>
+                    <div :class="{'step': true, 'active' : step3}">3</div>
                 </div>
             </div>
             <div v-if="step1">
                 <div class="apply-input">
                     <el-form :model="form" label-width="80px">
                         <el-form-item label="真实姓名: ">
-                            <el-input v-model="form.name" @blur="input" placeholder="请输入真实姓名"></el-input>
+                            <el-input v-model="form.name" @blur="input" placeholder="请输入真实姓名" @focus="nameerror = ''"></el-input>
                             <span class="error-tips">{{nameerror}}</span>
                         </el-form-item>
                         <el-form-item label="兼职意向: ">
-                            <el-select v-model="intention" placeholder="请选择" @change="handleChange" style="width: 458px;">
+                            <el-select v-model="intention" placeholder="请选择" @change="handleChange" @focus="handleFocus('intention')" style="width: 458px;">
                                 <el-option value="请选择"></el-option>
                                 <el-option :value="i" v-for="(item,i) in intentionList" :key="i" :label="item.ClassName"></el-option>
                             </el-select>
                         </el-form-item>
                         <el-form-item label="QQ号: ">
-                            <el-input v-model="form.qq" @blur="inputqq" placeholder="QQ号"></el-input>
+                            <el-input v-model="form.qq" @blur="inputqq" placeholder="QQ号" @focus="handleFocus('qq')"></el-input>
                             <span class="error-tips">{{qqerror}}</span>
                         </el-form-item>
                         <el-form-item label="联系邮箱: ">
-                            <el-input type="email" v-model="form.email" @blur="inputemail" placeholder="请正确填写，审核通过会收到邮件通知"></el-input>
+                            <el-input type="email" v-model="form.email" @blur="inputemail" @focus="handleFocus('email')" placeholder="请正确填写，审核通过会收到邮件通知"></el-input>
                             <span class="error-tips">{{emailerror}}</span>
                         </el-form-item>
                         <el-form-item label="手机号: ">
-                            <el-input v-model="phone"  placeholder="手机号"></el-input>  
-                            <span>{{error}}</span>
+                            <el-input v-model="phone" @blur="inputPhone" placeholder="手机号" @focus="handleFocus('phone')"></el-input>  
+                            <span class="error-tips">{{error}}</span>
                         </el-form-item>
                     </el-form>
                 </div>
@@ -48,12 +48,15 @@
                 <div class="pic-to-upload">
                     <div class="pic-item">
                         <el-upload
-                            action="http://v1.yinbuting.cn/api/UploadToOSS"
+                            :action="$store.state.port.netServer + '/UploadToOSS'"
                             list-type="picture-card"
                             :onSuccess="uploadSuccess"
                             :onError="uploadError"
                             :on-preview="handlePictureCardPreview"
                             :on-remove="handleRemove"
+                            :on-exceed="handleExceed"
+                            accept="image/*"
+                            :limit="3"
                             :headers="myHeader">
                             <i class="el-icon-plus"></i>
                         </el-upload>
@@ -70,9 +73,9 @@
                 <el-button class="step-btn" :disabled="disabled" :style="{background: backgroundColor}" @click="handleUpload"><span>上传</span></el-button>
             </div>
             <div v-if="step3" class="step3">
-                <img :src="$store.state.port.staticPath + '/img/home/apply_success.png'" alt="">
+                <img src="/img/home/apply_success.png" alt="">
                 <p>申请提交成功，请耐心等待3-5个工作日</p>
-                <el-button class="step-btn" :disabled="disabled" :style="{background: backgroundColor}" @click="handleToDesign">开启设计</el-button>
+                <!-- <el-button class="step-btn" :disabled="disabled" :style="{background: backgroundColor}" @click="handleToDesign">开启设计</el-button> -->
             </div>
         </div>
     </div>
@@ -89,7 +92,6 @@ export default {
                 email: '',
                 phone: ''
             },
-            //@blur="inputPhone"
             disabled: true,
             backgroundColor: 'rgba(216,216,216,1)',
             step1: true,
@@ -108,6 +110,7 @@ export default {
             skill: '',     // 兼职意向
         }
     },
+    props: ['state'],
     methods: {
         input() {
             if(!/^[\u4E00-\u9FA5A-Za-z]+$/.test(this.form.name)) {
@@ -117,13 +120,25 @@ export default {
                 this.nameerror = ''
             }
         },
+        handleFocus(msg) {
+            // if(!this.form.name) return this.$message({type:'warning', message: '请先填写姓名'})
+            if(msg == 'intention'){
+                this.getIntention()
+            }else if(msg == 'qq'){
+                this.qqerror = ''
+            }else if(msg == 'email'){
+                this.emailerror = ''
+            }else{
+                this.error = ''
+            }
+        },
         handleChange(val) {
             if(this.intention == '请选择') {
                 this.$message.error('请选择兼职意向!')
                 this.backgroundColor = 'rgba(216,216,216,1)'
                 return
             }else{
-                this.backgroundColor = 'rgba(0,131,233,1)'
+                //this.backgroundColor = 'rgba(0,131,233,1)'
             }
             this.skill = this.intentionList[val].ClassNum
             // console.log(this.skill)
@@ -131,8 +146,9 @@ export default {
         // 获取兼职意向列表
         getIntention() {
             this.$axios.get('/ProductCategories').then(res => {
-                //console.log(res)
+                //console.log(res.data)
                 this.intentionList = res.data
+                console.log(this.intentionList)
             })
         },
         inputqq() {
@@ -144,27 +160,22 @@ export default {
             }
         },
         inputemail() {
-            if(!/^\w+((-\w+)|(\.\w+))*\@[A-Za-z0-9]+((\.|-)[A-Za-z0-9]+)*\.[A-Za-z0-9]+$/.test(this.form.email)){
+            if(!/^\w+((-\w+)|(\.\w+))*\@[A-Za-z0-9]+((\.|-)[A-Za-z0-9]+)*\.([A-Za-z0-9]{2,4})+$/.test(this.form.email)){
                 this.emailerror = '请输入正确的邮箱格式'
                 return
             }else{
                 this.emailerror = ''
             }
         },
-        // inputPhone() {
-        //     if(!/^((1[3,5,8][0-9])|(14[5,7])|(17[0,6,7,8])|(19[7]))\d{8}$/.test(this.phone)) {
-        //         alert('请输入正确的手机号码')
-        //         return
-        //     }else{
-        //         if(this.intention == '请选择'){
-        //             this.$message.error('请选择兼职意向!')
-        //             return
-        //         }else{
-        //             this.disabled = false
-        //             this.backgroundColor = 'rgba(0,131,233,1)'
-        //         }
-        //     }
-        // },
+        inputPhone() {
+            if(!/^((1[3,5,8][0-9])|(14[5,7])|(17[0,6,7,8])|(19[7]))\d{8}$/.test(this.phone)) {
+                this.error = '请输入符合要求的号码'
+                return
+            }else{
+                this.error = ''
+            }
+        },
+
         handleClick() {
             this.step1 = false
             this.step2 = true
@@ -187,10 +198,14 @@ export default {
                 this.backgroundColor = 'rgba(0,131,233,1)'
             } 
         },
+        handleExceed(files, fileList) {  // 上传文件超出个数限制时的函数
+            console.log(files, fileList)
+            this.$message.warning('上传文件超出限制')
+        },
         uploadError (response, file, fileList) {
             console.log('上传失败，请重试！',response)
         },
-        handleUpload() {
+        handleUpload() {  // 申请设计师
             var formData = new FormData()
             formData.append('TrueName', this.form.name);
             formData.append('QQ', this.form.qq);
@@ -221,17 +236,26 @@ export default {
             this.$router.push('/designcenter')
         }
     },
+    created() {
+        console.log(this.state)
+        if(this.state == 'no') {
+            this.step3 = true
+            this.step1 = false
+        }
+    },
     mounted() {
-        this.getIntention()
+        //this.getIntention()
+        if(localStorage['isDesigner'] == '1'){
+            this.disabled = false
+            this.backgroundColor = 'rgba(0,131,233,1)'
+        }
     },
     watch: {
         // 验证手机号
         phone() {
             if(/(^1[0-9]{10}$)|(^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$)/.test(this.phone)) { 
-                this.error = ''
                 this.form.phone = -1
             }else{
-                this.error = '请输入正确的手机号'
                 this.form.phone = 1
             }
         },
@@ -242,14 +266,19 @@ export default {
             }else{
                 this.form.intention = -1
             }
+        },
+        state() {
+            console.log(this.state,'dsf ')
         }
     },
     computed: {
         show() {
-            if(this.form.phone == -1 && this.form.intention == 1) {
+            if(this.form.phone == -1 && this.form.intention == -1 && this.form.name && this.form.qq && this.form.email) {
+                console.log(123)
                 this.backgroundColor = 'rgba(0,131,233,1)'
                 return false
             }else{
+                console.log(456)
                 this.backgroundColor = 'rgba(216,216,216,1)'
                 return true
             }
@@ -265,7 +294,10 @@ export default {
 
 <style lang="scss" scoped>
 .apply-header{
-    height: 210px;
+	height: 210px;
+	img {
+		width: 100%;
+	}
 }
 .apply-body{
     width: 538px;
@@ -352,6 +384,7 @@ export default {
         font-family:MicrosoftYaHei;
         font-weight:400;
         color:rgba(51,51,51,1);
+        padding-bottom: 50px;
     }
 
 }

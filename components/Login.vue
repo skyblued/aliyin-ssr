@@ -206,7 +206,7 @@ export default {
                                     this.$store.commit('login/changeLogin', true)
                                     this.$message.success('登录成功')
                                     this.$store.commit('login/toggleShow', false)
-                                    this.$store.$cookiz.set('token', result.data.token, {maxAge: 604800, path: '/'}) 
+                                    this.$cookies.set('token', result.data.token, {maxAge: 604800, path: '/'}) 
                                     clearInterval(this.timer)
                                     // history.go(0)
                                 })
@@ -335,7 +335,7 @@ export default {
 							this.$store.commit('login/setUserName', name)
 							this.$store.commit('login/changeLogin', true)
 							this.$store.commit('login/toggleShow', false)
-							this.$store.$cookiz.set('token', data.Token,{maxAge: 604800, path: '/'}) 
+							this.$cookies.set('token', data.Token,{maxAge: 604800, path: '/'}) 
                             this.qqLogin = false
                             history.go(0)
                         })
