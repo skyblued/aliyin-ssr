@@ -57,14 +57,14 @@ export default {
 			let type = query.type;
 			this.TeamNum = query.teamNum;
 			this.param = type == 'true' ? {
-							uuid: query.uuid,
+							uuid: query.uuid || '',
 							TypeNum: 0,
 							TypeCategoryNum: 0,
 							KeyWords: ''		
 						} 
 						: {
-							uuid: query.uuid,
-							TeamNum: this.TeamNum,
+							uuid: query.uuid || '',
+							TeamNum: this.TeamNum || '',
 							TypeNum: 0,
 							TypeCategoryNum: 0,
 							IsPublic: 0
@@ -110,7 +110,7 @@ export default {
 				if (this.progress > 95) clearInterval(this.timer)
 				this.progress += 0.7;
 			}, 300)
-			this.$http.post(url, formdata)
+			this.$axios.post(url, formdata)
 			.then(res => {
 				clearInterval(this.timer)
 				this.progress = 0;

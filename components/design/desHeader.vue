@@ -43,22 +43,23 @@
 				>生成文件</span>
 			</div>
         </div>
-		<div v-if="dialogShow">
-			
-			 <el-dialog
-				:visible="dialogShow"
-				top="10vh"
-				width="880px"
-				append-to-body
-			>
-				 <TempSubmit 
-				 :faceImg="getFaceImg"
-				 @toggleDialog="toggleDialog" 
-				 :ProductTypeId="headerParams.productId" 
-				 :TemplateNumber="headerParams.tempNum" 
-				 :tempName="headerParams.design_title"></TempSubmit>
-			</el-dialog>
-		 </div>
+		<transition name="el-fade-in-linear">
+			<div class="model-mask" v-if="dialogShow" ></div>
+		</transition>
+		<transition name="animation-scale">
+			<div v-if="dialogShow" class="model-dialog">
+				 <div style="background: #fff;min-width: 850px;border-radius: 10px;    padding: 10px;position: relative">
+				<div class="close-btn" style="top:0;right: -55px;" @click="dialogShow = false"></div>
+					 <TempSubmit 
+					:faceImg="getFaceImg"
+					@toggleDialog="toggleDialog" 
+					:ProductTypeId="headerParams.productId" 
+					:TemplateNumber="headerParams.tempNum" 
+					:tempName="headerParams.design_title"></TempSubmit>
+				 </div>
+			</div>
+		</transition>
+		
     </div>
 </template>
 <script>
