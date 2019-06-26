@@ -40,11 +40,17 @@ export default {
 		// console.log(templateList, '服务端')
 		return {
             templateParam,
-            templateList,
+			templateList,
+			query: query
 		}
 	},
 	fetch() {
 		// console.log(123213)
+	},
+	head() {
+		return {
+			title: `免费${this.query.subtitle}模板列表_海量免费纸质名片模板无限制使用_免费下载${this.query.subtitle}高清无水印文件_阿里印`
+		}
 	},
     mounted() {
 		// console.log(this.templateList)

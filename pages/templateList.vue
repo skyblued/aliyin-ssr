@@ -17,7 +17,8 @@ export default {
 		HeaderTop,
 		Header,
 		Footer
-    },
+	},
+	
     async asyncData({$axios, isDev,route, store, env, params, query, req, res, redirect, error}) {
 		let [AllTemplate, FooterCode, FooterArticle] = await Promise.all([
 			$axios.get(store.state.port.AllTemplate),
@@ -29,6 +30,11 @@ export default {
 			qrcode: FooterCode.data.Advertisements[0].FileUrl,
 			articleList: FooterArticle.data,
 			isFixed: false,
+		}
+	},
+	head() {
+		return {
+			title: '免费在线设计_免费海量模板无限制使用_免费下载高清无水印文件_阿里印'
 		}
 	},
 	methods: {
