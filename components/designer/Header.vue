@@ -63,6 +63,7 @@ export default {
     },
     mounted() {
         this.username = localStorage['userName']
+        this.$store.commit('login/setAvatar', localStorage['avatar'])
     }
 }
 </script>
