@@ -4,7 +4,7 @@
             <div class="address-header">
                 <p>收货地址</p>
                 <div class="add-to-address" @click="handleAdd">添加地址</div>
-                <el-dialog title="添加收货地址" :visible.sync="$store.state.login.dialogAdd" :close-on-click-modal="false" :modal-append-to-body="false" :lock-scroll="false">
+                <el-dialog title="添加收货地址" :visible.sync="$store.state.login.dialogAdd" :close-on-click-modal="false" :modal-append-to-body="false" :lock-scroll="false" :show-close="false">
                     <AddToAddress v-if="$store.state.login.dialogAdd" @setAddress="getAddressList"></AddToAddress>
                 </el-dialog>
             </div>

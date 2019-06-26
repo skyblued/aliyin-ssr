@@ -31,6 +31,7 @@
                 <el-checkbox v-model="form.checked">默认</el-checkbox>
             </el-form-item>
         </el-form>
+        <div class="close-btn" style="top: 0px;right: -50px;" @click="handleCancel"></div>
         <div class="footer">
             <div class="sure-btn" @click="handleAdd">确定添加</div>
             <div class="cancel-btn" @click="handleCancel">取消添加</div>

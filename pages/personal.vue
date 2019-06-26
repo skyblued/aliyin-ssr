@@ -107,7 +107,7 @@
                         </ul>
                     </div>
                     <div class="personal-container" style="min-height: 880px;">
-                        <router-view></router-view>
+                        <nuxt-child />
                     </div>
                 </div>
             </div>
