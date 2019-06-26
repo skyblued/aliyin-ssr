@@ -8,7 +8,7 @@
                 </div>
             </div>
             <div class="loginout-btn" v-if="userName">
-                <nuxt-link to="/account/center"><span class="label-item-name">嗨，{{userName}}</span></nuxt-link>
+                <nuxt-link to="/personal/accountcenter"><span class="label-item-name">嗨，{{userName}}</span></nuxt-link>
                 <i class="label-line"></i>
                 <nuxt-link to="/personal">
                     <span class="item">会员中心</span>
@@ -66,7 +66,7 @@ export default {
                 this.$axios.get('/ApplyDesigner').then(res => {
                     console.log(res.data)
                     if(res.data.code == '1'){
-                        this.$router.push('/designcenter')
+                        this.$router.push('/designer')
                         localStorage.setItem('isDesigner', '1')
                     }else if(res.data.code == '0'){
                         this.state = res.data.state
@@ -108,10 +108,6 @@ export default {
             this.$cookies.remove('token')
             history.go(0)
         },
-        // 个人中心
-        handleToPersonal() {
-            this.$router.push('/account/center')
-        }
     },
     mounted () {
         if(localStorage['token']) {
