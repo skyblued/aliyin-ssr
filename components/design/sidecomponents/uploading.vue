@@ -24,7 +24,7 @@
 			    @drop="handledragend($event)">
 				<span class="area-icon" @click="handleActiveUpload">选择文件或者将文件拖到上传框中</span>
 			</div>
-			<transition name="el-zoom-in-center">
+			<transition name="el-fade-in-linear">
 				<div class="img-preivew" v-if="phoneQr" @click="handleUpdate">
 					<div class="lt-modal-content">
                         <img style="width: 166px;height: 166px;margin-top: 30px;" :src="phoneQr" alt="">
@@ -48,7 +48,7 @@
 					@mousedown="setCopyBox($event, item)"
 				>
 					<img 
-						@load="getSvgContent"
+						@load="getSvgContent(item, index)"
 						draggable="false" 
 						:style="`${item.Svgtext == '' ? '':'object-fit: fill'}`"
 						@click.stop="handleCreateImage(item)" 
@@ -60,7 +60,7 @@
 				</div>
 			</div>
 			<div v-if="loadingIcon || baseLine" style="width: 100%;text-align:center;padding: 50px 0;">
-				<img v-if="loadingIcon" style="height: 40px;" src="https://aliyinstatic.oss-cn-shenzhen.aliyuncs.com/img/loading.gif" title="加载中..." alt="加载中...">
+				<img v-if="loadingIcon" style="height: 40px;" src="//static.aliyin.com/img/loading.svg" title="加载中..." alt="加载中...">
 				<span style="font-size: 14px;">{{baseLine}}</span>
 			</div>
 		</div>
@@ -130,7 +130,7 @@ export default {
 			// 上传提示
 			uploadMssage: {
 				show: false,
-				src: 'https://aliyinstatic.oss-cn-shenzhen.aliyuncs.com/img/loading.gif',
+				src: '//static.aliyin.com/img/loading.svg',
 				msg: ''
 			},
 			// 选中元素
@@ -149,7 +149,7 @@ export default {
 		/**上传动画 */
 		setUploading (type) {
 			if (type) {
-				this.uploadMssage.src = 'https://aliyinstatic.oss-cn-shenzhen.aliyuncs.com/img/loading.gif'
+				this.uploadMssage.src = '//static.aliyin.com/img/loading.svg'
 				this.uploadMssage.msg = '正在上传'
 				this.uploadMssage.show = true
 			} else {
@@ -350,21 +350,14 @@ export default {
 		handleError () {
 			this.setUploading(false)
 		},
-		getSvgContent(e) {
+		getSvgContent(item, index) {
 			// 获取svg内容
-			if (!this.$refs.itemsList) return
-			let list = this.$refs.itemsList.childNodes,
-					src = e.path[0].src;
-				if (src.lastIndexOf('.svg') > -1) {
-					fetch(src).then(response => response.text())
-					.then(data => {
-						list.forEach((div, index) => {
-							if (div == e.path[0].parentNode) {
-								this.selectContentList[index].Svgtext = data
-							}
-						})
-					})
-				}
+			if (item.FilePath.lastIndexOf('.svg') > -1) {
+				fetch(this.$store.state.port.ossPath + item.FilePath).then(response => response.text())
+				.then(data => {
+					this.selectContentList[index].Svgtext = data;
+				})
+			}
 		},
 		/**
 		 * 将图片路径上行给父组件
@@ -518,27 +511,7 @@ export default {
     background-clip: padding-box;
     box-shadow: 0 4px 12px rgba(0,0,0,.15);
 }
-.close-btn {
-    position: absolute;
-    right: 20px;
-    top: 10px;
-    width: 20px;
-    height: 20px;
-    transform: rotate(45deg);
-    cursor: pointer;
-    &::before, &::after {
-        content: '';
-        position: absolute;
-        top: 50%;
-        width: 100%;
-        height: 3px;
-        border-radius: 3px;
-        background: #745bff;
-    }
-    &::after {
-        transform: rotate(90deg);
-    }
-}
+
 .qr {
 	.qr-icon {
 		width: 100px;

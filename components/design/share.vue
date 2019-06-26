@@ -8,7 +8,7 @@
 			</div>
 		</div>
 		<div v-if="selectContentList.loadingIcon || selectContentList.baseLine" style="position: absolute;width: 100%;text-align:center;padding: 50px 0;">
-			<img v-if="selectContentList.loadingIcon" style="height: 40px;" src="https://aliyinstatic.oss-cn-shenzhen.aliyuncs.com/img/loading.gif" title="加载中..." alt="加载中...">
+			<img v-if="selectContentList.loadingIcon" style="height: 40px;" src="//static.aliyin.com/img/loading.svg" title="加载中..." alt="加载中...">
 			<span>{{selectContentList.baseLine}}</span>
 		</div>
 		<div v-if="!selectContentList.loadingIcon && !selectContentList.backgroundList.length" style="text-align:center;padding: 50px 0;"><img style="width: 50%;" src="/img/error/ku.png" title="空空如也" alt="空空如也"></div>

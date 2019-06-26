@@ -36,6 +36,8 @@ import {
 
 
 export default {
+	name: 'designQI',
+	loading: false,
 	components: {
 		desHeader,
 		temp,
@@ -56,18 +58,8 @@ export default {
 		Psd,
 	},
 	asyncData({app, isDev, route, store, env, params, query, req, res, redirect, error}) {
-		console.log(store.state.login.token,1232131, app)
+		// console.log(store.state.login.token,1232131, app)
 		if (!store.state.login.token) store.commit('login/toggleShow', true)
-	},
-	validate({ params, query, redirect }) {
-		// console.log(params)
-		if (params.t) {
-			return true
-		} else {
-			redirect('/')
-
-		} // 参数无效，Nuxt.js 停止渲染当前页面并显示错误页面
-		
 	},
 	data() {
 	
@@ -424,9 +416,11 @@ export default {
 	},
 	methods: {
 		createInfo() {
-			// console.log(this.$store)
-			let params = this.$route.params,
-				query = window.atob(params.t),
+			console.log(this.$route.params)
+
+			let params = this.$route.params;
+			if (!params.t) return;
+			let query = window.atob(params.t),
 				queryArr = query.split('&');
 				this.queryNumber = queryArr[0].split('='),
 				this.superAdmin = queryArr[1] == 'admin=admin' ? 'admin' : null;
@@ -1069,6 +1063,7 @@ export default {
 
 		/* 查询模板数据 */
 		getTemplate() {
+
 			this.templateAnimation = true;
 			
 			if (this.queryNumber) {
@@ -1116,9 +1111,7 @@ export default {
 						this.closeWindow()
 					})
 				})
-			} else {
-				this.closeWindow()
-			}
+			} 
 			
 		},
 		getPageJson(page) { // 查询json数据,和svg html

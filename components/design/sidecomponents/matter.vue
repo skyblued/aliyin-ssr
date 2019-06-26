@@ -70,7 +70,7 @@
 								@click="handleCreateImage(item)" 
 							>
 								<img 
-									@load="getSvgContent"
+									@load="getSvgContent(item, index)"
 									:style="{'object-fit': resultsTypesTitle != '几何形状' ? 'contain' : 'fill'}"
 									draggable="false" 
 									@mousedown="getPosDown"
@@ -101,7 +101,7 @@
 							</div>
 						</div>
 						<div v-if="loadingIcon || baseLine" style="width: 100%;text-align:center;padding: 50px 0;">
-							<img v-if="loadingIcon" style="height: 40px;" src="//static.aliyin.com/img/loading.gif" title="加载中..." alt="加载中...">
+							<img v-if="loadingIcon" style="height: 40px;" src="//static.aliyin.com/img/loading.svg" title="加载中..." alt="加载中...">
 							<span style="font-size: 14px;">{{baseLine}}</span>
 						</div>
 						<div v-if="!totalCount" style="text-align:center;padding: 50px 0;"><img style="width: 50%;" src="/img/error/ku.png" title="空空如也" alt="空空如也"></div>
@@ -225,20 +225,14 @@ export default {
       this.textBlockSelected = index;
       this.getSelectContentList({ TypeNum: item.TypeNum, num: item.Num });
 	},
-    getSvgContent(e) {
+    getSvgContent(item, index) {
 	  // 获取svg内容
-	  let list = this.$refs.itemsList.childNodes,
-			src = e.path[0].src;
-		if (src.lastIndexOf('.svg') > -1) {
-			fetch(src).then(response => response.text())
-			.then(data => {
-				list.forEach((div, index) => {
-					if (div == e.path[0].parentNode) {
-						this.selectContentList[index].Svgtext = data
-					}
-				})
-			})
-		}	
+	  if (item.FilePath.lastIndexOf('.svg') > -1) {
+		  fetch(this.$store.state.port.ossPath + item.FilePath).then(response => response.text())
+		  .then(data => {
+			  this.selectContentList[index].Svgtext = data;
+		  })
+	  }	
     },
     // 内容瀑布流设置
     handlewaterfall() {

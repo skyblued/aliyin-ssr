@@ -12,7 +12,7 @@
             </div>
         </div>
 		<div v-if="progress.show" style="height: 40px; text-align:center">
-			<img style="height:100%;vertical-align: middle;" src="https://aliyinstatic.oss-cn-shenzhen.aliyuncs.com/img/loading.gif" alt="">
+			<img style="height:100%;vertical-align: middle;" src="//static.aliyin.com/img/loading.svg" alt="">
 		</div>
 		<transition name="fade" mode="out-in">
 			<template v-if="backgroundType">

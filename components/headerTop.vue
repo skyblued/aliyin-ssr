@@ -8,7 +8,7 @@
                 </div>
             </div>
             <div class="loginout-btn" v-if="userName">
-                <nuxt-link to="/personal/accountcenter"><span class="label-item-name">嗨，{{userName}}</span></nuxt-link>
+                <nuxt-link to="/personal/acountcenter"><span class="label-item-name">嗨，{{userName}}</span></nuxt-link>
                 <i class="label-line"></i>
                 <nuxt-link to="/personal">
                     <span class="item">会员中心</span>
