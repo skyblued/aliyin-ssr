@@ -88,7 +88,7 @@ export default {
                 let config = {
                     headers:{'Content-Type': 'application/json'}
                 }
-                this.$http.put('shipaddress', obj, config).then(res => {
+                this.$axios.put('shipaddress', obj, config).then(res => {
                     console.log(res.data)
                 })
             }
@@ -96,7 +96,7 @@ export default {
 
         // 获取收货地址列表
         getAddressList() {
-            this.$http.get('/shipaddresses?TeamNum=' + localStorage['teamNum']).then(res => {
+            this.$axios.get('/shipaddresses?TeamNum=' + localStorage['teamNum']).then(res => {
                 console.log(res.data)
                 var list = []
                 for(var i=0;i<res.data.length;i++){
@@ -125,7 +125,7 @@ export default {
                 let config = { 
                     headers:{'Content-Type': 'multipart/form-data'}
                 }
-                this.$http.delete('/shipaddress', {data: formData}, config).then(res => {
+                this.$axios.delete('/shipaddress', {data: formData}, config).then(res => {
                     //console.log(res)
                     if(res.data == true){
                         this.$message({type: 'success',message: '删除成功'})

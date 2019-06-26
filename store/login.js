@@ -2,7 +2,8 @@ export const state = () => ({
 	isLogin: false, // 是否登录
 	token: '', // token 验证
 	signType: 'wxpage',
-	loginShow: false,
+	loginShow: false, // 登录弹框
+	applyDesigner: false, // 申请设计师弹框
 	userName: '', // 用户名
 	avatar: '',   // 用户头像
 	dialogAdd: false,   // 添加地址弹框
