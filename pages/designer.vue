@@ -44,7 +44,7 @@
             </div>
 
             <div class="designer-container">
-                <nuxt-child />>
+                <nuxt-child />
             </div>
         </div>
     </div>
@@ -209,7 +209,7 @@ export default {
                     img{
                         display: inline-block;
                         vertical-align: middle;
-                        margin-right: 16px;
+                        margin-right: 10px;
                     }
                 }
                 .active{
