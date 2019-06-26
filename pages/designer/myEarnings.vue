@@ -3,12 +3,12 @@
         <div class="earnings">
             <div class="earnings-header">
                 <el-form :inline="true" class="demo-form-inline">
-                    <el-form-item label="收益类型 : " class="select">
-                        <el-select v-model="formInline.type" style="width: 150px;">
+                    <el-form-item label="积分类型 : " class="select">
+                        <el-select v-model="formInline.type" style="width: 108px;">
                             <el-option v-for="(item,index) in productList" :key="index" :label="item.label" :value="item.value"></el-option>
                         </el-select>
                     </el-form-item>
-                    <el-form-item label="收益时间 : " class="form-item">
+                    <el-form-item label="时间 : " class="form-item date">
                         <div class="block-date">
                             <el-date-picker
                                 v-model="formInline.startTime"
@@ -33,6 +33,7 @@
                         <div class="screen" @click="getBalanceList">筛选</div>
                     </el-form-item>
                 </el-form>
+                <div class="integral">总积分: {{balance}}</div>
             </div>
             <el-table
                 v-loading="loading"
@@ -51,10 +52,10 @@
                     min-width="100">
                 </el-table-column> -->
                 <el-table-column
-                    label="金额"
+                    label="积分"
                     min-width="75">
                     <template slot-scope="scope">
-                        <span v-if="scope.row.price">￥{{scope.row.price.toFixed(2)}}</span>
+                        <span v-if="scope.row.price">{{scope.row.price}}</span>
                     </template>
                 </el-table-column>
                 <el-table-column
@@ -64,13 +65,13 @@
                 </el-table-column>
                 <el-table-column
                     prop="balance"
-                    label="当前余额">
+                    label="当前积分">
                     <template slot-scope="scope">
-                        <span v-if="scope.row.balance">￥{{scope.row.balance.toFixed(2)}}</span>
+                        <span v-if="scope.row.balance">{{scope.row.balance}}</span>
                     </template>
                 </el-table-column>
             </el-table>
-            <div v-if="tableData.length">
+            <div v-if="tableData.length && page.totalRecords > 12">
                 <HomePagination :Page="page" @getTempList="getBalanceList" />
             </div>
         </div>
@@ -92,10 +93,10 @@ export default {
                 label: '全部'
             },{
                 value: '1',
-                label: '模板返利'
+                label: '模板积分'
             },{
                 value: '2',
-                label: '素材返利'
+                label: '素材积分'
             }],
             page: {
                 currentPage: 1,  // 当前页
@@ -126,7 +127,8 @@ export default {
                     }
                 }
             },
-            loading: true
+            loading: true,
+            balance: '',  // 总积分
         }
     },
     methods: {
@@ -139,7 +141,7 @@ export default {
         // 根据日期查询
         handleBlur() {},
 
-        // 获取收支明细列表
+        // 获取积分明细列表
         getBalanceList() {
             this.tableData = []
             if((this.formInline.startTime == '' && this.formInline.endTime == '') || (this.formInline.startTime == null && this.formInline.endTime == null)){
@@ -154,6 +156,7 @@ export default {
             this.$axios.get(url).then(res =>{
                 console.log(res.data)
                 this.loading = false
+                this.balance = res.data.Balance
                 var data = res.data.Data
                 var list = []
                 for(var i=0;i<data.length;i++){
@@ -181,7 +184,7 @@ export default {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 
 #earnings{
     width: 100%;
@@ -193,15 +196,13 @@ export default {
 
 .earnings{
     width: 1500px;
-    min-width: 900px;
+    min-width: 960px;
     margin: 0 auto;
     user-select: none;
-    .el-table{
-        width: 100%;
-    }
 }
 
 .earnings-header{
+    min-width: 960px;
     display: flex;
     justify-content: space-between;
     margin-bottom: 37px;
@@ -210,15 +211,17 @@ export default {
     border-radius: 10px;
     background:rgba(254,254,254,1);
     padding: 20px 28px 19px 20px;
-    .el-form .el-form-item{
-        margin-right: 42px;
-        height: 37px;
-        .el-button{
-            height: 37px;
-        }
-    }
 }
-.earnings .el-table td{
-    padding: 9px 0;
+
+// 搜索按钮样式
+.screen{
+    background: $color;
+    display: inline-block;
+    height: 37px;
+    line-height: 37px;
+    padding: 0 12px;
+    border-radius: 5px;
+    color: rgba(254,254,254,1);
+    cursor: pointer;
 }
 </style>

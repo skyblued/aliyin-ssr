@@ -9,19 +9,19 @@
                             <el-option v-for="(item,index) in materialTypeList" :key="index" :label="item.TypeName" :value="item.Num"></el-option>
                         </el-select>
                     </el-form-item>
-                    <el-form-item label="素材分类 : " class="select">
+                    <el-form-item label="素材分类 : " class="select" v-if="materialClassList.length">
                         <el-select v-model="formInline.classify" style="width: 98px;" @change="handleChooseClassify" placeholder="全部">
                             <el-option label="全部分类" value=""></el-option>
                             <el-option v-for="(item,index) in materialClassList" :key="index" :label="item.TypeCategoryName" :value="item.Num"></el-option>
                         </el-select>
                     </el-form-item>
                     <el-form-item label="提交状态 : " class="select">
-                        <el-select v-model="formInline.value1" style="width: 98px;" @change="handleChange1" placeholder="全部">
+                        <el-select v-model="formInline.value1" style="width: 80px;" @change="handleChange1" placeholder="全部">
                             <el-option v-for="(item,index) in submitStateList" :key="index" :label="item.label" :value="item.value"></el-option>
                         </el-select>
                     </el-form-item>
                     <el-form-item label="审核状态 : " class="select">
-                        <el-select v-model="formInline.value2" style="width: 98px;" @change="handleChange2" placeholder="全部">
+                        <el-select v-model="formInline.value2" style="width: 80px;" @change="handleChange2" placeholder="全部">
                             <el-option v-for="(item,index) in examineStateList" :key="index" :label="item.label" :value="item.value" :disabled="disabled"></el-option>
                         </el-select>
                     </el-form-item>
@@ -46,14 +46,14 @@
                             </el-date-picker>
                         </div>
                     </el-form-item>
-                    <el-form-item>
-                        <div class="screen" @click="handleScreen">筛选</div>
-                    </el-form-item>
                 </el-form>
+                <div class="screen" @click="handleScreen">筛选</div>
                 <div class="add-material-btn" @click="handleOpenAdd">添加素材</div>
                 <el-dialog
                     title="上传素材"
                     :visible.sync="dialogMaterialVisible"
+                    :lock-scroll="false"
+                    :show-close="false"
                     :modal-append-to-body="false"
                     :close-on-click-modal="false">
                     <div class="form">
@@ -75,7 +75,7 @@
                                 <el-upload
                                     ref="upload"
                                     drag
-                                    action="http://v1.yinbuting.cn/api/UploadToOSS"
+                                    :action="$store.state.port.netServer + '/UploadToOSS'"
                                     :on-preview="handlePreview"
                                     :on-remove="handleRemove"
                                     :onSuccess="uploadSuccess"
@@ -91,8 +91,9 @@
                             </el-form-item>
                         </el-form>
                     </div>
+                    <div class="close-btn" style="right: -55px;top: 8px;" @click="dialogMaterialVisible = false"></div>
                     <div class="footer">
-                        <el-button type="primary" @click="handleUpload">确定上传</el-button>
+                        <el-button class="sure-btn" @click="handleUpload">确定上传</el-button>
                         <el-button @click="dialogMaterialVisible = false">取消</el-button>
                     </div>
                 </el-dialog>
@@ -195,6 +196,8 @@
                             title="提交素材"
                             :visible.sync="dialogSubmit"
                             @close="handleCloseDialog"
+                            :lock-scroll="false"
+                            :show-close="false"
                             :modal-append-to-body="false"
                             :close-on-click-modal="false">
                             <el-form :model="form" class="demo-form-inline">
@@ -212,8 +215,9 @@
                                     <el-input class="input" v-model="keyword" placeholder="请输入关键词用顿号“、”隔开"></el-input>
                                 </el-form-item>
                             </el-form>
+                            <div class="close-btn" style="right: -55px;top: 8px;" @click="dialogSubmit = false"></div>
                             <div class="footer">
-                                <el-button type="primary" @click="handleSubmit">确定提交</el-button>
+                                <el-button class="sure-btn" @click="handleSubmit">确定提交</el-button>
                                 <el-button @click="dialogSubmit = false">取消</el-button>
                             </div>
                         </el-dialog>
@@ -221,7 +225,7 @@
                     </template>
                 </el-table-column>
             </el-table>
-            <div class="block" v-if="tableData.length">
+            <div class="block" v-if="tableData.length && page.totalRecords > 18">
                 <HomePagination :Page="page" @getTempList="getMaterialList" />
             </div>
         </div>
@@ -291,7 +295,7 @@ export default {
             page: {
                 currentPage: 1,  // 当前页
                 totalRecords: 0,   // 总条数
-                pageSize: null,    // 每页个数
+                pageSize: 10,    // 每页个数
             },
             pickerOptions0: {
                 disabledDate: (time) => {
@@ -355,15 +359,20 @@ export default {
             this.type = ''
         },
 
+        handleChange(val) {
+            console.log(val)
+        },
+
         // 获取素材类型列表
         getMaterialType() {
             this.$axios.get(this.$store.state.port.MaterialTypes).then(res => {
-                //console.log(res.data)
+                // console.log(res.data)
                 this.materialTypeList = res.data
             })
         },
         // 获取素材分类列表
         getMaterialClass(num) {
+            if(!num) return this.$message.warning('请先选择素材类型')
             if(this.type){
                 console.log(this.type, 123)
                 num = this.type
@@ -425,6 +434,7 @@ export default {
                 let config = {
                     headers:{'Content-Type': 'multipart/form-data'}
                 }
+                console.log(this.materialNum,this.type,this.classify,this.keyword)
                 this.$axios.post('/DesignerSubmitMaterial', formData, config).then(res => {
                     console.log(res.data)
                     if(res.data == true){
@@ -480,7 +490,7 @@ export default {
             this.dialogMaterialVisible = true
             this.form.type = ''
             this.form.classify = ''
-            this.formInline = {}
+            //this.formInline = {}
         },
         handleUpload() {
             this.formInline.startTime = ''
@@ -600,11 +610,12 @@ export default {
             var url = '/DesignerMaterials?pageIndex=' + this.page.currentPage + '&SubStatus=' + this.formInline.value1 + '&AudStatus=' + this.formInline.value2 + '&StarTime=' + this.startTime + '&EndTime=' + this.endTime + '&TypeNum=' + this.formInline.type + '&TypeCateNum=' + this.formInline.classify + '&Keywords=' + ''
             this.$axios.get(url).then(res => {
                 console.log(JSON.parse(res.data))
-                this.loading = false
+                //this.loading = false
                 var data;
                 if(res.data == '暂无数据'){
                     data = []
                 }else{
+                    this.loading = false
                     data = JSON.parse(res.data).Data
                     var pagedata = JSON.parse(res.data)['X-Pagination']
                     this.page.totalRecords = pagedata.TotalCount
@@ -640,7 +651,8 @@ export default {
             this.$confirm('是否删除该素材?', '提示', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
-                type: 'warning'
+                type: 'warning',
+                lockScroll: false
             }).then(() => {
                 var formData = new FormData(); 
                 formData.append("Id", id);
@@ -676,7 +688,7 @@ export default {
         // },
         myHeader() {
             return {
-                "token":window.localStorage.getItem('token')
+                "token": this.$cookies.get('token')
             }
         }
     },
@@ -705,6 +717,7 @@ export default {
         width: 100%;
     }
 }
+
 .material-header{
     display: flex;
     justify-content: space-between;
@@ -714,17 +727,32 @@ export default {
     box-shadow: 0px 0px 20px 1px rgba(203,211,217,0.3);
     border-radius: 10px;
     background:rgba(254,254,254,1);
-    padding: 20px 28px 19px 20px;
+    padding: 20px 0 19px 20px;
     position: relative;
+    // 搜索按钮样式
+    .screen{
+        background: $color;
+        display: inline-block;
+        height: 37px;
+        line-height: 37px;
+        padding: 0 12px;
+        border-radius: 5px;
+        color: rgba(254,254,254,1);
+        cursor: pointer;
+    }
     .demo-form-inline .el-form-item{
-        margin-right: 26px;
+        margin-right: 24px;
         height: 37px;
         .el-button{
             height: 37px;
         }
     }
-    .select .el-input__inner{
+    .demo-form-inline .el-form-item:last-child{
+        margin-right: 0;
+    }
+    .el-input__inner{
         padding: 0 10px;
+        font-size: 12px;
     }
     .add-material-btn{
         background: $color;
@@ -734,15 +762,10 @@ export default {
         font-weight: 400;
         color:rgba(255,255,255,1);
         text-align: center;
+        height: 37px;
         line-height: 37px;
         padding: 0 22px;
-        position: absolute;
-        top: 76px;
-        right: 125px;
         cursor: pointer;
-        &:hover{
-            background: #0893ff;
-        }
     }
 }
 
@@ -756,7 +779,7 @@ export default {
     height: 135px;
     line-height: 135px;
     .cell{
-        //padding: 14px 10px;
+        padding: 0 10px;
         .material-thumb{
             display: inline-block;
             height: 90px;
@@ -881,6 +904,10 @@ export default {
             width: 389px;
             margin: 80px auto 0;
             display: flex;
+            .sure-btn{
+                background: $color;
+                color: rgba(255,255,255,1);
+            }
             .el-button{
                 width: 179px;
                 height: 48px !important;

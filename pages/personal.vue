@@ -166,9 +166,12 @@ export default {
     mounted() {
         this.setParam()
         // this.$bus.$on('setMyOrder', (msg) =>this.asideTitle = msg)
-        console.log(this.$route)
         var title = this.$route.fullPath.split('/')[2]
-        this.asideTitle = title
+        if(title == undefined) {
+            this.asideTitle = ''
+        }else{
+            this.asideTitle = title
+        }
     },
     destroyed() {
         // this.$bus.$off('setMyOrder')
