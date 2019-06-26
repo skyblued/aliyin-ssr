@@ -644,13 +644,15 @@ export default {
                 }
             }else{
                 this.$store.commit('addShopingCar', this.printprice)
+                let cook = this.$myParseCookie(this.$store.state.productionObj)
+                this.$cookies.set('myCar', cook, {path: '/'}) 
                 this.$confirm('加入购物车成功, 是否去提交订单?', '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
                     type: 'success',
                     lockScroll: false
                 }).then(() => {
-                    this.$router.push('/cart')
+                    this.$router.push('/order/shoppingCart')
                 }).catch(() => {
                     this.$message.warning('已取消选择')
                 })

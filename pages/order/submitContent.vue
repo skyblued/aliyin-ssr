@@ -339,7 +339,7 @@ export default {
         },
 
         handleBackCart() {  // 返回购物车
-            this.$router.push('/cart')
+            this.$router.push('/order/shoppingCart')
         },
         handleToPay() {  // 立即下单
             if(this.addressList.length == 0 ){
