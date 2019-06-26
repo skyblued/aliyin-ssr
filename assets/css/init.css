@@ -300,3 +300,12 @@ sub {
 .header-top .el-dialog .el-dialog__header {
   display: none;
 }
+
+/* 全固定header导航栏 */
+.fixed {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 2000;
+}
