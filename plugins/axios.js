@@ -1,6 +1,7 @@
 export default function ({app, $axios, store, req}) {
 	let axios = $axios;
-	if (!store.state.login.token && app.$cookies) store.commit('login/addToKen', app.$cookies.getAll().token || '');
+	if (!store.state.login.token && app.$cookies) store.commit('login/addToKen', app.$cookies.getAll().token || ''); // 添加token
+	if (!store.state.productionObj) store.commit("getCar", app.$cookies.getAll().myCar || ''); // 添加购物车
 	if (store.state.login.token) {
 		axios.defaults.withCredentials = false;
 		store.commit('login/changeLogin', true)
