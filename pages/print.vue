@@ -34,6 +34,11 @@ export default {
 			isFixed: false,
 		}
 	},
+	head () {
+		return {
+			title: '在线印刷_免费设计_工厂直供_送货上门_阿里印'
+		}
+	},
 	methods: {
 		scrollToTop() {
 			let osTop = document.documentElement.scrollTop || document.body.scrollTop
