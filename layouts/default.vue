@@ -2,7 +2,7 @@
   <div>
     <nuxt />
 	<transition name="el-fade-in-linear">
-		<div class="model-mask" v-show="$store.state.login.loginShow" ></div>
+		<div class="model-mask" v-if="$store.state.login.loginShow" ></div>
 	</transition>
 	<transition name="animation-scale">
 		<Login v-if="$store.state.login.loginShow"></Login>

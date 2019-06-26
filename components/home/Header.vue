@@ -3,15 +3,21 @@
         <div  class="header">
             <div class="header-left">
                 <img class="logo" :src="$store.state.port.staticPath + '/img/home/logo.svg'" alt="" v-if="!isFixed" @click="handleClick">
-                <div v-if="isFixed" class="bar-menu-wrap">
-                    <div class="bar-menu">
-                        <img class="bar-img" src="/img/home/classify_icon.png" alt="">
-                        <span class="bar-title">海量模板，每天更新</span>
-                    </div>
-                    <div class="bar-menu-list">
-                        <TemplateClass :barList="barList"></TemplateClass>
-                    </div>
-                </div>
+				
+					 <div v-if="isFixed" class="bar-menu-wrap" @mouseenter="barMenuListShow = true" @mouseleave="barMenuListShow = false">
+						<div class="bar-menu">
+							<img class="bar-img" src="/img/home/classify_icon.png" alt="">
+							<span class="bar-title">海量模板，每天更新</span>
+						</div>
+						<transition name="el-zoom-in-top">
+							<!-- <el-collapse-transition> -->
+							<div class="bar-menu-list" v-if="barMenuListShow" >
+								<TemplateClass :barList="barList"></TemplateClass>
+							</div>
+							<!-- </el-collapse-transition> -->
+						</transition>
+					</div>
+				
                 <ul>
                     <li :class="{'menu-list': true, active: path == '/'}" @click="handleJump('/')">首页</li>
                     <nuxt-link to="/templateList">
@@ -45,7 +51,8 @@ export default {
         return {
             keywords: '',
             hotSearchList: [],
-            show: false
+			show: false,
+			barMenuListShow: false,
         }
     },
     props: ['isFixed', 'barList'],
@@ -141,14 +148,14 @@ export default {
         .bar-menu-wrap{
             position: relative;
             width: 255px;
-            &:hover .bar-menu-list{
-                display: block;
-            }
+            // &:hover .bar-menu-list{
+            //     display: block;
+            // }
             .bar-menu-list{
                 position: absolute;
                 top: 44px;
                 left: 0;
-                display: none;
+                // display: none;
                 padding-top: 28px;
             }
         }

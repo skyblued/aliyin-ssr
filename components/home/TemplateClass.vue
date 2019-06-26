@@ -1,4 +1,5 @@
 <template>
+
     <div class="template-class">
         <div :class="{'class-item': true, 'active': activeIndex == i ? true : false}" v-for="(items,i) in barList" :key="i" @mouseenter="handleOver(i)" @mouseleave="handleOut">
             <div class="class-item-block">
@@ -30,6 +31,7 @@
             </div>
         </div>
     </div>
+	
 </template>
 
 <script>
