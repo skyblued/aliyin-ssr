@@ -44,6 +44,11 @@ export default {
 			info: LeftDetail.data
 		}
     },
+    head() {
+        return {
+            title: `${this.info[0].ProductType.TypeName}在线印刷报价_厂家直销_免费设计_送货上门_阿里印`
+        }
+    },
     mounted() {
         // console.log(this.info)
         window.scrollTo(0,0)

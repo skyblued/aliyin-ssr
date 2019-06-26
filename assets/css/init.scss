@@ -419,4 +419,8 @@ $color: #745bff; // 主题色rgba(0, 131, 233, 1)
     position: absolute;
     top: 28px;
     right: 15px;
-  }
+}
+
+.el-table td .cell{
+    padding: 10px;
+}

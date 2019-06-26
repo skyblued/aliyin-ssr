@@ -50,7 +50,7 @@ export default {
             dialogVisibleImg: false,
             dialogImageUrl: '',
             teamNum: '',  // 团队编号
-            userType: 0,
+            userType: null,
             image: '/img/personal/n_choose_icon.png',
             src: '/img/personal/choose_icon.png',
             state: ''
@@ -110,6 +110,7 @@ export default {
         },
     },
     mounted () {
+        this.userType = localStorage['userType']
         if(localStorage['token']) {
             this.$store.commit('login/setUserName', localStorage['userName'])
             this.$store.commit('login/changeLogin', true)
