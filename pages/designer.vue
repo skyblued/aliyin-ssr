@@ -7,7 +7,7 @@
         <div class="designer-main">
             <div class="aside">
                 <div class="logo">
-                    <img v-if="$store.state.login.avatar != 'null'" :src="$store.state.login.avatar.indexOf('http') > -1 ? $store.state.login.avatar :$store.state.port.imgBaseUrl + $store.state.login.avatar" alt="">
+                    <img v-if="$store.state.login.avatar != 'null'" :src="$store.state.login.avatar.indexOf('http') > -1 ? $store.state.login.avatar :( $store.state.port.imgBaseUrl + $store.state.login.avatar)" alt="">
                     <div v-else class="logo-wrap"></div>
                     <p class="name-block">
                         <span class="user-name">
@@ -68,12 +68,13 @@ export default {
     methods: {
         handleToggle(title){
             this.asideTitle = title
+            this.$route.push('/designer/' + title)
         }
     },
     created() {
-        this.$http.get('/ApplyDesigner').then(res => {
+        this.$axios.get('/ApplyDesigner').then(res => {
             if(res.data.code == '1') {
-                this.asideTitle = 'desCreate'
+                this.asideTitle = ''
             }else{
                 this.$message.warning(res.data.msg)
                 this.$router.push('/')
@@ -82,6 +83,7 @@ export default {
     },
     mounted() {
         this.username = localStorage['userName']
+        this.$store.commit('login/setAvatar', localStorage['avatar'])
     },
     components: {
         Header,
