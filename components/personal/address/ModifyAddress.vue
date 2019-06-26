@@ -287,6 +287,7 @@ export default {
     }
     .el-form-item__label{
         margin-right: 20px;
+        padding: 0;
     }
     .el-select{
         margin-right: 15px;

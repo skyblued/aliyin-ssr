@@ -618,7 +618,9 @@ export default {
                         lockScroll: false
                     }).then(() => {
                         this.$store.commit('addShopingCar', this.printprice)
-                        this.$router.push({path: 'order/submitOrder', query: {t: 'order'}})
+                        let cook = this.$myParseCookie(this.$store.state.productionObj)
+                        this.$cookies.set('myCar', cook, {path: '/'}) 
+                        this.$router.push({path: '/order/submitOrder', query: {t: 'order'}})
                     }).catch(() => {
                         this.$message.warning('已取消选择')
                     })
@@ -626,7 +628,9 @@ export default {
                 }
                 if(this.printprice.FilePath) {
                     this.$store.commit('addShopingCar', this.printprice)
-                    this.$router.push({path: 'order/submitOrder', query: {t: 'order'}})
+                    let cook = this.$myParseCookie(this.$store.state.productionObj)
+                    this.$cookies.set('myCar', cook, {path: '/'}) 
+                    this.$router.push({path: '/order/submitOrder', query: {t: 'order'}})
                 }
                 if(this.tempNum) {
                     var formData = new FormData()
@@ -636,7 +640,9 @@ export default {
                         if(data.state == 'ok') {
                             this.printprice.DocumentNum = data.msg
                             this.$store.commit('addShopingCar', this.printprice)
-                            this.$router.push({path: 'order/submitOrder', query: {t: 'order'}})
+                            let cook = this.$myParseCookie(this.$store.state.productionObj)
+                            this.$cookies.set('myCar', cook, {path: '/'}) 
+                            this.$router.push({path: '/order/submitOrder', query: {t: 'order'}})
                         }else{
                             this.$message.warning(data.msg)
                         }

@@ -326,3 +326,97 @@ $color: #745bff; // 主题色rgba(0, 131, 233, 1)
 		cursor: pointer;
 	}
 }
+
+/* 订单价格样式 */
+.pay-price{
+    padding: 30px;
+    font-size: 16px;
+    display: flex;
+    justify-content: flex-end;
+    .pay-price-info{
+        text-align: right;
+        p{
+            width: 250px;
+            display: flex;
+            justify-content: space-between;
+            line-height: 36px;
+            .price{
+                color: rgba(255,0,0,1);
+            }
+            .actual{
+                font-size: 36px;
+                color: rgba(254,0,0,1);
+            }
+        }
+        .actual-title{
+            margin-top: 16px;
+            line-height: 16px;
+        }
+        .to-pay{
+            background:$color;
+            border-radius:5px;
+            color:rgba(254,254,254,1);
+            font-size: 18px;
+            text-align: center;
+            line-height: 48px;
+            width: 179px;
+            margin: 61px 0 26px 71px;
+            cursor: pointer;
+        }
+    }
+}
+
+.orderInfo-thumb{
+    display: flex;
+    .orderInfo-thumb-wrap{
+        display: inline-block;
+        width:90px;
+        height:90px;
+        background:rgba(213,221,227,1);
+        border-radius:5px;
+        margin-right: 25px;
+        text-align: center;
+        .thumbnail{
+            display: inline-block;
+            width: 80%;
+            height: 100%;
+            background-size: contain;
+            background-position: 50%;
+            background-repeat: no-repeat;
+        }
+    }
+    .orderInfo-tip{
+        text-align: left;
+        line-height: 23px;
+    }
+}
+.upload-file{
+    border:1px solid rgba(254,108,35,1);
+    border-radius:5px;
+    text-align: center;
+    width: 118px;
+    height: 43px;
+    line-height: 43px;
+    margin-top: 23px;
+    margin: 0 auto;
+    cursor: pointer;
+    img{
+        display: inline-block;
+        vertical-align: middle;
+        margin-right: 8px;
+    }
+}
+
+/* 固定导航栏购物车数量样式 */
+.toolsbar-wrap .el-badge__content.is-fixed{
+    display: inline-block;
+    width: 13px;
+    height: 13px;
+    font-size: 10px;
+    border: none;
+    padding: 0;
+    line-height: normal;
+    position: absolute;
+    top: 28px;
+    right: 15px;
+  }

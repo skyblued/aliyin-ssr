@@ -125,6 +125,8 @@ export default {
                     this.$store.commit('setShopingState', {i:index,type: 0})
                 }
             })
+            let cook = this.$myParseCookie(this.$store.state.productionObj)
+            this.$cookies.set('myCar', cook, {path: '/'})
         },
         handleSelectedChange(i) {  // 单选
             this.tableData[i].Selected = !this.tableData[i].Selected
@@ -136,6 +138,8 @@ export default {
                 this.$store.commit('setShopingState', {i:i,type: 1})
                 this.totalPrice += this.tableData[i].subtotal
             }
+            let cook = this.$myParseCookie(this.$store.state.productionObj)
+            this.$cookies.set('myCar', cook, {path: '/'}) 
             this.checkedList = []
             this.tableData.forEach((item,index) => {
                 if(item.Selected == 1) {
@@ -165,7 +169,7 @@ export default {
         },
         handleToSettle() {  // 去结算
             if(this.disabled == false) {
-                this.$router.push({path: 'order/submitOrder', query: {t: 'cart'}})
+                this.$router.push({path: '/order/submitOrder', query: {t: 'cart'}})
             }
         },
 
@@ -175,6 +179,8 @@ export default {
             car.FileName = msg.name
             car.FilePath = msg.path
             this.$store.commit('setShopingCar', {i: this.index, shop: car})
+            let cook = this.$myParseCookie(this.$store.state.productionObj)
+            this.$cookies.set('myCar', cook, {path: '/'}) 
             this.tableData[this.index].fileName = msg.name
             this.getData()
         },
@@ -247,6 +253,8 @@ export default {
             }).then(() => {
                 this.$store.commit('delShopingCar', {i : i, num: 1})
                 this.checkedList.splice(i,1)
+                let cook = this.$myParseCookie(this.$store.state.productionObj)
+                this.$cookies.set('myCar', cook, {path: '/'}) 
                 this.getData()
             }).catch(() => {
                 this.$message({

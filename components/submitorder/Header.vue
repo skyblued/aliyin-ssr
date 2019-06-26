@@ -3,7 +3,7 @@
         <div class="header">
             <div class="header-left">
                 <nuxt-link to="/"><img src="/img/home/logo.svg" alt=""></nuxt-link>
-                <p v-if="path == '/order/submitorder'">提交订单</p>
+                <p v-if="path == '/order/submitOrder'">提交订单</p>
                 <p v-else-if="path == '/order/shoppingCart'">
                     我的购物车
                     <span>温馨提示：产品出货时间，以最终下单并付款的时间起算，请尽快下单结算</span>
@@ -35,7 +35,7 @@ export default {
     },
     computed: {
         path() {
-            return this.$route.fullPath
+            return this.$route.path
         }
     }
 }
