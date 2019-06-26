@@ -1,9 +1,9 @@
 <template>
     <div class="master-temp">
-        <div class="mastertemp-header">
-            <div class="mastertemp-header-item">
-                <div class="mastertemp-header-title">产品分类: </div>
-                <div class="mastertemp-header-content">
+        <div class="designer-header">
+            <div class="designer-header-item">
+                <div class="designer-header-title">产品分类: </div>
+                <div class="designer-header-content">
                     <el-select v-model="product" @change="handleChange" style="width: 150px;">
                         <el-option label="全部" value="all"></el-option>
                         <el-option
@@ -24,9 +24,9 @@
                     </el-select>
                 </div>
             </div>
-            <div class="mastertemp-header-item">
-                <div class="mastertemp-header-title">创建时间: </div>
-                <div class="mastertemp-header-content">
+            <div class="designer-header-item">
+                <div class="designer-header-title">创建时间: </div>
+                <div class="designer-header-content">
                     <el-date-picker
                         v-model="date"
                         type="daterange"
@@ -40,7 +40,7 @@
                     </el-date-picker>
                 </div>
             </div>
-            <div class="mastertemp-header-search">搜索</div>
+            <div class="designer-search-btn">搜索</div>
         </div>
         <div class="mastertemp-content"></div>
     </div>
@@ -117,53 +117,5 @@ export default {
     margin: 65px auto 0;
     padding: 0 65px;
     display: flex;
-    .mastertemp-header{
-        min-width: 1200px;
-        display: flex;
-        margin-bottom: 57px;
-        height: 76px;
-        box-shadow: 0px 0px 20px 1px rgba(203,211,217,0.3);
-        border-radius: 10px;
-        background:rgba(254,254,254,1);
-        padding: 20px 28px 19px 20px;
-        .mastertemp-header-item{
-            display: flex;
-            align-items: center;
-            margin-right: 30px;
-            .mastertemp-header-title{
-                margin-right: 20px;
-                font-size: 14px;
-            }
-        }
-        .mastertemp-header-search{
-            padding: 0 15px;
-            text-align: center;
-            background: $color;
-            border-radius: 5px;
-            font-size: 14px;
-            line-height: 37px;
-            color: rgba(255,255,255,1);
-            cursor: pointer;
-        }
-    }
-}
-.master-temp /deep/ .el-input__inner{
-    height: 37px;
-}
-.master-temp /deep/ .el-select .el-input{
-    .el-input__suffix-inner i::before{
-        content: '';
-    }
-    .el-input__suffix-inner i::after{
-        background-image: url(/img/personal/drop_down.png);
-        width: 100%;
-        height: 30px;
-    }
-    .el-select__caret{
-        transform: rotateZ(0);
-    }
-}
-.master-temp /deep/ .el-date-editor .el-range__icon{
-    font-size: 22px;
 }
 </style>

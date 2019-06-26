@@ -119,7 +119,7 @@ export default {
                         SvgContent: '',
                     }]
                 }
-                var url = window.open('/designer', '_blank')
+                var url = window.open('/design', '_blank')
                 this.$axios.post(this.$store.state.port.DesignerTemplate,obj).then(res =>{
                     // console.log(JSON.parse(res.data))
                     this.dialogDiyVisible = false
@@ -127,7 +127,7 @@ export default {
                     let data = JSON.parse(res.data)
                     let str = 'TemplateNumber=' + data.TemplateNumber
                     str = window.btoa(str)
-                    url.location = '/designer/' + str
+                    url.location = '/design/' + str
                 })
             }else{
                 console.log('缺少必要参数')

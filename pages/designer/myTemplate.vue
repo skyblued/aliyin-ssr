@@ -19,7 +19,7 @@
                         </el-select>
                     </el-form-item>
                     <el-form-item label="审核状态 : " class="select">
-                        <el-select v-model="formInline.audstate" style="width: 96px;" @change="handleChange2">
+                        <el-select v-model="formInline.audstate" style="width: 96px;" @change="handleChange2" placeholder="请选择">
                             <el-option v-for="(item,index) in audstateList" :key="index" :label="item.label" :value="item.value" :disabled="disabled"></el-option>
                         </el-select>
                     </el-form-item>
@@ -423,13 +423,11 @@ export default {
     width: 100%;
     min-width: 1200px;
     margin: 65px auto 0;
-    padding: 0 65px;
+    padding-left: 65px;
     display: flex;
 }
 .my-template{
-    width: 1500px;
     min-width: 1200px;
-    margin: 0 auto;
     user-select: none;
     overflow: visible;
 }
@@ -438,12 +436,14 @@ export default {
     min-width: 1200px;
     display: flex;
     justify-content: space-between;
+    flex-wrap: wrap;
     margin-bottom: 57px;
-    height: 76px;
+    // height: 76px;
     box-shadow: 0px 0px 20px 1px rgba(203,211,217,0.3);
     border-radius: 10px;
     background:rgba(254,254,254,1);
-    padding: 20px 28px 19px 20px;
+    padding: 20px;
+    padding-bottom: 0;
     .el-form .el-form-item{
         margin-right: 26px;
         height: 37px;

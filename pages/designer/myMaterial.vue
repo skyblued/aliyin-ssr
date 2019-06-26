@@ -1,53 +1,75 @@
 <template>
     <div id="my-material">
         <div class="my-material">
-            <div class="material-header">
-                <el-form :inline="true" class="demo-form-inline">
-                    <el-form-item label="素材类型 : " class="select">
-                        <el-select v-model="formInline.type" style="width: 98px;" @change="handleChooseType" placeholder="全部">
+            <div class="designer-header">
+                <div class="designer-header-item">
+                    <div class="designer-header-title">素材类型: </div>
+                    <div class="designer-header-content">
+                        <el-select v-model="formInline.type" style="width: 108px" @change="handleChooseType">
                             <el-option label="全部类型" value=""></el-option>
-                            <el-option v-for="(item,index) in materialTypeList" :key="index" :label="item.TypeName" :value="item.Num"></el-option>
+                            <el-option v-for="(item,index) in materialTypeList"
+                                :key="index"
+                                :label="item.TypeName"
+                                :value="item.Num">
+                            </el-option>
                         </el-select>
-                    </el-form-item>
-                    <el-form-item label="素材分类 : " class="select" v-if="materialClassList.length">
-                        <el-select v-model="formInline.classify" style="width: 98px;" @change="handleChooseClassify" placeholder="全部">
+                    </div>
+                </div>
+                <div class="designer-header-item" v-if="materialClassList.length">
+                    <div class="designer-header-title">素材分类: </div>
+                    <div class="designer-header-content">
+                        <el-select v-model="formInline.classify" style="width: 108px" @change="handleChooseClassify">
                             <el-option label="全部分类" value=""></el-option>
-                            <el-option v-for="(item,index) in materialClassList" :key="index" :label="item.TypeCategoryName" :value="item.Num"></el-option>
+                            <el-option v-for="(item,index) in materialClassList"
+                                :key="index"
+                                :label="item.TypeCategoryName"
+                                :value="item.Num">
+                            </el-option>
                         </el-select>
-                    </el-form-item>
-                    <el-form-item label="提交状态 : " class="select">
-                        <el-select v-model="formInline.value1" style="width: 80px;" @change="handleChange1" placeholder="全部">
-                            <el-option v-for="(item,index) in submitStateList" :key="index" :label="item.label" :value="item.value"></el-option>
+                    </div>
+                </div>
+                <div class="designer-header-item">
+                    <div class="designer-header-title">提交状态: </div>
+                    <div class="designer-header-content">
+                        <el-select v-model="formInline.value1" style="width: 98px" @change="handleChange1">
+                            <el-option v-for="(item,index) in submitStateList"
+                                :key="index"
+                                :label="item.label"
+                                :value="item.value">
+                            </el-option>
                         </el-select>
-                    </el-form-item>
-                    <el-form-item label="审核状态 : " class="select">
-                        <el-select v-model="formInline.value2" style="width: 80px;" @change="handleChange2" placeholder="全部">
-                            <el-option v-for="(item,index) in examineStateList" :key="index" :label="item.label" :value="item.value" :disabled="disabled"></el-option>
+                    </div>
+                </div>
+                <div class="designer-header-item">
+                    <div class="designer-header-title">审核状态: </div>
+                    <div class="designer-header-content">
+                        <el-select v-model="formInline.value2" style="width: 98px" @change="handleChange2">
+                            <el-option v-for="(item,index) in examineStateList"
+                                :key="index"
+                                :label="item.label"
+                                :value="item.value"
+                                :disabled="disabled">
+                            </el-option>
                         </el-select>
-                    </el-form-item>
-                    <el-form-item label="设计时间 : " class="form-item">
-                        <div class="block-date">
-                            <el-date-picker
-                                v-model="formInline.startTime"
-                                type="date"
-                                value-format="yyyy-MM-dd HH:mm:ss"
-                                placeholder="选择开始日期"
-                                :picker-options="pickerOptions0">
-                            </el-date-picker>
-                        </div>
-                        <span class="range">~</span>
-                        <div class="block-date">
-                            <el-date-picker
-                                v-model="formInline.endTime"
-                                type="date"
-                                value-format="yyyy-MM-dd HH:mm:ss"
-                                placeholder="选择结束日期"
-                                :picker-options="pickerOptions1">
-                            </el-date-picker>
-                        </div>
-                    </el-form-item>
-                </el-form>
-                <div class="screen" @click="handleScreen">筛选</div>
+                    </div>
+                </div>
+                <div class="designer-header-item">
+                    <div class="designer-header-title">设计时间: </div>
+                    <div class="designer-header-content">
+                        <el-date-picker
+                            v-model="formInline.date"
+                            type="daterange"
+                            start-placeholder="开始日期"
+                            end-placeholder="结束日期"
+                            range-separator="~"
+                            prefix-icon="el-icon-time"
+                            value-format="yyyy-MM-dd HH:mm:ss"
+                            :default-time="['00:00:00', '23:59:59']"
+                            @change="handleDate">
+                        </el-date-picker>
+                    </div>
+                </div>
+                <div class="designer-search-btn" @click="handleScreen">筛选</div>
                 <div class="add-material-btn" @click="handleOpenAdd">添加素材</div>
                 <el-dialog
                     title="上传素材"
@@ -242,9 +264,7 @@ export default {
                 classify: '',
                 value1: '0',
                 value2: '',
-                //date: ''
-                startTime: '',
-                endTime: ''
+                date: ''
             },
             form: {
                 type: '',
@@ -296,27 +316,6 @@ export default {
                 currentPage: 1,  // 当前页
                 totalRecords: 0,   // 总条数
                 pageSize: 10,    // 每页个数
-            },
-            pickerOptions0: {
-                disabledDate: (time) => {
-                    if (this.formInline.endTime) {
-                        return time.getTime() > new Date(this.formInline.endTime).getTime();
-                    } else {
-                        return time.getTime() > Date.now();
-                    }
-                }
-            },
-            pickerOptions1: {
-                disabledDate: (time) => {
-                    if(this.formInline.startTime){
-                        return (
-                            time.getTime() > Date.now() ||
-                            time.getTime() < new Date(this.formInline.startTime).getTime()
-                        );
-                    }else{
-                        return time.getTime() > Date.now();
-                    }
-                }
             },
             checkAll: false,
             checkedList: [],
@@ -493,8 +492,7 @@ export default {
             //this.formInline = {}
         },
         handleUpload() {
-            this.formInline.startTime = ''
-            this.formInline.endTime = ''
+            this.formInline.date = ''
             if(!this.form.keyword){
                 this.$message({type: 'warning', message: '请填写素材关键词'})
                 return
@@ -556,17 +554,20 @@ export default {
             }
         },
 
+        // 选择时间
+        handleDate(value) {
+            if(value != null) {
+                this.startTime = value[0]
+                this.endTime = value[1]
+            }else{
+                this.startTime = ''
+                this.pendTime = ''
+            }
+        },
         // 筛选
         handleScreen() {
             console.log('筛选')
             this.tableData = []
-            if((this.formInline.startTime == '' && this.formInline.endTime == '') || (this.formInline.startTime == null && this.formInline.endTime == null)){
-                this.startTime = ''
-                this.endTime = ''
-            }else{
-                this.startTime = this.formInline.startTime
-                this.endTime = this.formInline.endTime
-            }
             this.substate = this.substate || '0'
             var url = '/DesignerMaterials?pageIndex=' + this.page.currentPage + '&SubStatus=' + this.substate + '&AudStatus=' + this.audstate + '&StarTime=' + this.startTime + '&EndTime=' + this.endTime + '&TypeNum=' + this.formInline.type + '&TypeCateNum=' + this.formInline.classify + '&Keywords=' + ''
             this.$axios.get(url).then(res =>{
@@ -698,77 +699,29 @@ export default {
 }
 </script>
 
-<style lang="scss">
-
+<style lang="scss" scoped>
 #my-material{
     width: 100%;
-   // min-width: 1200px;
     margin: 65px auto 0;
-    padding: 0 65px;
+    padding-left: 65px;
     display: flex;
 }
 
 .my-material{
-    width: 1500px;
     min-width: 1200px;
-    margin: 0 auto;
     user-select: none;
-    .el-table{
-        width: 100%;
-    }
-}
-
-.material-header{
-    display: flex;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    margin-bottom: 57px;
-    height: 76px;
-    box-shadow: 0px 0px 20px 1px rgba(203,211,217,0.3);
-    border-radius: 10px;
-    background:rgba(254,254,254,1);
-    padding: 20px 0 19px 20px;
-    position: relative;
-    // 搜索按钮样式
-    .screen{
-        background: $color;
-        display: inline-block;
+    .designer-header .add-material-btn{
         height: 37px;
         line-height: 37px;
-        padding: 0 12px;
-        border-radius: 5px;
-        color: rgba(254,254,254,1);
-        cursor: pointer;
-    }
-    .demo-form-inline .el-form-item{
-        margin-right: 24px;
-        height: 37px;
-        .el-button{
-            height: 37px;
-        }
-    }
-    .demo-form-inline .el-form-item:last-child{
-        margin-right: 0;
-    }
-    .el-input__inner{
-        padding: 0 10px;
-        font-size: 12px;
-    }
-    .add-material-btn{
+        text-align: center;
+        padding: 0 15px;
+        color: rgba(255,255,255,1);
+        font-size: 14px;
         background: $color;
         border-radius: 21px;
-        font-size: 16px;
-        font-family: MicrosoftYaHei;
-        font-weight: 400;
-        color:rgba(255,255,255,1);
-        text-align: center;
-        height: 37px;
-        line-height: 37px;
-        padding: 0 22px;
         cursor: pointer;
     }
 }
-
 
 // 素材表格样式
 .my-material .el-table th .cell{
@@ -812,7 +765,7 @@ export default {
 }
 
 // 弹出框关闭按钮样式
-.my-material .el-dialog{
+.my-material /deep/ .el-dialog{
     width: 33%;
     min-width: 630px;
     border-radius:10px;
@@ -839,7 +792,7 @@ export default {
     }
 }
 
-.my-material .el-dialog{
+.my-material /deep/ .el-dialog{
     .el-dialog__body{
         padding: 31px 58px 57px;
         .el-form-item{

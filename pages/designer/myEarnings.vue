@@ -1,44 +1,44 @@
 <template>
     <div id="earnings">
         <div class="earnings">
-            <div class="earnings-header">
-                <el-form :inline="true" class="demo-form-inline">
-                    <el-form-item label="积分类型 : " class="select">
-                        <el-select v-model="formInline.type" style="width: 108px;">
-                            <el-option v-for="(item,index) in productList" :key="index" :label="item.label" :value="item.value"></el-option>
+            <div class="designer-header">
+                <div class="designer-header-item">
+                    <div class="designer-header-title">积分类型: </div>
+                    <div class="designer-header-content">
+                        <el-select v-model="type" style="width: 108px;">
+                            <el-option 
+                                v-for="item in productList" 
+                                :key="item.value" 
+                                :label="item.label" 
+                                :value="item.value">
+                            </el-option>
                         </el-select>
-                    </el-form-item>
-                    <el-form-item label="时间 : " class="form-item date">
-                        <div class="block-date">
-                            <el-date-picker
-                                v-model="formInline.startTime"
-                                type="date"
-                                value-format="yyyy-MM-dd HH:mm:ss"
-                                placeholder="选择开始日期"
-                                :picker-options="pickerOptions0">
-                            </el-date-picker>
-                        </div>
-                        <span class="range">~</span>
-                        <div class="block-date">
-                            <el-date-picker
-                                v-model="formInline.endTime"
-                                type="date"
-                                value-format="yyyy-MM-dd HH:mm:ss"
-                                placeholder="选择结束日期"
-                                :picker-options="pickerOptions1">
-                            </el-date-picker>
-                        </div>
-                    </el-form-item>
-                    <el-form-item>
-                        <div class="screen" @click="getBalanceList">筛选</div>
-                    </el-form-item>
-                </el-form>
+                    </div>
+                </div>
+                <div class="designer-header-item">
+                    <div class="designer-header-title">时间: </div>
+                    <div class="designer-header-content">
+                        <el-date-picker
+                            v-model="date"
+                            type="daterange"
+                            start-placeholder="开始日期"
+                            end-placeholder="结束日期"
+                            range-separator="~"
+                            prefix-icon="el-icon-time"
+                            value-format="yyyy-MM-dd HH:mm:ss"
+                            :default-time="['00:00:00', '23:59:59']"
+                            @change="handleDate">
+                        </el-date-picker>
+                    </div>
+                </div>
+                <div class="designer-search-btn" @click="getBalanceList">搜索</div>
                 <div class="integral">总积分: {{balance}}</div>
             </div>
             <el-table
                 v-loading="loading"
                 :data="tableData"
-                :row-class-name="tableRowClassName">
+                :row-class-name="tableRowClassName"
+                empty-text="暂无数据">
                 <el-table-column
                     label="时间"
                     min-width="200">
@@ -83,11 +83,8 @@ import HomePagination from '@/components/home/HomePagination.vue'
 export default {
     data () {
         return {
-            formInline: {
-                type: '',
-                startTime: '',
-                endTime: '',
-            },
+            type:'',
+            date: '',
             productList: [{
                 value: '',
                 label: '全部'
@@ -106,27 +103,6 @@ export default {
             startTime: '',
             endTime: '',
             tableData: [], 
-            pickerOptions0: {
-                disabledDate: (time) => {
-                    if (this.formInline.endTime) {
-                        return time.getTime() > new Date(this.formInline.endTime).getTime();
-                    } else {
-                        return time.getTime() > Date.now();
-                    }
-                }
-            },
-            pickerOptions1: {
-                disabledDate: (time) => {
-                    if(this.formInline.startTime){
-                        return (
-                            time.getTime() > Date.now() ||
-                            time.getTime() < new Date(this.formInline.startTime).getTime()
-                        );
-                    }else{
-                        return time.getTime() > Date.now();
-                    }
-                }
-            },
             loading: true,
             balance: '',  // 总积分
         }
@@ -138,21 +114,20 @@ export default {
             }
             return '';
         },
-        // 根据日期查询
-        handleBlur() {},
-
+        // 选择时间
+        handleDate(value) {
+            if(value != null) {
+                this.startTime = value[0]
+                this.endTime = value[1]
+            }else{
+                this.startTime = ''
+                this.pendTime = ''
+            }
+        },
         // 获取积分明细列表
         getBalanceList() {
             this.tableData = []
-            if((this.formInline.startTime == '' && this.formInline.endTime == '') || (this.formInline.startTime == null && this.formInline.endTime == null)){
-                this.startTime = ''
-                this.endTime = ''
-            }else{
-                this.startTime = this.formInline.startTime
-                this.endTime = this.formInline.endTime
-            }
-            let type = this.formInline.type
-            var url = '/BalanceDetils?pageIndex=' + this.page.currentPage + '&type=' + type + '&starttime=' + this.startTime + '&endtime=' + this.endTime
+            var url = '/BalanceDetils?pageIndex=' + this.page.currentPage + '&type=' + this.type + '&starttime=' + this.startTime + '&endtime=' + this.endTime
             this.$axios.get(url).then(res =>{
                 console.log(res.data)
                 this.loading = false
@@ -188,40 +163,17 @@ export default {
 
 #earnings{
     width: 100%;
-    min-width: 960px;
     margin: 65px auto 0;
-    padding: 0 65px;
+    padding-left: 65px;
     display: flex;
 }
 
 .earnings{
-    width: 1500px;
-    min-width: 960px;
-    margin: 0 auto;
+    min-width: 1200px;
     user-select: none;
-}
-
-.earnings-header{
-    min-width: 960px;
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 37px;
-    height: 76px;
-    box-shadow: 0px 0px 20px 1px rgba(203,211,217,0.3);
-    border-radius: 10px;
-    background:rgba(254,254,254,1);
-    padding: 20px 28px 19px 20px;
-}
-
-// 搜索按钮样式
-.screen{
-    background: $color;
-    display: inline-block;
-    height: 37px;
-    line-height: 37px;
-    padding: 0 12px;
-    border-radius: 5px;
-    color: rgba(254,254,254,1);
-    cursor: pointer;
+    .integral{
+        line-height: 37px;
+        margin-left: 200px;
+    }
 }
 </style>
