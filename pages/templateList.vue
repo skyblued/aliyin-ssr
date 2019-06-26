@@ -34,6 +34,11 @@ export default {
 			isFixed: false,
 		}
 	},
+	head() {
+		return {
+			title: '免费在线设计_免费海量模板无限制使用_免费下载高清无水印文件_阿里印'
+		}
+	},
 	methods: {
 		scrollToTop() {
 			let osTop = document.documentElement.scrollTop || document.body.scrollTop

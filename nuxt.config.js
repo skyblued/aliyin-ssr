@@ -5,7 +5,7 @@ module.exports = {
 	** Headers of the page
 	*/
 	head: {
-		title:  '阿里印-ssr',//process.env.npm_package_name ||
+		title: '阿里印_在线设计印刷_免费设计_工厂直供_全国发货',//process.env.npm_package_name ||
 		meta: [
 			{ charset: 'utf-8' },
 			{ name: 'viewport', content: 'width=device-width, initial-scale=1' },
