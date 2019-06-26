@@ -35,11 +35,7 @@ export default {
 		Footer
 	},
 	async asyncData({app, $axios, route, store, query, req, redirect, error}) {
-		// console.log(query, '服务端' + process.server , '客服端' + process.client);
-		// let cookie = app.$cookiz.getAll();
-		// if (req) console.log(cookie,isDev, req.headers.cookie);
-		let isFixed = false;
-		let marginTop = 0;
+		
 		let [AllTemplate, Carousel, Steps, TempCommend, FooterCode, FooterArticle] = await Promise.all([
 			$axios.get(store.state.port.AllTemplate),
 			$axios.get(store.state.port.Advertise + '?ID=131'),
@@ -55,8 +51,8 @@ export default {
 			label: TempCommend.data,
 			qrcode: FooterCode.data.Advertisements[0].FileUrl,
 			articleList: FooterArticle.data,
-			isFixed,
-			marginTop
+			isFixed: false,
+			marginTop: 0
 		}
 	},
 	methods: {
@@ -72,6 +68,7 @@ export default {
 		}
 	},
 	mounted() {
+		this.$store.commit('login/addToKen', localStorage['token']);
 		window.addEventListener('scroll', this.scrollToTop)
 	},
 	destroyed () {
@@ -88,12 +85,6 @@ export default {
 	margin: 30px auto 20px;
 	padding-top: 25px;
 }
-.fixed{
-	position: fixed;
-	top: 0;
-	left: 0;
-	right: 0;
-	z-index: 2000;
-}
+
 </style>
 
