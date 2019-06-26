@@ -61,16 +61,6 @@ export default {
 		// console.log(store.state.login.token,1232131, app)
 		if (!store.state.login.token) store.commit('login/toggleShow', true)
 	},
-	validate({ params, query, redirect }) {
-		if (params.t) {
-			return true
-		} else {
-			return false
-			// redirect('/')
-
-		} // 参数无效，Nuxt.js 停止渲染当前页面并显示错误页面
-		
-	},
 	data() {
 	
 		return {

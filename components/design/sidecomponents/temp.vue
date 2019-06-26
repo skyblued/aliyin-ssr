@@ -54,7 +54,7 @@
 				</div>
 			</transition>
 		</div>
-		<div v-if="loadingIcon" style="text-align:center;padding: 50px 0;"><img style="height: 40px;" src="https://aliyinstatic.oss-cn-shenzhen.aliyuncs.com/img/loading.gif" title="加载中..." alt="加载中..."></div>
+		<div v-if="loadingIcon" style="text-align:center;padding: 50px 0;"><img style="height: 40px;" src="//static.aliyin.com/img/loading.svg" title="加载中..." alt="加载中..."></div>
 		<div v-if="!loadingIcon && !list.length" style="text-align:center;padding: 50px 0;"><img style="width: 50%;" src="/img/error/ku.png" title="空空如也" alt="空空如也"></div>
 		
     </div>

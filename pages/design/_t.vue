@@ -270,7 +270,7 @@
 											 	v-if="codeTypeTool == 'text'"
 												@click="textConversion"
 											>Aa</div>
-											<div @click="textToAdsorb">path</div>
+											<!-- <div @click="textToAdsorb">path</div> -->
 											<!--  <div>弧形</div> -->
 										</div>
 								</div>
@@ -2965,32 +2965,6 @@
 
 	}
 
-  // 预览图
-  
-  .close-btn {
-	position: absolute;
-	right: 20px;
-	top: 20px;
-	width: 30px;
-	height: 30px;
-	transform: rotate(45deg);
-	cursor: pointer;
-	z-index: 2019;
-	&::before,
-	&::after {
-		content: '';
-		position: absolute;
-		top:50%;
-		width: 30px;
-		height: 3px;
-		border-radius: 3px;
-		background: $color;
-		
-	}
-	&::before {
-		transform: rotate(90deg);
-	}
-}
 // 右键菜单
 .right-menu {
 	position: absolute;

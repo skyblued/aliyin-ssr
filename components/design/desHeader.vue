@@ -2,7 +2,7 @@
     <div class="des-header">
         <div class="des-header-left">
             <div class="logo">
-				<router-link to="/"><img src="/img/logo.svg" alt="logo"></router-link>
+				<nuxt-link to="/"><img src="/img/logo.svg" alt="logo"></nuxt-link>
 			</div>
             <div class="set">
 				<span :class="setundo.un == 0 ? 'undo' : ''" @click="undo('undo')">撤销</span>

@@ -313,7 +313,7 @@ export default {
 			for (let item in obj) {
 				formdata.append(item, obj[item])
 			}
-			this.$axios.post(this.$store.state.print.printprice, formdata)
+			this.$axios.post(this.$store.state.port.print.printprice, formdata)
 			.then(res => {
 				// console.log(res)
 				this.TotalPrice = res.data.TotalPrice || 0
@@ -445,7 +445,7 @@ export default {
 		},
 		getQr () { // 获取支付二维码
 			let url = `?Url=${window.location.origin}/pay/&Action=PrintShop&TeamNum=6666&Num=&OrderCode=`
-			this.$axios.get(this.$store.state.print.pay + url)
+			this.$axios.get(this.$store.state.port.print.pay + url)
 			.then(res => {
 				this.Qr = res.data;
 			})
@@ -455,7 +455,7 @@ export default {
 	},
 	mounted () {
 		this.getSize() // 获取规格
-		this.getQr() // 获取支付二维码
+		// this.getQr() // 获取支付二维码
 	},
 }
 </script>
@@ -516,34 +516,7 @@ export default {
 		color: $color;
 	}
 }
-.close-btn {
-	position: absolute;
-	right: -40px;
-	top: 5px;
-	width: 24px;
-	height: 24px;
-	transform: rotate(45deg);
-	cursor: pointer;
-	&::before {
-		content: '';
-		position: absolute;
-		top:50%;
-		width: 24px;
-		height: 2px;
-		border-radius: 2px;
-		background: #fff;
-		transform: rotate(90deg);
-	}
-	&::after {
-		content: '';
-		position: absolute;
-		top:50%;
-		width: 24px;
-		height: 2px;
-		border-radius: 2px;
-		background: #fff;
-	}
-}
+
 .dialog-content {
 	padding: 20px;
 	
