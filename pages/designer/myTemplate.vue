@@ -3,25 +3,23 @@
         <div class="my-template">
             <div class="template-header">
                 <el-form :inline="true" class="demo-form-inline">
-                    <el-form-item label="全部产品 : " class="select">
-                        <el-select v-model="formInline.product" clearable style="width: 128px;" @change="handleChange">
-                            <el-option label="全部" value="all"></el-option>
-                            <el-option v-for="(item,index) in productList" :key="index" :label="item.ClassName" :value="index"></el-option>
-                        </el-select>
-                    </el-form-item>
-                    <el-form-item label="产品分类 : " class="select">
-                        <el-select v-model="formInline.productType" clearable style="width: 128px;">
-                            <el-option label="全部" value=""></el-option>
-                            <el-option v-for="(item,index) in productTypeList" :key="index" :label="item.TypeName" :value="item.TypeId"></el-option>
-                        </el-select>
+                    <el-form-item label="产品分类 : ">
+                        <el-cascader
+                            expand-trigger="hover"
+                            :options="options"
+                            clearable
+                            :change-on-select="true"
+                            v-model="selectedOptions"
+                            @change="handleChange">
+                        </el-cascader>
                     </el-form-item>
                     <el-form-item label="提交状态 : " class="select">
-                        <el-select v-model="formInline.substate" clearable style="width: 98px;" @change="handleChange1">
+                        <el-select v-model="formInline.substate" style="width: 80px;" @change="handleChange1">
                             <el-option v-for="(item,index) in substateList" :key="index" :label="item.label" :value="item.value"></el-option>
                         </el-select>
                     </el-form-item>
                     <el-form-item label="审核状态 : " class="select">
-                        <el-select v-model="formInline.audstate" clearable style="width: 118px;" @change="handleChange2">
+                        <el-select v-model="formInline.audstate" style="width: 96px;" @change="handleChange2">
                             <el-option v-for="(item,index) in audstateList" :key="index" :label="item.label" :value="item.value" :disabled="disabled"></el-option>
                         </el-select>
                     </el-form-item>
@@ -60,7 +58,7 @@
                     min-width="164">
                     <template slot-scope="scope">
                         <!-- <img :src="$store.state.port.imgBaseUrl+scope.row.thumb" alt="" style="width: 100px;height: auto;"> -->
-                        <div class="temp-thumb" :style="{'background-image': `url(${$store.state.port.imgBaseUrl+scope.row.thumb})`}"></div>
+                        <div class="temp-thumb" :style="{'background-image': `url(${$store.state.port.imgBaseUrl+scope.row.thumbnail})`}"></div>
                     </template>
                 </el-table-column>
                 <el-table-column
@@ -75,7 +73,7 @@
                     min-width="150">
                     <template slot-scope="scope">
                         <div v-for="(item,i) in scope.row.trade" :key="i" class="temp-filters">
-                            <span>{{item.Name}}: </span>
+                            <span class="temp-filters-title">{{item.Name}}: </span>
                             <span v-for="(items,index) in item.FilterValues" :key="index" class="temp-classify">
                                 <img class="temp-color" v-if="items.DisplayMode == 1" :src="$store.state.port.imgBaseUrl+items.ImageUrl" alt="">
                                 <span v-else>{{items.Name}}</span>
@@ -101,13 +99,14 @@
                     label="模板状态"
                     min-width="116">
                     <template slot-scope="scope">
-                        <span v-if="scope.row.state== -1 " style="color: #333">未提交</span>
+                        <span v-if="scope.row.state== -1 && !scope.row.text" style="color: #333">未提交</span>
                         <span v-else-if="scope.row.state == 1 " style="color: #008000">已通过审核</span>
                         <!-- <span v-else-if="scope.row.state =='已下架'" style="color: #ff9900">已下架</span> -->
-                        <span v-else-if="scope.row.state == -1" style="color: red">
+                        <span v-else-if="scope.row.state == -1 && scope.row.text" style="color: red">
                             审核不通过
                             <p style="color: #333">
                                 <i class="el-icon-warning"></i>
+                                <span>{{scope.row.text}}</span>
                             </p>
                         </span>
                         <span v-else style="color: #0099ff">审核中</span>
@@ -134,16 +133,17 @@
                 <el-table-column label="操作">
                     <template slot-scope="scope">
                         <el-button size="mini" v-if="scope.row.state == -1" @click="handleEdit(scope.row)">编辑</el-button>
-                        <el-button size="mini" type="success" v-if="scope.row.state == -1" @click="handleSubmit(scope.row)">提交</el-button>
-                        <el-dialog title="提交模板" :visible.sync="$store.state.dialogSubmit" :close-on-click-modal="false" :modal-append-to-body="false">
-                            <temp-submit :productId="productId" :tempNum="num" @getRecord="getData"></temp-submit>
-                        </el-dialog>
-                        <el-button size="mini" type="danger" v-if="scope.row.state == -1 || scope.row.state == 0" @click="handleDelete(scope.row.tempNum,scope.row.i)">删除</el-button>
+                        <el-button size="mini" type="success" v-if="scope.row.state == -1" @click.stop="handleSubmit(scope.row)">提交</el-button>
+                        <el-button size="mini" type="danger" v-if="scope.row.state == -1 || scope.row.state == 0" @click="handleDelete(scope.row.TemplateNumber,scope.$index)">删除</el-button>
                         <el-button size="mini" type="primary" v-if="scope.row.state == 2">下架</el-button>
                     </template>
                 </el-table-column>
             </el-table>
-            <div class="block" v-if="tableData.length">
+            <el-dialog title="提交模板" :visible.sync="dialogSubmit" :close-on-click-modal="false" :modal-append-to-body="false" :lock-scroll="false" top="10vh" :show-close="false">
+                <TempSubmit v-if="dialogSubmit" :tempInfo="tempInfo" :ProductTypeId="ProductTypeId" :TemplateNumber="TemplateNumber" :faceImg="faceImg" @getRecord="getData"></TempSubmit>
+                <div class="close-btn" style="right: -55px;top: 8px;" @click="dialogSubmit = false"></div>
+            </el-dialog>
+            <div class="block" v-if="tableData.length && page.totalRecords > 20">
                 <HomePagination :Page="page" @getTempList="getData" />
             </div>
         </div>
@@ -151,22 +151,19 @@
 </template>
 
 <script>
-import TempSubmit from '@/components/designer/mytemplate/TempSubmit.vue'
+import TempSubmit from '@/components/designer/TempSubmit.vue'
 import HomePagination from '@/components/home/HomePagination.vue'
 export default {
     data () {
         return {
             formInline: {
-                product: '',
-                productType: '',
                 substate: '',
                 audstate: '',
                 startTime: '',
                 endTime: ''
             },
-            product: '',
             substateList: [{
-                value: '0',
+                value: '',
                 label: '全部'
             },{
                 value: '1',
@@ -176,9 +173,6 @@ export default {
                 label: '未提交'
             }],
             audstateList: [{
-                value: '',
-                label: '全部'
-            },{
                 value: '0',
                 label: '待审核'
             },{
@@ -190,8 +184,6 @@ export default {
             }],
             disabled: false,
             tableData: [],   // 设计记录列表
-            productList: [],
-            productTypeList: [],
             page: {
                 currentPage: 1,  // 当前页
                 totalRecords: 0,   // 总条数
@@ -199,8 +191,11 @@ export default {
             },
             startTime: '',
             endTime: '',
-            productId: '',                  // 当前模板封面
-            num: '',                    // 当前模板编号
+            ProductTypeId: '',                  // 当前模板产品id
+            TemplateNumber: '',                    // 当前模板编号
+            tempName: '',              // 当前模板名称
+            faceImg: '',               // 当前模板封面
+            tempInfo: null,      // 当前模板信息     
             loading: true,      // 加载动画
             pickerOptions0: {
                 disabledDate: (time) => {
@@ -222,7 +217,14 @@ export default {
                         return time.getTime() > Date.now();
                     }
                 }
-            }
+            },
+            selectedOptions: [''],
+            options: [{
+                value: '',
+                label: '全部',
+            }],
+            enumArr: [],
+            dialogSubmit: false,  // 提交模板弹框
         }
     },
     methods: {
@@ -234,18 +236,13 @@ export default {
         },
 
         handleChange(val) {
-            if(val !== 'all' && val !== ''){
-                this.productTypeList = this.productList[val].ProductTypeList
-                this.formInline.productType = ''
-                this.product = this.productList[val].ClassNum
-            }else{
-                this.product = ''
-                this.formInline.productType = ''
-                this.productTypeList = []
-            }
+            // console.log(val)
         },
         handleChange1(val) {
-            this.formInline.audstate = ''
+            this.formInline.audstate = '0'
+            if(val == '') {
+                this.formInline.audstate = ''
+            }
             if(val == '-1'){
                 this.disabled = true
                 this.formInline.audstate = ''
@@ -259,16 +256,19 @@ export default {
             }
         },
 
-        // 提交
+        // 打开提交弹框
         handleSubmit(row) {
-            this.$store.commit('setDialogSubmit', true)
-            this.productId = row.productId
-            this.num = row.tempNum
+            this.ProductTypeId = row.ProductTypeId
+            this.TemplateNumber = row.TemplateNumber
+            this.faceImg = row.thumb
+            this.dialogSubmit = true
         },
         // 获取设计师设计记录
         getData() {
             this.tableData = []
-            let productType = this.formInline.productType || ''
+            this.loading = true
+            let product = this.selectedOptions[0] || ''
+            let productType = this.selectedOptions[1] || ''
             if((this.formInline.startTime == '' && this.formInline.endTime == '') || (this.formInline.startTime == null && this.formInline.endTime == null)){
                 this.startTime = ''
                 this.endTime = ''
@@ -278,7 +278,7 @@ export default {
             }
             var formData = new FormData()
             formData.append('pageIndex', this.page.currentPage);
-            formData.append('productcategory', this.product);
+            formData.append('productcategory', product);
             formData.append('producttypeid', productType);
             formData.append('startTime', this.startTime);
             formData.append('endTime', this.endTime);
@@ -296,6 +296,7 @@ export default {
                 var desrecordList = []
                 for(var i=0;i<res.data.Data.length;i++) {
                     var obj = {}
+                    obj.thumbnail = res.data.Data[i].FacePicture + '?v=' + new Date().getTime()
                     obj.thumb = res.data.Data[i].FacePicture
                     obj.typeName = res.data.Data[i].ProductTypeName
                     obj.trade = res.data.Data[i].StrFilters
@@ -305,9 +306,17 @@ export default {
                     obj.use = res.data.Data[i].Counts
                     obj.visits = res.data.Data[i].Visits
                     obj.subject = res.data.Data[i].StrThematic
-                    obj.tempNum = res.data.Data[i].TemplateNumber
-                    obj.productId = res.data.Data[i].ProductTypeId
+                    obj.TemplateNumber = res.data.Data[i].TemplateNumber
+                    obj.ProductTypeId = res.data.Data[i].ProductTypeId
+                    obj.tempname = res.data.Data[i].Name
                     obj.i = i
+                    if(res.data.Data[i].SubTemplate) {
+                        obj.content = res.data.Data[i].SubTemplate.Contents
+                        obj.text = res.data.Data[i].SubTemplate.RefuseText
+                    }else{
+                        obj.text = ''
+                        obj.content = ''
+                    }
                     desrecordList[i] = obj
                 }
                 this.tableData = desrecordList
@@ -322,7 +331,8 @@ export default {
             this.$confirm('是否删除该模板?', '提示', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
-                type: 'warning'
+                type: 'warning',
+                lockScroll: false
             }).then(() => {
                 var formData = new FormData()
                 formData.append('TemplateNum', num);
@@ -330,11 +340,15 @@ export default {
                     headers:{'Content-Type': 'multipart/form-data'}
                 }
                 this.$axios.delete('/DesignerTemplate', {data: formData}, config).then(res => {
-                    console.log(res)
+                    //console.log(res)
                     if(res.data == true){
                         this.$message({type: 'success',message: '删除成功'})
                         this.tableData.splice(i,1)
                         this.page.totalRecords = this.page.totalRecords - 1
+                        if(this.tableData.length == 0 && this.page.currentPage > 1) {
+                            this.page.currentPage -= 1
+                            this.getData()
+                        }
                     }else{
                         this.$message({type: 'error',message: '删除失败'})
                     }
@@ -349,15 +363,50 @@ export default {
         // 编辑
         handleEdit(row) {
             //console.log(row)
-            let str = 'TemplateNumber=' + row.tempNum
+            let str = 'TemplateNumber=' + row.TemplateNumber
             str = window.btoa(str)
-            window.open('/designer/'+ str)
+            window.open('/design/'+ str)
         },
+
+        getEnumsList(val) {
+            if(val && val.length!=0) {
+                val.forEach(item => {
+                    this.enumArr.push(item)
+                    this.getEnumsList(item.ProductTypeList)
+                })
+            }
+        },
+        keep(val) {
+            val.Children = []
+            if (val.ProductTypeList && val.ProductTypeList.length!= 0) {
+                val.ProductTypeList.forEach(item => {
+                    val.Children.push({
+                        value: item.TypeId,
+                        label: item.TypeName,
+                        children: item.Children
+                    })
+                    this.keep(item)
+                })
+            } else {
+                delete val.Children;
+            }
+        }
     },
     mounted() {
-        this.$axios.get(this.$store.state.port.AllTemplate).then(res =>{
-            //console.log(res.data)
-            this.productList = res.data
+        this.$axios.get('/designer/products').then(res =>{
+            console.log(res.data)
+            var data = res.data
+            this.enumArr = []
+            this.getEnumsList(data)
+            data.forEach(item => {
+                this.keep(item)
+                this.options.push({
+                    value: item.ClassNum,
+                    label: item.ClassName,
+                    children: item.Children
+                })
+            })
+            // this.productList = res.data
         })
         this.getData()
     },
@@ -372,21 +421,21 @@ export default {
 
 #my-template{
     width: 100%;
-    min-width: 960px;
+    min-width: 1200px;
     margin: 65px auto 0;
     padding: 0 65px;
     display: flex;
 }
 .my-template{
     width: 1500px;
-    min-width: 900px;
+    min-width: 1200px;
     margin: 0 auto;
     user-select: none;
     overflow: visible;
 }
 
 .template-header{
-    //min-width: 1200px;
+    min-width: 1200px;
     display: flex;
     justify-content: space-between;
     margin-bottom: 57px;
@@ -401,6 +450,38 @@ export default {
         .el-button{
             height: 37px;
         }
+        .el-input__inner{
+            padding-left: 10px;
+            padding-right: 0;
+            font-size: 12px;
+        }
+        .el-cascader{
+            display: inline-block;
+            line-height: 37px;
+            width: 210px;
+            .el-input__suffix-inner i::before{
+                content: '';
+            }
+            .el-input__suffix-inner i::after{
+                background-image: url(/img/personal/drop_down.png);
+                width: 100%;
+                height: 30px;
+            }
+            .el-input__suffix:hover::before{
+                content: '';
+                position: absolute;
+                top: 10px;
+                right: 5px;
+                display: inline-block;
+                vertical-align: middle;
+                background-image: url(/img/print/xqy_fork.png);
+                width: 16px;
+                height: 16px;
+            }
+            .el-input__suffix:hover .el-input__suffix-inner i::after{
+                display: none;
+            }
+        }
     }
 }
 .demo-form-inline .form-item{
@@ -410,16 +491,17 @@ export default {
     .block-date{
         display: inline-block;
         .el-date-editor, .el-input__inner{
-            width: 144px;
+            width: 120px;
         }
         .el-input--prefix .el-input__inner{
             padding-left: 35px;
-            padding-right: 18px;
+            padding-right: 0;
         }
     }
 }
 .my-template .el-table{
     width: 100%;
+    box-shadow: 0px 0px 20px 5px rgba(203,211,217,0.3);
 }
 
 .my-template .el-table td{
@@ -440,12 +522,18 @@ export default {
         display: block;
     }
     .temp-filters{
+        text-align: left;
+        padding-left: 10px;
         .temp-color{
             border-radius: 3px;
             display: inline-block;
             width: 23px;
             height: 19px;
             vertical-align: middle;
+        }
+        .temp-filters-title{
+            display: inline-block;
+            margin-right: 5px;
         }
         .temp-classify{
             margin-right: 5px;
@@ -499,9 +587,44 @@ export default {
         }
     }
     .el-dialog__body{
-        padding: 30px 51px 60px 32px;
+        padding: 30px 32px 60px;
     }
 }
 
 
+// 搜索按钮样式
+.screen{
+    background: $color;
+    display: inline-block;
+    height: 37px;
+    line-height: 37px;
+    padding: 0 12px;
+    border-radius: 5px;
+    color: rgba(254,254,254,1);
+    cursor: pointer;
+}
+// 下拉按钮样式
+.demo-form-inline .select .el-input__suffix-inner i::before{
+    content: '';
+}
+.demo-form-inline .select .el-select .el-input .el-select__caret{
+    transform: rotateZ(0);
+}
+.demo-form-inline .select .el-input__suffix-inner i::after{
+    background-image: url(/img/personal/drop_down.png);
+    width: 100%;
+    height: 30px;
+}
+
+.demo-form-inline .el-form-item__content{
+    .el-icon-date::before{
+        content: '';
+    }
+    .el-icon-date::after{
+        background-image: url(/img/personal/time_icon.png);
+        width: 100%;
+        height: 32px;
+        margin-right: 8px;
+    }
+}
 </style>

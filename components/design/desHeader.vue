@@ -62,7 +62,7 @@
     </div>
 </template>
 <script>
-import TempSubmit from '@/components/designer/mytemplate/TempSubmit.vue'
+import TempSubmit from '@/components/designer/TempSubmit.vue'
 export default {
 	components: {
 		TempSubmit

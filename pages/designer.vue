@@ -16,8 +16,8 @@
                     </p>
                 </div>
                 <ul>
-                    <li :class="asideTitle == 'desCreate' ? 'active' : ''" @click="handleToggle('desCreate')">
-                        <img :src="asideTitle == 'desCreate' ? '/img/personal/cjdd_blue_icon.png' : '/img/personal/cjdd_white_icon.png'" alt="">
+                    <li :class="asideTitle == '' ? 'active' : ''" @click="handleToggle('')">
+                        <img :src="asideTitle == '' ? '/img/personal/cjdd_blue_icon.png' : '/img/personal/cjdd_white_icon.png'" alt="">
                         <span>创建设计</span>
                     </li>
                     <li :class="asideTitle == 'myTemplate' ? 'active' : ''" @click="handleToggle('myTemplate')">
@@ -28,12 +28,12 @@
                         <img :src="asideTitle == 'myMaterial' ? '/img/personal/wdsc_blue_icon.png' : '/img/personal/wdsc_white_icon.png'" alt="">
                         <span>我的素材</span>
                     </li>
-                    <li :class="asideTitle == 'earnings' ? 'active' : ''" @click="handleToggle('earnings')">
-                        <img :src="asideTitle == 'earnings' ? '/img/personal/szmx_blue_icon.png' : '/img/personal/szmx_white_icon.png'" alt="">
+                    <li :class="asideTitle == 'myEarnings' ? 'active' : ''" @click="handleToggle('myEarnings')">
+                        <img :src="asideTitle == 'myEarnings' ? '/img/personal/szmx_blue_icon.png' : '/img/personal/szmx_white_icon.png'" alt="">
                         <span>积分明细</span>
                     </li>
-                    <li :class="asideTitle == 'MasterTemp' ? 'active' : ''" @click="handleToggle('MasterTemp')">
-                        <img :src="asideTitle == 'MasterTemp' ? '/img/personal/wdmb_blue_icon.png' : '/img/personal/wdmb_white_icon.png'" alt="">
+                    <li :class="asideTitle == 'masterTemp' ? 'active' : ''" @click="handleToggle('masterTemp')">
+                        <img :src="asideTitle == 'masterTemp' ? '/img/personal/wdmb_blue_icon.png' : '/img/personal/wdmb_white_icon.png'" alt="">
                         <span>专属模板</span>
                     </li>
                     <!-- <li :class="asideTitle == 'withdrawRecord' ? 'active' : ''" @click="handleToggle('withdrawRecord')">
@@ -68,18 +68,24 @@ export default {
     methods: {
         handleToggle(title){
             this.asideTitle = title
-            this.$route.push('/designer/' + title)
+            this.$router.push('/designer/' + title)
         }
     },
     created() {
-        this.$axios.get('/ApplyDesigner').then(res => {
-            if(res.data.code == '1') {
-                this.asideTitle = ''
-            }else{
-                this.$message.warning(res.data.msg)
-                this.$router.push('/')
-            }
-        })
+        // this.$axios.get('/ApplyDesigner').then(res => {
+        //     if(res.data.code == '1') {
+        //         this.asideTitle = ''
+        //     }else{
+        //         this.$message.warning(res.data.msg)
+        //         this.$router.push('/')
+        //     }
+        // })
+        var title = this.$route.fullPath.split('/')[2]
+        if(title == undefined) {
+            this.asideTitle = ''
+        }else{
+            this.asideTitle = title
+        }
     },
     mounted() {
         this.username = localStorage['userName']
