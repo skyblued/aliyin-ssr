@@ -36,7 +36,7 @@ module.exports = {
 		  routes.push({
 			name: 'notfound',
 			path: '*',
-			redirect: '/'
+			component: resolve(__dirname, 'pages/404.vue')
 		  })
 		}
 	},
