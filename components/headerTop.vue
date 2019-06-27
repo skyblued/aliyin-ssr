@@ -22,7 +22,7 @@
             </div>
         </div>
 		<!-- 设计师申请弹框 -->
-		<el-dialog  :visible.sync="dialogApply" top="7vh">
+		<el-dialog  :visible.sync="dialogApply" top="7vh" width="630px">
 			<ApplyDesigner :state="state"></ApplyDesigner>
 			<div class="close-btn" style="right: -55px;top: 8px;" @click="dialogApply = false"></div>
 		</el-dialog>
@@ -68,7 +68,7 @@ export default {
                     if(res.data.code == '1'){
                         this.$router.push('/designer')
                         localStorage.setItem('isDesigner', '1')
-                    }else if(res.data.code == '0'){
+                    }else if(res.data.code == "0"){
                         this.state = res.data.state
                        	this.dialogApply = true;
                     }else if(res.data.code == '-1') {
@@ -76,7 +76,7 @@ export default {
 						this.dialogApply = true;
 						console.log(this.dialogApply)
                     }else{
-                        this.$message.warning(res.data.msg)
+                        this.dialogApply = true;
                     }
                 })
             }else{
