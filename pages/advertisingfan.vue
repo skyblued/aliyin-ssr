@@ -95,7 +95,7 @@ export default {
             background: Advertising.data.Background,
             banner: Advertising.data.Banners,
             casesList: Advertising.data.Cases,
-            couponList: Advertising.data.Coupons,
+            couponList: Advertising.data.Coupons.reverse(),
             Tplcategory: Advertising.data.Tplcategory,
             items: Advertising.data.OrderDelivers,
             animate: false,

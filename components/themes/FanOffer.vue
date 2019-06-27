@@ -389,7 +389,7 @@ export default {
                     // console.log(res.data)
                     this.production = res.data[0]
                     this.unit = res.data[0].ProductType.Unit
-                    this.couponList = res.data[0].Coupons
+                    this.couponList = res.data[0].Coupons.reverse()
                     if(this.production.Urgent){
                         this.urgent = true
                     }else{

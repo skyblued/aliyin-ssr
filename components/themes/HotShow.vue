@@ -8,13 +8,13 @@
                     <img class="first" src="/img/themes/advertise_icon.png" alt="">
                 </div>
                 <div class="content-item" v-for="(item,i) in showList" :key="i">
-                    <a :href="`/design?t=${item.number}&n=${teamNum}`" target="_blank">
+                    <a :href="`/design?t=${item.number}`" target="_blank">
                         <div class="content-item-block">
                             <div class="block-image" :style="{'background-image': `url(${item.imgUrl})`}"></div>
                         </div>
                     </a>
                     <div class="content-item-bottom">
-                        <a :href="`/design?t=${item.number}&n=${teamNum}`" target="_blank">
+                        <a :href="`/design?t=${item.number}`" target="_blank">
                             <p :title="item.name">{{item.name}}</p>
                         </a>
                         <p>
@@ -73,7 +73,6 @@ export default {
                 name: '金科状元 - 广告扇',
                 number: '15819'
             }],
-            teamNum: null,
         }
     },
     methods: {
@@ -95,9 +94,6 @@ export default {
                 url.location = '/design/' + str
             })
         }
-    },
-    mounted() {
-        this.teamNum = localStorage['teamNum']
     }
 }
 </script>

@@ -5,13 +5,13 @@
             <img src="/img/themes/shed_bule.png" alt="">
             <div class="service-content-list" v-if="list.length">
                 <div class="service-content-item" v-for="(item,i) in list" :key="i">
-                    <a :href="`/design?t=${item.number}&n=${teamNum}`" target="_blank">
-                        <div class="service-content-block" @click="handleClick(item)">
+                    <a :href="`/design?t=${item.number}`" target="_blank">
+                        <div class="service-content-block">
                             <div class="image-wrap" :style="{'background-image': `url(${item.imgUrl})`}"></div>
                         </div>
                     </a>
                     <div class="service-content-bottom">
-                        <p @click="handleClick(item)">{{item.name}}</p>
+                        <p>{{item.name}}</p>
                     </div>
                 </div>
             </div>
@@ -84,7 +84,6 @@ export default {
                 name: '五粮液',
                 number: '15783'
             }],
-            teamNum: null,
         }
     },
     // props: ['casesList'],
@@ -107,9 +106,6 @@ export default {
                 url.location = '/design/' + str
             })
         }
-    },
-    mounted() {
-        this.teamNum = localStorage['teamNum']
     }
 }
 </script>
