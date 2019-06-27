@@ -61,16 +61,6 @@ export default {
     },
     props: ['isFixed', 'barList'],
     methods: {
-        // handleClick() {
-        //     if(this.$route.path == '/') {
-        //         history.go(0)
-        //     }else{
-        //         this.$router.push('/')
-        //     }
-        // },
-        // handleJump(url) {
-        //     this.$router.push(url)
-        // },
          handleSearch(keywords) {
             console.log(13)
             let n, id,subtitle,title;
@@ -79,10 +69,11 @@ export default {
                 subtitle = this.$route.query.subtitle || ''
                 title = this.$route.query.title || ''
             this.$router.push({path: '/templateList/templateCenter', query: {k: keywords, n: n, id: id,subtitle: subtitle,title: title}})
-            // if(this.$route.path == '/templatecenter'){
-			// 	this.$bus.$emit('setKeyword', this.keywords)
-			// 	this.$router.push({path: '/templateList/templateCenter', query: {k: keywords, n: n, id: id,subtitle: subtitle,title: title}})
-            // } 
+        }
+    },
+    watch: {
+        $route() {
+           this.barMenuListShow = false 
         }
     },
     computed: {

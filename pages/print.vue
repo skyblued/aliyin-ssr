@@ -2,7 +2,7 @@
     <div>
 		<HeaderTop></HeaderTop>
 		<Header id="header" :isFixed="isFixed" :barList="barList" :class="{fixed : isFixed}"></Header>
-		<nuxt-child></nuxt-child>
+		<nuxt-child :style="{ marginTop: marginTop }"></nuxt-child>
 		<ToolsBar></ToolsBar>
 		<Footer :qrcode="qrcode" :articleList="articleList"></Footer>
     </div>
@@ -32,6 +32,7 @@ export default {
 			qrcode: FooterCode.data.Advertisements[0].FileUrl,
 			articleList: FooterArticle.data,
 			isFixed: false,
+			marginTop: 0
 		}
 	},
 	head () {

@@ -67,7 +67,7 @@ export default {
         },
         enter() {
             this.isShow = 'ok'
-        }
+        },
 	}
 }
 </script>
