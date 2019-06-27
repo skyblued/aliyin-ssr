@@ -8,16 +8,13 @@ export default {
 	loading: false,
 	async asyncData({$axios, isDev, route, store, env, params, query, req, res, redirect, error}) {
 		return {
-			q: {
-				t: query.t,
-				n: query.n
-			}
+			t: query.t
 		}
 	},
 	mounted() {
-		if (this.$store.state.login.isLogin) {
-			if (this.q.n == 'undefined' || this.q.n == undefined) this.q.n = localStorage['teamNum'];
-			let params = `TemplateNumber=${this.q.t}&TeamNum=${this.q.n}` ;
+		if (this.$store.state.login.isLogin && localStorage['teamNum']) {
+			let n = localStorage['teamNum'];
+			let params = `TemplateNumber=${this.t}&TeamNum=${n}` ;
 			this.$axios.post('/CopyTemplate', params)
 			.then(({data}) => {
 				let str = '/design/' +  window.btoa(`DocumentNumber=${data}`)

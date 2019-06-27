@@ -13,7 +13,7 @@
             <div class="container-list">
                 <div class="container-item" v-for="(items,index) in secondList[i].slice(0,10)" :key="index">
 					<!-- @click="handleToDesign(items)" -->
-					<a :href="`/design?t=${items.TemplateNumber}&n=${teamNum}`" target="_blank">
+					<a :href="`/design?t=${items.TemplateNumber}`" target="_blank">
                     <div class="container-block" >
                         <div class="block-img-wrap">
                             <img :src="items.FacePicture && $store.state.port.imgBaseUrl + items.FacePicture + '!w280.src'" alt="">
