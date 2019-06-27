@@ -2,28 +2,32 @@
     <div id="header">
         <div  class="header">
             <div class="header-left">
-                <img class="logo" :src="$store.state.port.staticPath + '/img/home/logo.svg'" alt="" v-if="!isFixed" @click="handleClick">
-				
-					 <div v-if="isFixed" class="bar-menu-wrap" @mouseenter="barMenuListShow = true" @mouseleave="barMenuListShow = false">
-						<div class="bar-menu">
-							<img class="bar-img" src="/img/home/classify_icon.png" alt="">
-							<span class="bar-title">海量模板，每天更新</span>
-						</div>
-						<transition name="el-zoom-in-top">
-							<!-- <el-collapse-transition> -->
-							<div class="bar-menu-list" v-if="barMenuListShow" >
-								<TemplateClass :barList="barList"></TemplateClass>
-							</div>
-							<!-- </el-collapse-transition> -->
-						</transition>
-					</div>
-				
+                <nuxt-link to="/" v-if="!isFixed">
+                    <img class="logo" :src="$store.state.port.staticPath + '/img/home/logo.svg'" alt="">
+                </nuxt-link>
+                <div v-if="isFixed" class="bar-menu-wrap" @mouseenter="barMenuListShow = true" @mouseleave="barMenuListShow = false">
+                    <div class="bar-menu">
+                        <img class="bar-img" src="/img/home/classify_icon.png" alt="">
+                        <span class="bar-title">海量模板，每天更新</span>
+                    </div>
+                    <transition name="el-zoom-in-top">
+                        <!-- <el-collapse-transition> -->
+                        <div class="bar-menu-list" v-if="barMenuListShow" >
+                            <TemplateClass :barList="barList"></TemplateClass>
+                        </div>
+                        <!-- </el-collapse-transition> -->
+                    </transition>
+                </div>
                 <ul>
-                    <li :class="{'menu-list': true, active: path == '/'}" @click="handleJump('/')">首页</li>
+                    <nuxt-link to="/">
+                        <li :class="{'menu-list': true, active: path == '/'}">首页</li>
+                    </nuxt-link>
                     <nuxt-link to="/templateList">
                         <li :class="{'menu-list': true, active: path.indexOf('/templateList') > -1}">在线设计</li>
                     </nuxt-link>
-                    <li :class="{'menu-list': true, active: path.indexOf('/print') > -1}" @click="handleJump('/print')">在线印刷</li>
+                    <nuxt-link to="/print">
+                        <li :class="{'menu-list': true, active: path.indexOf('/print') > -1}">在线印刷</li>
+                    </nuxt-link>
                 </ul>
             </div>
             <div class="header-right">
@@ -57,16 +61,16 @@ export default {
     },
     props: ['isFixed', 'barList'],
     methods: {
-        handleClick() {
-            if(this.$route.path == '/') {
-                history.go(0)
-            }else{
-                this.$router.push('/')
-            }
-        },
-        handleJump(url) {
-            this.$router.push(url)
-        },
+        // handleClick() {
+        //     if(this.$route.path == '/') {
+        //         history.go(0)
+        //     }else{
+        //         this.$router.push('/')
+        //     }
+        // },
+        // handleJump(url) {
+        //     this.$router.push(url)
+        // },
          handleSearch(keywords) {
             console.log(13)
             let n, id,subtitle,title;

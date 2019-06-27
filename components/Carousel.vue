@@ -2,7 +2,9 @@
     <div class="carousel">
         <el-carousel trigger="click">
             <el-carousel-item v-for="(item,i) in banner" :key="i">
-                <img :src="$store.state.port.imgBaseUrl+item.FileUrl" alt="">
+                <a target="_blank" :href="item.NavigateUrl.indexOf('www') > -1 ? item.NavigateUrl : 'javascript:;'">
+                    <img :src="$store.state.port.imgBaseUrl+item.FileUrl" alt="" :title="item.AdvertisementName">
+                </a>
             </el-carousel-item>
         </el-carousel>
     </div>
