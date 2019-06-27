@@ -86,7 +86,7 @@
                     </div>
                 </div>
 				<div class="template-center-item" v-for="(item,i) in templateList" :key="i">
-					<a :href="`/design?t=${item.TemplateNumber}&n=${teamNum}`" target="_blank">
+					<a :href="`/design?t=${item.TemplateNumber}`" target="_blank">
 						<div class="template-center-block">
 							<!-- @click="handleToDesign(item)" -->
 							<div class="block-img-wrap" >
