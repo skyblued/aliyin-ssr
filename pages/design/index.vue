@@ -12,8 +12,6 @@ export default {
 		}
 	},
 	mounted() {
-		console.log(localStorage['teamNum'])
-		console.log(12321)
 		if (this.$store.state.login.isLogin && localStorage['teamNum']) {
 			let n = localStorage['teamNum'];
 			let params = `TemplateNumber=${this.t}&TeamNum=${n}` ;

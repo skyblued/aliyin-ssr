@@ -416,8 +416,6 @@ export default {
 	},
 	methods: {
 		createInfo() {
-			console.log(this.$route.params)
-
 			let params = this.$route.params;
 			if (!params.t) return;
 			let query = window.atob(params.t),
@@ -1082,19 +1080,18 @@ export default {
 				}
 				let formdata = new FormData();
 				formdata.append(page, t);
+				formdata.append('TeamNum', localStorage['teamNum']);
 				return new Promise((resolve, reject) => {
 					this.$axios.post(url, formdata)
 					.then(res => {
 						this.templateAnimation = false;
 						let data = res.data;
-						// console.log(data)
 						// 保存模板数据
 						this.templateInfo = data;
 						this.preview.btnSee = data.Size.StereoModel == '' ? false : true;
 						this.design_title = data.Name;
 						this.PageMode = data.ProductType;
 						if (!this.PageMode.PageMode) this.PageMode.MaxPages = this.PageMode.FixedPages
-						// console.log(this.PageMode)
 						this.getMasking()
 						.then(masking => {
 							let size = this.templateInfo.Size, 
