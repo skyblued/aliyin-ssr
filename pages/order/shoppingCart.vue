@@ -71,7 +71,7 @@
         </div>
         <div class="empty" v-else>
             <img src="/img/error/ku.png" alt="">
-            <span>购物车里空空如也，您可以去<router-link to="/createdesign"><span class="">模板中心</span></router-link>看看</span>
+            <span>购物车里空空如也，您可以去<nuxt-link to="/templateList"><span class="">模板中心</span></nuxt-link>看看</span>
         </div>
     </div>
 </template>

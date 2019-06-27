@@ -332,7 +332,7 @@ export default {
         },
         handleToPay() { // 去付款
             let code = this.orderDeatil.OrderCode
-            this.$router.push({path: '/cashier', query: {code}})
+            this.$router.push({path: '/order/cashier', query: {code}})
         },
 
         setcurrentDate() {  // 获取当前日期

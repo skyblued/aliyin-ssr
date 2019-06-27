@@ -75,12 +75,12 @@
                                 <span style="cursor: pointer;" title="点击可下载模板文件" @click="handleDown(item,items)">{{items.DocumentName}}</span>
                             </div>
                             <div class="orderInfo-file" v-if="!items.DocumentName">
-                                <div v-if="!items.FileName" class="upload-file" @click="handleUpload(items,i)">
-                                    <!-- <img src="/img/print/xqy_scwj_icon.png" alt="">
-                                    <span>上传文件</span> -->
-                                </div>
-                                <span v-else @click="handleDownload(items)" title="点击可下载文件">
-                                    <span class="fileName">{{items.FileName ? items.FileName : '未命名'}}</span>
+                                <!-- <div v-if="!items.FileName" class="upload-file" @click="handleUpload(items,i)">
+                                    <img src="/img/print/xqy_scwj_icon.png" alt="">
+                                    <span>上传文件</span>
+                                </div> -->
+                                <span  @click="handleDownload(items)" title="点击可下载文件">
+                                    <span class="fileName">{{items.FileName}}</span>
                                     <!-- <img src="/img/print/xqy_refresh_icon.png" alt="" title="重新上传文件" @click.stop="handleUpload(items,i)"> -->
                                 </span>
                             </div>
@@ -176,7 +176,7 @@ export default {
         },
         handleToPay(i) {  // 去支付
             let code = this.printOrder[i].OrderCode
-            this.$router.push({path: '/cashier', query: {code}})
+            this.$router.push({path: '/order/cashier', query: {code}})
         },
         handleCancel(i) {  // 取消订单
             this.$confirm('是否取消该订单?', '提示', {
