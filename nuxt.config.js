@@ -30,6 +30,16 @@ module.exports = {
 		'@/assets/css/init.scss',
 		'@/assets/css/animation.css'
 	],
+	/* 添加新的路由 */
+	router: {
+		extendRoutes (routes, resolve) {
+		  routes.push({
+			name: 'notfound',
+			path: '*',
+			redirect: '/'
+		  })
+		}
+	},
 	/*
 	** Plugins to load before mounting the App
 	*/
@@ -79,9 +89,13 @@ module.exports = {
 		** You can extend webpack config here
 		*/
 		extend(config, ctx) {
+			if (process.env.NODE_ENV === 'production') {
+				config.optimization.minimizer[0].options.terserOptions.compress.drop_console = true
+			}
 		},
 		styleResources: {
 			scss: './assets/css/index.scss',
-		}
+		},
+		
 	}
 }

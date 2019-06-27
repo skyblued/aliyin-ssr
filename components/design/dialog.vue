@@ -79,21 +79,21 @@
 								<span style="display: inline-block;margin-right: 30px;">{{info.Size.Alias}}</span>
 								<span class="promise">
 									<font style="background:#E81623">邮</font>
-									&nbsp;&nbsp;全国包邮&nbsp;&nbsp;
+									全国包邮
 								</span>
 								<span class="promise">
 									<font style="background:#F3960A">票</font>
-									&nbsp;&nbsp;报销发票&nbsp;&nbsp;
+									报销发票
 								</span>
 								<span class="promise">
 									<font style="background:#54BE59">送</font>
-									&nbsp;&nbsp;送货上门&nbsp;&nbsp;
+									送货上门
 								</span>
 								<span class="promise">
 									<font style="background:#2292E9">近</font>
-									&nbsp;&nbsp;就近印刷&nbsp;&nbsp;
+									就近印刷
 								</span>
-								<a :href="`/printdetail?id=${info.TypeId}`" target="_blank" class="understand">了解更多></a>
+								<a :href="`/print/printdetail?id=${info.TypeId}`" target="_blank" class="understand">了解更多></a>
 							</div>	
 						</div>
 						<div class="content-item">
@@ -540,6 +540,7 @@ export default {
 				border: 1px solid transparent;
 				margin-right: 8px;
 				font-size: 13px;
+				padding-right: 10px;
 			}
 			& .promise:nth-child(2) {
 					border-color: #E81623;
