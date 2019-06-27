@@ -286,6 +286,7 @@ export default {
                 padding: 18px 17px;
                 background: rgba(255,255,255,1);
                 border-radius: 0 0 10px 10px;
+                font-size: 14px;
                 .bottom-title{
                     display: inline-block;
                     color:rgba(51,51,51,1);
