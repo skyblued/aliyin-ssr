@@ -19,7 +19,12 @@ export default function ({app, $axios, store, req}) {
 	})
   
 	// 返回回调
-	axios.onResponse(res => {})
+	axios.onResponse(response => {
+		if(response.config.headers.token){
+			store.commit('login/addToKen', response.config.headers.token);
+		}
+		return response;
+	})
   
 	// 错误回调
 	axios.onError(error => {})

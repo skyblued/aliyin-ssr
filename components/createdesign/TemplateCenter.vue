@@ -350,7 +350,7 @@ export default {
                 headers:{'Content-Type': 'multipart/form-data'}
             }
             this.$axios.post('/TemplateCenter', formdata, config).then(res => {
-                console.log(res.data)
+                // console.log(res.data)
                 this.templateList = res.data.Data
                 this.error = false
                 if(res.data.Data.length == 0) this.error = false
@@ -601,16 +601,18 @@ export default {
 	},
 	watch: {
 		$route(to,from) {
-			// console.log(to,from)
+			console.log(to,from)
 			let query = to.query;
 			this.title = query.title;
 			this.keywords = this.$route.query.k || '';
 			this.subtitle = query.subtitle;
 			this.templateParam.ProductCategorieNum = query.n
-            this.templateParam.ProductTypeId = query.id
-            this.typeId = query.id
-            // this.getTempLateList(this.templateParam)
-            this.getParam()
+			this.templateParam.ProductTypeId = query.id
+			this.templateParam.pageIndex = 1;
+			this.typeId = query.id;
+			this.templateParam.keywords = this.$route.query.k || ''
+            this.getTempLateList(this.templateParam)
+            // this.getParam()
 		}
 	},
     mounted() {
@@ -622,12 +624,11 @@ export default {
         this.keywords = this.$route.query.k || ''
         this.templateParam.SizeId = this.$route.query.sizeId || ''
 
-        document.head.querySelector('title').innerHTML = `免费${this.subtitle}模板列表_海量免费${this.subtitle}模板无限制使用_免费下载${this.subtitle}高清无水印文件_阿里印`
 		
 		this.getParam();
-        window.scrollTo(0,0)
+        // window.scrollTo(0,0)
 
-        console.log(this.center)
+        // console.log(this.center)
 
     },
     components: {
