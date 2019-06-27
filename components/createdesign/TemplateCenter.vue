@@ -85,34 +85,30 @@
                         </div>
                     </div>
                 </div>
-                <div class="template-center-item" v-for="(item,i) in templateList" :key="i">
-                    <div class="template-center-block">
-                        <div class="block-img-wrap" @click="handleToDesign(item)">
-                            <img @load="waterfall" class="image" :src="$store.state.port.imgBaseUrl+item.FacePicture + '!w280.src'" alt="">
-                            <div class="block-img-mask">
-                                <div class="tooltip" :data-tip="item.IsFavorite == true ? '取消' : '收藏'" @click.stop="handleCollect(i)">
-                                    <img class="likeTemplate" :src="$store.state.port.staticPath + (item.IsFavorite == true ? collectImage : image)" alt="">
-                                </div>
-                                <!-- <el-button class="design-btn"  @click="handleToDesign(item)"><span>立即制作</span></el-button> -->
-                            </div>
-                        </div>
-                        <div class="template-center-item-bottom">
-                            <p class="shop-title" v-html="item.Name.replace(keywords, `<span style='color: #745bff'>${keywords}</span>`)" :title="item.Name">
-                            </p>
-                            <span>
-                                <img :src="$store.state.port.staticPath + '/img/home/user.png'" alt=""> 
-                                {{item.Visits}}
-                            </span>
-                            <!-- <p class="shop-tips">
-                                <span>{{item.ProductTypeName}}</span>
-                                <span>
-                                    <img src="/img/home/user.png" alt=""> 
-                                    {{item.Visits}}人使用
-                                </span>
-                            </p> -->
-                        </div>
-                    </div>
-                </div>
+				<div class="template-center-item" v-for="(item,i) in templateList" :key="i">
+					<a :href="`/design?t=${item.TemplateNumber}&n=${teamNum}`" target="_blank">
+						<div class="template-center-block">
+							<!-- @click="handleToDesign(item)" -->
+							<div class="block-img-wrap" >
+								<img @load="waterfall" class="image" :src="$store.state.port.imgBaseUrl+item.FacePicture + '!w280.src'" alt="">
+								<div class="block-img-mask">
+									<div class="tooltip" :data-tip="item.IsFavorite == true ? '取消' : '收藏'" @click.stop="handleCollect(i)">
+										<img class="likeTemplate" :src="$store.state.port.staticPath + (item.IsFavorite == true ? collectImage : image)" alt="">
+									</div>
+									<!-- <el-button class="design-btn"  @click="handleToDesign(item)"><span>立即制作</span></el-button> -->
+								</div>
+							</div>
+							<div class="template-center-item-bottom">
+								<p class="shop-title" v-html="item.Name.replace(keywords, `<span style='color: #745bff'>${keywords}</span>`)" :title="item.Name">
+								</p>
+								<span>
+									<img :src="$store.state.port.staticPath + '/img/home/user.png'" alt=""> 
+									{{item.Visits}}
+								</span>
+							</div>
+						</div>
+					</a>
+				</div>
             </div>
             <div v-if="!templateList.length && !error" class="block-error">
                 <img :src="$store.state.port.staticPath + '/img/error/ku.png'" alt="">
@@ -150,6 +146,7 @@ export default {
 	props: ['center'],
     data () {
         return {
+			teamNum: null, // 团队编号
             isAll: true,
             typeList: [],  // 分类列表
             page: {
@@ -511,12 +508,6 @@ export default {
                 // console.log(res.data)
                 let str = 'DocumentNumber=' + res.data
 				str = window.btoa(str);
-				// var a = document.createElement('a')
-				// 	a.target = "_blank"
-				// 	a.href = '/design/' + str;
-				// 	a.click();
-				// 	a = null;
-				// url.location = '/design/' + str
 				url.location.replace('/design/' + str)
             })
         },
@@ -556,12 +547,6 @@ export default {
                     let data = JSON.parse(res.data)
                     let str = 'DocumentNumber=' + data.DocumentNumber
 					str = window.btoa(str)
-					// var a = document.createElement('a')
-					// a.target = "_blank"
-					// a.href = '/design/' + str;
-					// a.click();
-					// console.log(a)
-					// a = null;
                     url.location.replace('/design/' + str)
                 })
             }else{
@@ -616,6 +601,7 @@ export default {
 		}
 	},
     mounted() {
+		this.teamNum = localStorage['teamNum'];
         // console.log(this.$route.query)
         this.title = this.$route.query.title || ''
         this.subtitle = this.$route.query.subtitle || ''
