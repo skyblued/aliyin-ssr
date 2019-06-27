@@ -424,3 +424,172 @@ $color: #745bff; // 主题色rgba(0, 131, 233, 1)
 .el-table td .cell{
     padding: 10px;
 }
+
+
+
+/* 瀑布流布局样式 */
+.waterfall-list{
+    min-width: 1000px;
+    position: relative;
+    .waterfall-item{
+        position: absolute;
+        border-radius: 10px;
+        cursor: pointer;
+        box-shadow: 0 1px 4px 0 rgba(0,0,0,.08);
+        transition: all .4s;
+        &:hover{
+            box-shadow: 0 4px 15px rgba(0,0,0,.1);
+            transform: translateY(-5px);
+        }
+        .image{
+            width: 226px;
+            display: block;
+            border-radius: 10px 10px 0 0;
+        }
+        .waterfall-block{
+            background: rgba(255,255,255,1);
+            border-radius: 10px;
+        }
+        .waterfall-item-wrap{
+            position: relative;
+            &:hover .img-mask{
+                opacity: 1;
+            }
+            .img-mask{
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                border-radius: 10px 10px 0 0;
+                background: rgba(0,0,0,.3);
+                opacity: 0;
+                transition: opacity .4s linear;
+                .tooltip{
+                    width:35px;
+                    height:35px;
+                    background:rgba(255,255,255,1);
+                    border-radius:5px;
+                    text-align: center;
+                    position: absolute;
+                    right: 15px;
+                    top: 15px;
+                    .copy-img{
+                        display: inline-block;
+                        width: 20px;
+                        height: 20px;
+                        margin-top: 8px;
+                        background-image: url(/img/desicon/copy_small_icon.png);
+                        background-repeat: no-repeat;
+                    }
+                    &:hover .copy-img{
+                        background-image: url(/img/desicon/copy_small_bule_icon.png);
+                    }
+                    &:hover::before{
+                        content: attr(data-tip);
+                        font-size: 12px;
+                        line-height: 12px;
+                        background-color: #fff;
+                        color: #626262;
+                        padding: 4px 6px;
+                        position: absolute;
+                        top: 49px;
+                        left: -.5px;
+                        white-space: pre;
+                        border-radius: 2px;
+                        box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.24);
+                    }
+                    &:hover::after{
+                        content: "";
+                        position: absolute;
+                        width: 0;
+                        height: 0;
+                        border-bottom: 4px solid #fff;
+                        border-left: 4px solid transparent;
+                        border-right: 4px solid transparent;
+                        top: 45px;
+                        left: 15.5px;
+                    }
+                }
+                .item-set{
+                    position: absolute;
+                    top: 15px;
+                    left: 8px;
+                    display: block;
+                    border-radius: 4px;
+                    min-width: 70px;
+                    height: 28px;
+                    padding: 0 10px;
+                    line-height: 28px;
+                    font-size: 14px;
+                    color: #fff;
+                    background: $color;
+                    text-align: center;
+                }
+            }
+        }
+        .waterfall-item-title{
+            padding: 8px 13px;
+            .title{
+                font-size: 14px;
+                color: rgba(51,51,51,1);
+                margin-bottom: 10px;
+                display: flex;
+                justify-content: space-between;
+                .delete{
+                    display: inline-block;
+                    background-image: url(/img/desicon/delete_small_icon.png);
+                    background-repeat: no-repeat;
+                    width: 20px;
+                    height: 20px;
+                    &:hover{
+                        background-image: url(/img/desicon/delete_small_blue_icon.png);
+                    }
+                }
+                .template-title{
+                    width: 150px;
+                    min-width: 150px;
+                    border: 1px dashed transparent;
+                    overflow: hidden;
+                    text-overflow:ellipsis;
+                    white-space: nowrap;
+                    position: relative;
+                    &:hover{
+                        border-bottom: 1px dashed #bfbfbf;
+                    }
+                    &:hover::before{
+                        content: '';
+                        background-image: url(/img/personal/Modify_icon.png);
+                        position: absolute;
+                        top: -3px;
+                        right: 0;
+                        width: 20px;
+                        height: 20px;
+                    }
+                }
+                .edit-title{
+                    width: 150px;
+                    height: 18px;
+                    line-height: 18px;
+                    font-size: 14px;
+                    outline: none;
+                    border: none;
+                    border-bottom: 1px dashed #bfbfbf;
+                    .el-input__inner{
+                        outline: none;
+                        border: none;
+                        height: 18px;
+                        line-height: 18px;
+                        padding: 0;
+                    }
+                }
+            }
+            .tips{
+                display: flex;
+                justify-content: space-between;
+                font-size: 12px;
+                color: rgba(153,153,153,1);
+            }
+        }
+    }
+}

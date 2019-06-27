@@ -41,7 +41,7 @@
             <div class="waterfall-list" v-if="list.length" ref="box">
                 <div class="waterfall-item" v-for="(item,i) in list" :key="i">
                     <div class="waterfall-block">
-                        <div class="waterfall-item-wrap" @click="handleJump(i)">
+                        <div class="waterfall-item-wrap" @click="handleJump(item)">
                             <img @load="waterfall" class="image" :src="$store.state.port.imgBaseUrl+item.FacePicture">
                             <div class="img-mask">
                                 <div class="tooltip" data-tip="取消" @click.stop="open(i)">
@@ -230,11 +230,23 @@ export default {
                 });          
             });
         },
-        // 跳转到模板详情页
-        // handleJump(i) {
-        //     //console.log(this.list[i].TemplateNumber)
-        //     this.$router.push({path: '/detail', query: {t: this.list[i].TemplateNumber}})
-        // },
+        // 跳转到设计器
+        handleJump(item) {
+            var formData = new FormData()
+            formData.append('TemplateNumber', item.TemplateNumber);
+            formData.append('TeamNum', localStorage['teamNum']);
+            let config = {
+                headers:{'Content-Type': 'multipart/form-data'}
+            }
+            var url = window.open('/design', '_blank')
+            this.$axios.post('/CopyTemplate', formData, config).then(res => {
+                if(res.data == '') return console.log('没有返回')
+                // console.log(res.data)
+                let str = 'DocumentNumber=' + res.data
+				str = window.btoa(str);
+				url.location.replace('/design/' + str)
+            })
+        },
     },
     filters: {
         ToSplit(time) {
@@ -262,7 +274,7 @@ export default {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 
 #collect{
     width: 100%;
