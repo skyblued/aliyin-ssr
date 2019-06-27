@@ -129,6 +129,7 @@
                 title="模板审核"
                 :visible.sync="dialogPassTemp"
                 :lock-scroll="false"
+                :show-close="false"
                 width="20%">
                 <span>审核通过给设计师对应模板上传报酬</span>
                 <div class="reward">
@@ -139,11 +140,13 @@
                     </div>
                     <div class="temp-btn" @click="handlePass">通过</div>
                 </div>
+                <div class="close-btn" style="top: 0px;right: -50px;" @click="dialogPassTemp = false"></div>
             </el-dialog>
             <el-dialog
                 title="拒绝申请"
                 :visible.sync="dialogRefuseTemp"
                 :lock-scroll="false"
+                :show-close="false"
                 width="20%">
                 <span>如果设计师上传的模板不符合规范，可以拒绝要求重新上传</span>
                 <div class="reward">
@@ -153,8 +156,8 @@
                     </div>
                     <div class="temp-btn" @click="handleRefuse">确定拒绝</div>
                 </div>
+                <div class="close-btn" style="top: 0px;right: -50px;" @click="dialogRefuseTemp = false"></div>
             </el-dialog>
-            <!-- <div class="batch-del">批量删除</div> -->
         </div>
 
         <div class="block" v-if="tableData.length && page.totalRecords > 20">
@@ -550,34 +553,39 @@ export default {
         margin: 200px auto 0;
     }
 }
-.template-audit /deep/ .audit-content .el-table td{
-    padding: 0;
-    height: 108px;
-    line-height: 108px;
+.template-audit /deep/ .audit-content .el-table {
     .cell{
-        .temp-thumb{
-            display: inline-block;
-            height: 60px;
-            width: 80%;
-            background-position: 50%;
-            background-size: contain;
-            background-repeat: no-repeat;
-        }
-        .subtime, .auditTime{
-            display: inline-block;
-            width: 86px;
-        }
-        .el-button{
-            display: block;
-            width: 48px;
-            height: 32px;
-            line-height: 32px;
-            padding: 0;
-            margin: 0 auto;
-        }
-        .el-button+.el-button{
-            margin-left: 0;
-            margin: 5px auto 0;
+        text-align: center;
+    }
+    td{
+        padding: 0;
+        height: 108px;
+        line-height: 108px;
+        .cell{
+            .temp-thumb{
+                display: inline-block;
+                height: 60px;
+                width: 80%;
+                background-position: 50%;
+                background-size: contain;
+                background-repeat: no-repeat;
+            }
+            .subtime, .auditTime{
+                display: inline-block;
+                width: 80px;
+            }
+            .el-button{
+                display: block;
+                width: 48px;
+                height: 32px;
+                line-height: 32px;
+                padding: 0;
+                margin: 0 auto;
+            }
+            .el-button+.el-button{
+                margin-left: 0;
+                margin: 5px auto 0;
+            }
         }
     }
 }

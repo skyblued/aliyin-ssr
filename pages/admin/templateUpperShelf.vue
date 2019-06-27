@@ -576,34 +576,39 @@ export default {
     height: 37px;
     border-radius: 21px;
 }
-.template-upper /deep/ .upper-content .el-table td{
-    padding: 0;
-    height: 108px;
-    line-height: 108px;
+.template-upper /deep/ .upper-content .el-table {
     .cell{
-        .temp-thumb{
-            display: inline-block;
-            height: 60px;
-            width: 80%;
-            background-position: 50%;
-            background-size: contain;
-            background-repeat: no-repeat;
-        }
-        // .subtime{
-        //     display: inline-block;
-        //     width: 86px;
-        // }
-        .el-button{
-            display: block;
-            width: 48px;
-            height: 32px;
-            line-height: 32px;
-            padding: 0;
-            margin: 0 auto;
-        }
-        .el-button+.el-button{
-            margin-left: 0;
-            margin: 5px auto 0;
+        text-align: center;
+    }
+    td{
+        padding: 0;
+        height: 108px;
+        line-height: 108px;
+        .cell{
+            .temp-thumb{
+                display: inline-block;
+                height: 60px;
+                width: 80%;
+                background-position: 50%;
+                background-size: contain;
+                background-repeat: no-repeat;
+            }
+            // .subtime{
+            //     display: inline-block;
+            //     width: 86px;
+            // }
+            .el-button{
+                display: block;
+                width: 48px;
+                height: 32px;
+                line-height: 32px;
+                padding: 0;
+                margin: 0 auto;
+            }
+            .el-button+.el-button{
+                margin-left: 0;
+                margin: 5px auto 0;
+            }
         }
     }
 }

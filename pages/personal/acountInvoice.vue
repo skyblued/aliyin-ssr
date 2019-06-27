@@ -245,7 +245,11 @@ export default {
 .invoice-info /deep/ .el-table td:last-child .cell{
     padding: 15px 17px; 
 }
-
+.invoice-info /deep/ .el-table{
+    .cell{
+        text-align: center;
+    }
+}
 .invoice-info /deep/ .el-table td{
     padding: 0;
     .cell{

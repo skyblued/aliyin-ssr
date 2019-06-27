@@ -37,7 +37,7 @@
                     :row-class-name="tableRowClassName">
                     <el-table-column
                         label="申请时间"
-                        width="140">
+                        width="100">
                         <template slot-scope="scope">
                             <span>{{scope.row.time && scope.row.time.split('T').join(' ')}}</span>
                         </template>
@@ -242,12 +242,17 @@ export default {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 
 #invoice{
     width: 100%;
     padding: 45px 63px;
     user-select: none;
+}
+#invoice /deep/ .el-table {
+    .cell{
+        text-align: center;
+    }
 }
 .invoice{
     min-width: 1200px;

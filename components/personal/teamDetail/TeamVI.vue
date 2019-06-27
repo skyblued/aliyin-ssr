@@ -24,12 +24,13 @@
                     :lock-scroll="false"
                     :close-on-click-modal="false"
                     :before-close="close"
+                    :show-close="false"
                     :visible.sync="dialogLogoVisible">
                     <el-upload
                         class="upload-demo"
                         ref="upload"
                         drag
-                        :action="$store.state.netServer + '/TeamLogo'" 
+                        :action="$store.state.port.netServer + '/TeamLogo'" 
                         :on-preview="handlePreview"
                         :on-remove="handleRemove"
                         :onSuccess="uploadSuccess"
@@ -46,6 +47,7 @@
                         <img class="el-icon-upload" src="/img/personal/qyadd_icon.png" alt="">
                         <div class="el-upload__text">选择素材，支持PNG、JPG格式 文件最大20MB</div>
                     </el-upload>
+                    <div class="close-btn" style="top: 0px;right: -50px;" @click="dialogLogoVisible = false"></div>
                     <!-- <div v-if="logoFlag" class="progress-bar progress-bar-striped active" :style="{width: logoUploadPercent + '%'}">{{logoUploadPercent+ '%'}}<i :class="{'el-icon-check': success == true ? true : false}"></i></div> -->
                     <div class="dialog-footer">
                         <div class="sure" @click="handleUpload">确定上传</div>
@@ -69,7 +71,7 @@
                     <div class="colors-mask" @click="open(i)">删除</div>
                     <span :style="{color:item.ColorCode}">{{item.ColorCode}}</span>
                 </div>
-                <el-dialog title="设置颜色" :visible.sync="dialogColorVisible" :close-on-click-modal="false">
+                <el-dialog title="设置颜色" :visible.sync="dialogColorVisible" :close-on-click-modal="false" :show-close="false">
                     <div class="color-input">
                         颜色值: 
                         <el-input style="width: 276px;margin-left: 10px;" v-model="color"></el-input>
@@ -77,6 +79,7 @@
                             <el-color-picker v-model="color"></el-color-picker>
                         </div>
                     </div>
+                    <div class="close-btn" style="top: 0px;right: -50px;" @click="dialogColorVisible = false"></div>
                     <div slot="footer" class="dialog-footer">
                         <div class="sure" @click="handleAdd">确定</div>
                         <div class="cancel" @click="dialogColorVisible = false">取消</div>

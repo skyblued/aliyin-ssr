@@ -101,7 +101,7 @@
 							<div class="template-center-item-bottom">
 								<p class="shop-title" v-html="item.Name.replace(keywords, `<span style='color: #745bff'>${keywords}</span>`)" :title="item.Name">
 								</p>
-								<span>
+								<span style="font-size: 14px;color: rgba(51,51,51,1);">
 									<img :src="$store.state.port.staticPath + '/img/home/user.png'" alt=""> 
 									{{item.Visits}}
 								</span>
@@ -120,6 +120,7 @@
                 :visible.sync="dialogSizeVisible"
                 :close-on-click-modal="false"
                 :lock-scroll="false"
+                :show-close="false"
                 center>
                 <div class="diy-header">
                     <div class="often-size">
@@ -132,6 +133,7 @@
                         <div class="start-btn" @click="handleCreate">开启设计</div>
                     </div>
                 </div>
+                <div class="close-btn" style="top: 0px;right: -50px;" @click="dialogSizeVisible = false"></div>
             </el-dialog>
 
             <HomePagination :Page="page" @setTempList="setTempList" v-if="page.totalRecords > 19" />
@@ -1040,20 +1042,20 @@ export default {
         font-weight:bold;
         color:rgba(51,51,51,1);
         position: relative;
-        .el-dialog__headerbtn{
-            position: absolute;
-            top: 17px;
-            right: -45px;
-            .el-dialog__close{
-                width: 24px;
-                height: 24px;
-                color: rgba(255,255,255,1);
-                background-image: url(/img/home/fork_white.png);
-                &::before{
-                    content: '';
-                }
-            }
-        }
+        // .el-dialog__headerbtn{
+        //     position: absolute;
+        //     top: 17px;
+        //     right: -45px;
+        //     .el-dialog__close{
+        //         width: 24px;
+        //         height: 24px;
+        //         color: rgba(255,255,255,1);
+        //         background-image: url(/img/home/fork_white.png);
+        //         &::before{
+        //             content: '';
+        //         }
+        //     }
+        // }
     }
     .el-dialog__body .diy-header{
         padding: 62px 55px 40px 48px;
