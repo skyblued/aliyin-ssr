@@ -74,16 +74,15 @@ export default {
          handleSearch(keywords) {
             console.log(13)
             let n, id,subtitle,title;
-            if(this.$route.query.id && this.$route.query.n && this.$route.query.subtitle && this.$route.query.title) {
-                n = this.$route.query.n
-                id = this.$route.query.id   
-                subtitle = this.$route.query.subtitle
-                title = this.$route.query.title
-            }
-            this.$router.push({path: '/templatecenter', query: {k: keywords, n: n, id: id,subtitle: subtitle,title: title}})
-            if(this.$route.path == '/templatecenter'){
-                this.$bus.$emit('setKeyword', this.keywords)
-            } 
+                n = this.$route.query.n  || ''
+                id = this.$route.query.id    || ''
+                subtitle = this.$route.query.subtitle || ''
+                title = this.$route.query.title || ''
+            this.$router.push({path: '/templateList/templateCenter', query: {k: keywords, n: n, id: id,subtitle: subtitle,title: title}})
+            // if(this.$route.path == '/templatecenter'){
+			// 	this.$bus.$emit('setKeyword', this.keywords)
+			// 	this.$router.push({path: '/templateList/templateCenter', query: {k: keywords, n: n, id: id,subtitle: subtitle,title: title}})
+            // } 
         }
     },
     computed: {

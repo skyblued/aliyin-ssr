@@ -12,7 +12,9 @@
             </div>
             <div class="container-list">
                 <div class="container-item" v-for="(items,index) in secondList[i].slice(0,10)" :key="index">
-                    <div class="container-block" @click="handleToDesign(items)">
+					<!-- @click="handleToDesign(items)" -->
+					<a :href="`/design?t=${items.TemplateNumber}&n=${teamNum}`" target="_blank">
+                    <div class="container-block" >
                         <div class="block-img-wrap">
                             <img :src="items.FacePicture && $store.state.port.imgBaseUrl + items.FacePicture + '!w280.src'" alt="">
                             <div class="tooltip" :data-tip="items.IsFavorite == true ? '取消' : '收藏'" @click.stop="handleCollect(items)">
@@ -30,6 +32,7 @@
                             </p>
                         </div>
                     </div>
+					</a>
                 </div>
                 <div class="container-item" style="height: 0px;visibility: hidden;"></div>
                 <div class="container-item" style="height: 0px;visibility: hidden;"></div>
@@ -46,7 +49,8 @@ export default {
     props: ['label'],
     data() {
         return {
-            // label: [],
+			// label: [],
+			teamNum: null,
             image: '/img/home/collect-icon.png',
             collectImage: '/img/home/collect_s_icon_hl.png',
             secondList: [],
@@ -140,6 +144,7 @@ export default {
         }
     },
     mounted() {
+		this.teamNum = localStorage['teamNum'];
         // this.getData();
     },
 }

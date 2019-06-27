@@ -1,5 +1,6 @@
 
 module.exports = {
+	server: {host: '127.0.0.1'},
 	mode: 'universal',
 	/*
 	** Headers of the page
@@ -82,5 +83,10 @@ module.exports = {
 		styleResources: {
 			scss: './assets/css/index.scss',
 		},
+		configureWebpack: config => {
+			if (process.env.NODE_ENV === 'production') {
+			  config.optimization.minimizer[0].options.terserOptions.compress.drop_console = true
+			}
+		}
 	}
 }
