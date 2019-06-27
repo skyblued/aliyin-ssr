@@ -12,9 +12,11 @@
                 </ul>
                 <div class="self-template-list">
                     <div class="self-template-item" v-for="(tmp,index) in templateList" :key="index">
-                        <div class="self-template-block" @click="handleToDesign(tmp)">
-                            <div class="image-wrap" :style="{'background-image': `url(${$store.state.port.imgBaseUrl + tmp.FacePicture + '!w280.src'})`}"></div>
-                        </div>
+                        <a :href="`/design?t=${tmp.TemplateNumber}&n=${teamNum}`" target="_blank">
+                            <div class="self-template-block" @click="handleToDesign(tmp)">
+                                <div class="image-wrap" :style="{'background-image': `url(${$store.state.port.imgBaseUrl + tmp.FacePicture + '!w280.src'})`}"></div>
+                            </div>
+                        </a>
                         <div class="self-template-bottom">
                             <p :title="tmp.Name" @click="handleToDesign(tmp)">{{tmp.Name}}</p>
                             <p>
@@ -42,7 +44,8 @@ export default {
     data () {
         return {
             templateList: [],
-            activeIndex: 0
+            activeIndex: 0,
+            teamNum: null,
         }
     },
     props: ['Tplcategory'],
@@ -75,6 +78,7 @@ export default {
         }
     },
     mounted() {
+        this.teamNum = localStorage['teamNum']
         this.templateList = this.Tplcategory[0].Value.Temps
     },
 }

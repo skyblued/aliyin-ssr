@@ -8,11 +8,15 @@
                     <img class="first" src="/img/themes/advertise_icon.png" alt="">
                 </div>
                 <div class="content-item" v-for="(item,i) in showList" :key="i">
-                    <div class="content-item-block" @click="handleClick(item)">
-                        <div class="block-image" :style="{'background-image': `url(${item.imgUrl})`}"></div>
-                    </div>
+                    <a :href="`/design?t=${item.number}&n=${teamNum}`" target="_blank">
+                        <div class="content-item-block">
+                            <div class="block-image" :style="{'background-image': `url(${item.imgUrl})`}"></div>
+                        </div>
+                    </a>
                     <div class="content-item-bottom">
-                        <p :title="item.name" @click="handleClick(item)">{{item.name}}</p>
+                        <a :href="`/design?t=${item.number}&n=${teamNum}`" target="_blank">
+                            <p :title="item.name">{{item.name}}</p>
+                        </a>
                         <p>
                             <span><span class="price">￥<span>0.37</span></span>元/把 起</span>
                             <span class="price-btn"><a href="#print">立即订购</a></span>
@@ -68,7 +72,8 @@ export default {
                 imgUrl: '/img/themes/fan15819.png',
                 name: '金科状元 - 广告扇',
                 number: '15819'
-            }]
+            }],
+            teamNum: null,
         }
     },
     methods: {
@@ -90,6 +95,9 @@ export default {
                 url.location = '/design/' + str
             })
         }
+    },
+    mounted() {
+        this.teamNum = localStorage['teamNum']
     }
 }
 </script>
