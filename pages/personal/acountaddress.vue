@@ -226,10 +226,13 @@ export default {
         }
     }
 }
-.address /deep/ .el-table td{
-    padding: 0;
+.address /deep/ .el-table{
+    td{
+        padding: 0;
+    }
     .cell{
         padding: 15px 0;
+        text-align: center;
     }
 }
 

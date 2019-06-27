@@ -94,12 +94,15 @@
                 class="dialog-image"
                 top="10vh"
                 :lock-scroll="false"
+                :show-close="false"
                 :visible.sync="dialogSeeMaterial">
                 <img width="100%" :src="$store.state.port.imgBaseUrl + dialogImage" alt="">
+                <div class="close-btn" style="top: 0px;right: -50px;" @click="dialogSeeMaterial = false"></div>
             </el-dialog>
             <el-dialog
                 title="素材审核"
                 :lock-scroll="false"
+                :show-close="false"
                 :visible.sync="dialogPassMaterial"
                 width="20%">
                 <span>审核通过给设计师对应素材上传报酬</span>
@@ -111,10 +114,12 @@
                     </div>
                     <div class="temp-btn" @click="handleAudit">通过</div>
                 </div>
+                <div class="close-btn" style="top: 0px;right: -50px;" @click="dialogPassMaterial = false"></div>
             </el-dialog>
             <el-dialog
                 title="拒绝申请"
                 :lock-scroll="false"
+                :show-close="false"
                 :visible.sync="dialogRefuseMaterial"
                 width="20%">
                 <span>如果设计师上传的素材不符合规范，可以拒绝要求重新上传</span>
@@ -125,6 +130,7 @@
                     </div>
                     <div class="temp-btn" @click="handleRefuse">确定拒绝</div>
                 </div>
+                <div class="close-btn" style="top: 0px;right: -50px;" @click="dialogRefuseMaterial = false"></div>
             </el-dialog>
         </div>
 
@@ -445,34 +451,39 @@ export default {
     }
 }
 
-.material-audit /deep/ .audit-content .el-table td{
-    padding: 0;
-    height: 108px;
-    line-height: 108px;
+.material-audit /deep/ .audit-content .el-table {
     .cell{
-        .temp-thumb{
-            display: inline-block;
-            height: 60px;
-            width: 80%;
-            background-position: 50%;
-            background-size: contain;
-            background-repeat: no-repeat;
-        }
-        .subtime, .auditTime{
-            display: inline-block;
-            width: 86px;
-        }
-        .el-button{
-            display: block;
-            width: 48px;
-            height: 32px;
-            line-height: 32px;
-            padding: 0;
-            margin: 0 auto;
-        }
-        .el-button+.el-button{
-            margin-left: 0;
-            margin: 5px auto 0;
+        text-align: center;
+    }
+    td{
+        padding: 0;
+        height: 108px;
+        line-height: 108px;
+        .cell{
+            .temp-thumb{
+                display: inline-block;
+                height: 60px;
+                width: 80%;
+                background-position: 50%;
+                background-size: contain;
+                background-repeat: no-repeat;
+            }
+            .subtime, .auditTime{
+                display: inline-block;
+                width: 86px;
+            }
+            .el-button{
+                display: block;
+                width: 48px;
+                height: 32px;
+                line-height: 32px;
+                padding: 0;
+                margin: 0 auto;
+            }
+            .el-button+.el-button{
+                margin-left: 0;
+                margin: 5px auto 0;
+            }
         }
     }
 }

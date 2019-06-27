@@ -29,12 +29,14 @@
                     <div class="hr-title">{{item.ClassName}}</div>
                 </div>
                 <div class="pic-list">
-                    <div class="pic-item" v-for="(tmp,index) in item.ProductTypeList" :key="index" @click="handleChoseTemp(i,tmp)">
-                        <div class="pic-img">
-                            <img :src="$store.state.port.imgBaseUrl+tmp.ImageUrl" alt="">
-                        </div>
-                        <p class="pic-title">{{tmp.TypeName}}</p>
-                        <p class="size"></p>
+                    <div class="pic-item" v-for="(tmp,index) in item.ProductTypeList" :key="index">
+                        <nuxt-link :to="`/templateList/templateCenter?id=${tmp.TypeId}&n=${tmp.FromClass}&title=${item.ClassName}&subtitle=${tmp.TypeName}`">
+                            <div class="pic-img">
+                                <img :src="$store.state.port.imgBaseUrl+tmp.ImageUrl" alt="">
+                            </div>
+                            <p class="pic-title">{{tmp.TypeName}}</p>
+                            <p class="size"></p>
+                        </nuxt-link>
                     </div>
                 </div>
             </div>
@@ -68,12 +70,12 @@ export default {
         },
         getSearch(e) {  // 搜索
             if(e.keyCode == 13) {
-                this.$router.push({path: '/templatecenter', query: {k: this.keyword}})
+                this.$router.push({path: '/templateList/templateCenter', query: {k: this.keyword}})
                 this.keyword = ''
             }
         },
         handleSearch(keyword) {
-            this.$router.push({path: '/templatecenter', query: {k: keyword}})
+            this.$router.push({path: '/templateList/templateCenter', query: {k: keyword}})
             this.keyword = ''
         }
     },

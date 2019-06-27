@@ -44,12 +44,13 @@
                 <el-dialog
                     title="上传团队素材"
                     :close-on-click-modal="false"
+                    :show-close="false"
                     :visible.sync="dialogMaterialVisible">
                     <el-upload
                         class="upload-demo"
                         ref="upload"
                         drag
-                        :action="$store.state.netServer + '/TeamMaterial'"
+                        :action="$store.state.port.netServer + '/TeamMaterial'"
                         :on-preview="handlePreview"
                         :on-remove="handleRemove"
                         :onSuccess="uploadSuccess"
@@ -73,6 +74,7 @@
                             <div></div>
                         </div>
                     </div>
+                    <div class="close-btn" style="top: 0px;right: -50px;" @click="dialogMaterialVisible = false"></div>
                     <div v-if="success" style="font-size: 18px;color: #745bff">上传成功</div>
                     <!-- <div v-if="logoFlag" class="progress-bar progress-bar-striped active" :style="{width: logoUploadPercent + '%'}">{{logoUploadPercent+ '%'}}</div> -->
                     <div class="footer">

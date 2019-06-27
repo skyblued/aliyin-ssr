@@ -3,7 +3,7 @@
         <div class="avatar-content">
             <el-upload
                 class="avatar-uploader"
-                :action="$store.state.netServer + '/UploadToOSS'"
+                :action="$store.state.port.netServer + '/UploadToOSS'"
                 :show-file-list="false"
                 list-type="picture-card"
                 :on-success="handleAvatarSuccess"

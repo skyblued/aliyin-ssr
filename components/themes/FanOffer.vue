@@ -108,7 +108,8 @@
                     title="选择模板"
                     :visible.sync="dialogVisible"
                     :close-on-click-modal="false"
-                    :lock-scroll="false">
+                    :lock-scroll="false"
+                    :show-close="false">
                     <div id="Loading" v-if="loading">
                         <div class="loader-inner ball-beat">
                             <div></div>
@@ -116,6 +117,7 @@
                             <div></div>
                         </div>
                     </div>
+                    <div class="close-btn" style="top: 0px;right: -50px;" @click="dialogVisible = false"></div>
                     <div class="choose-title">模板P数: {{pages + 'P'}}  模板尺寸:  {{sizename}}</div>
                     <div class="template-list" v-if="list.length">
                         <div :class="['template-item',tempIndex == i ? 'active' : '']" v-for="(item,i) in list" :key="i" @click="handleChooseTemp(i)">

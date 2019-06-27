@@ -118,8 +118,9 @@
                 </el-table-column>
             </el-table>
 
-            <el-dialog title="提交模板" :visible.sync="$store.state.dialogSubmit" :close-on-click-modal="false" :modal-append-to-body="false" :lock-scroll="false" top="10vh">
-                <temp-submit v-if="$store.state.dialogSubmit" :ProductTypeId="ProductTypeId" :TemplateNumber="TemplateNumber" :faceImg="faceImg" @getRecord="getAllTemplate"></temp-submit>
+            <el-dialog title="提交模板" :visible.sync="dialogSubmit" :close-on-click-modal="false" :modal-append-to-body="false" :lock-scroll="false" :show-close="false" top="10vh">
+                <temp-submit v-if="dialogSubmit" :ProductTypeId="ProductTypeId" :TemplateNumber="TemplateNumber" :faceImg="faceImg" @getRecord="getAllTemplate" @toggleDialog="toggleDialog"></temp-submit>
+                <div class="close-btn" style="top: 0px;right: -50px;" @click="dialogSubmit = false"></div>
             </el-dialog>
         </div>
 
@@ -185,14 +186,17 @@ export default {
             },
             ProductTypeId: '',
             TemplateNumber: '',
-            // tempNum: '',
             faceImg: '',
             authorList: [],
             author: '',
             isAuthor: null,
+            dialogSubmit: false,  // 提交模板弹框
         }
     },
     methods: {
+        toggleDialog(msg) {
+            this.dialogSubmit = msg
+        },
         getProduct() {
             this.$axios.get('/admin/products').then(res => {
                 // console.log(res.data)
@@ -205,7 +209,7 @@ export default {
             this.ProductTypeId = row.ProductTypeId
             this.TemplateNumber = row.TemplateNumber
             this.faceImg = row.faceUrl
-            this.$store.commit('setDialogSubmit', true)
+            this.dialogSubmit = true
         },
 
 
@@ -479,34 +483,39 @@ export default {
     }
 }
 
-.design-template /deep/ .design-content .el-table td{
-    padding: 0;
-    height: 108px;
-    line-height: 108px;
+.design-template /deep/ .design-content .el-table {
     .cell{
-        .temp-thumb{
-            display: inline-block;
-            height: 60px;
-            width: 80%;
-            background-position: 50%;
-            background-size: contain;
-            background-repeat: no-repeat;
-        }
-        .subtime, .auditTime{
-            display: inline-block;
-            width: 90px;
-        }
-        .el-button{
-            display: block;
-            width: 48px;
-            height: 32px;
-            line-height: 32px;
-            padding: 0;
-            margin: 0 auto;
-        }
-        .el-button+.el-button{
-            margin-left: 0;
-            margin: 5px auto 0;
+        text-align: center;
+    }
+    td{
+        padding: 0;
+        height: 108px;
+        line-height: 108px;
+        .cell{
+            .temp-thumb{
+                display: inline-block;
+                height: 60px;
+                width: 80%;
+                background-position: 50%;
+                background-size: contain;
+                background-repeat: no-repeat;
+            }
+            .subtime, .auditTime{
+                display: inline-block;
+                width: 90px;
+            }
+            .el-button{
+                display: block;
+                width: 48px;
+                height: 32px;
+                line-height: 32px;
+                padding: 0;
+                margin: 0 auto;
+            }
+            .el-button+.el-button{
+                margin-left: 0;
+                margin: 5px auto 0;
+            }
         }
     }
 }

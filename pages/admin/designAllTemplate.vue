@@ -122,8 +122,9 @@
                 </el-table-column>
             </el-table>
 
-            <el-dialog title="提交模板" :visible.sync="$store.state.dialogSubmit" :close-on-click-modal="false" :modal-append-to-body="false" :lock-scroll="false" top="10vh">
-                <temp-submit v-if="$store.state.dialogSubmit" :productId="productId" :tempNum="num" :tempName="tempName" :faceImg="faceImg" @getRecord="getAllTemplateList"></temp-submit>
+            <el-dialog title="提交模板" :visible.sync="dialogSubmit" :close-on-click-modal="false" :modal-append-to-body="false" :lock-scroll="false" :show-close="false" top="10vh">
+                <temp-submit v-if="dialogSubmit" :ProductTypeId="ProductTypeId" :TemplateNumber="TemplateNumber" :faceImg="faceImg" @getRecord="getAllTemplateList" @toggleDialog="toggleDialog"></temp-submit>
+                <div class="close-btn" style="top: 0px;right: -50px;" @click="dialogSubmit = false"></div>
             </el-dialog>
         </div>
 
@@ -209,10 +210,10 @@ export default {
             authorList: [],
             tableData: [],   
             designState: '',  // 设计师状态
-            productId: '',
-            num: '',
-            tempNum: '',
-            faceImg: ''
+            ProductTypeId: '',
+            TemplateNumber: '',
+            faceImg: '',
+            dialogSubmit: false,
         }
     },
     created () {
@@ -220,6 +221,9 @@ export default {
         this.getAuthor()
     },
     methods: {
+        toggleDialog(msg) {
+            this.dialogSubmit = msg
+        },
         getProduct() {
             this.$axios.get('/admin/products').then(res => {
                 // console.log(res.data)
@@ -236,11 +240,10 @@ export default {
         // 打开提交模板弹框
         handleSubmit(row) {
             // console.log(row)
-            this.$store.commit('setDialogSubmit', true)
-            this.productId = row.productId
-            this.num = row.num
-            this.tempName = row.tempName
+            this.ProductTypeId = row.ProductTypeId
+            this.TemplateNumber = row.TemplateNumber
             this.faceImg = row.faceUrl
+            this.dialogSubmit = true
         },
         handleAuthor() {
             this.$refs.author.style.maxHeight = '270px'
@@ -377,9 +380,9 @@ export default {
                         obj.text = ''
                     }
                     obj.faceUrl = data[i].FacePicture
-                    obj.num = data[i].TemplateNumber
+                    obj.TemplateNumber = data[i].TemplateNumber
+                    obj.ProductTypeId = data[i].TypeId
                     obj.tempName = data[i].Name
-                    obj.productId = data[i].TypeId
                     list[i] = obj
                 }
                 this.tableData = list
@@ -496,6 +499,11 @@ export default {
     }
 }
 
+.all-template /deep/ .el-table{
+    .cell{
+        text-align: center;
+    }
+}
 .all-template /deep/ .el-dialog{
     width: 883px;
     border-radius: 10px;

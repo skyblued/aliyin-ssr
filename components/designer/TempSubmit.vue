@@ -106,7 +106,6 @@ export default {
     props: ['tempInfo','TemplateNumber', 'ProductTypeId', 'faceImg'],
     methods: {
 		closeDialog() { // 向上传递关闭
-			this.$store.state.dialogSubmit = false
 			this.$emit('toggleDialog', false)
 		},
         // 输入关键词

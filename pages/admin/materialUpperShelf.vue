@@ -92,8 +92,10 @@
             <el-dialog
                 class="dialog-image"
                 top="10vh"
+                :show-close="false"
                 :visible.sync="dialogSeeMaterial">
                 <img width="100%" :src="$store.state.port.imgBaseUrl + dialogImage" alt="">
+                <div class="close-btn" style="top: 0px;right: -50px;" @click="dialogSeeMaterial = false"></div>
             </el-dialog>
         </div>
 
@@ -395,35 +397,40 @@ export default {
     }
 }
 
-.material-upper /deep/ .upper-content .el-table td{
-    padding: 0;
-    height: 108px;
-    line-height: 108px;
+.material-upper /deep/ .upper-content .el-table {
     .cell{
-        .temp-thumb{
-            display: inline-block;
-            height: 60px;
-            width: 80%;
-            background-position: 50%;
-            background-size: contain;
-            background-repeat: no-repeat;
-        }
-        .keyword{
-            display: inline-block;
-            height: 46px;
-            overflow: hidden;
-        }
-        .el-button{
-            display: block;
-            width: 48px;
-            height: 32px;
-            line-height: 32px;
-            padding: 0;
-            margin: 0 auto;
-        }
-        .el-button+.el-button{
-            margin-left: 0;
-            margin: 5px auto 0;
+        text-align: center;
+    }
+    td{
+        padding: 0;
+        height: 108px;
+        line-height: 108px;
+        .cell{
+            .temp-thumb{
+                display: inline-block;
+                height: 60px;
+                width: 80%;
+                background-position: 50%;
+                background-size: contain;
+                background-repeat: no-repeat;
+            }
+            .keyword{
+                display: inline-block;
+                height: 46px;
+                overflow: hidden;
+            }
+            .el-button{
+                display: block;
+                width: 48px;
+                height: 32px;
+                line-height: 32px;
+                padding: 0;
+                margin: 0 auto;
+            }
+            .el-button+.el-button{
+                margin-left: 0;
+                margin: 5px auto 0;
+            }
         }
     }
 }
