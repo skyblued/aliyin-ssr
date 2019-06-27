@@ -388,7 +388,7 @@ export default {
         handleSee(index) {  // 查看
             let str = 'TemplateNumber=' + this.tableData[index].tempNum + '&admin=admin'
             str = window.btoa(str)
-            window.open('/designer/'+ str)
+            window.open('/design/'+ str)
         },
         recommend(index, type) {  // 推荐
             var formData = new FormData()

@@ -370,7 +370,7 @@ export default {
         handleSee(index) {
             let str = 'TemplateNumber=' + this.tableData[index].TemplateNumber + '&admin=admin'
             str = window.btoa(str)
-            window.open('/designer/'+ str)
+            window.open('/design/'+ str)
         }
     },
     mounted() {

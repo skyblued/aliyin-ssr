@@ -146,7 +146,7 @@ export default {
         handleToDesign(item) {
             let str = 'DocumentNumber=' + item.DocumentNumber + '&admin=admin'
             str = window.btoa(str)
-            window.open('/designer/'+ str)
+            window.open('/design/'+ str)
         },
 
         // 打开上传文件弹框
