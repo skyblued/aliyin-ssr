@@ -13,6 +13,9 @@ export default {
 			}
 		}
 	},
+	asyncData({app, isDev, route, store, env, params, query, req, res, redirect, error}) {
+		if (!store.state.login.token) store.commit('login/toggleShow', true)
+	},
 	mounted() {
 		this.$store.commit('login/addToKen', localStorage['token']);
 	}
