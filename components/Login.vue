@@ -377,7 +377,7 @@ export default {
 						this.$store.commit('login/setUserName', name)
 						this.$store.commit('login/changeLogin', true)
 						this.$store.commit('login/toggleShow', false)
-						this.$store.$cookiz.set('token', res.data.token,{maxAge: 604800, path: '/'}) 
+						this.$store.$cookies.set('token', res.data.token,{maxAge: 604800, path: '/'}) 
                         this.skip = false
                         history.go(0)
                     })

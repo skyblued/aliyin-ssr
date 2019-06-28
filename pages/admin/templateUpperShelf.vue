@@ -193,6 +193,7 @@ export default {
                 this.$axios.post('/UpperShelfTemplate', formData, config).then(res => {
                     console.log(res.data)
                     if(res.data.state == 'ok') {
+                        this.$message.closeAll()
                         this.$message.success(res.data.msg)
                         this.checkedList = []
                         this.getUpperTemplate()

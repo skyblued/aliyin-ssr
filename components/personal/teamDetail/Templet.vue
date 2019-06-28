@@ -42,7 +42,7 @@
                 <div class="waterfall-item" v-for="(item,i) in list" :key="i">
                     <div class="waterfall-block">
                         <div class="waterfall-item-wrap" @click="handleUseMaster(item)">
-                            <img @load="waterfall" class="image" :src="$store.state.port.imgBaseUrl+item.FacePicture">
+                            <img @load="waterfall" class="image" :src="$store.state.port.imgBaseUrl + item.FacePicture + '?v=' + new Date().getTime()">
                             <div class="img-mask">
                                 <div class="tooltip" data-tip="删除" @click.stop="handleCancelSetMaster(i)">
                                     <img class="delete-img" src="/img/personal/delete_icon.png" alt="">
