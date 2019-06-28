@@ -17,8 +17,7 @@ module.exports = {
 			{ hid: 'description', name: 'description', content: '阿里印,海量精美正版模板免费使用，5G云端设计工具免费在线作图,全国联盟工厂就近生产制作，全国任何地方都可接单生产送货，厂价直销，价格一降到底，全国客服热线：4000-975-123。' },
 		],
 		link: [
-			{ rel: 'icon', type: 'image/x-icon', href: '//static.aliyin.com/favicon.ico' },
-			// { rel: 'stylesheet', href: '//static.aliyin.com/service/css/element.css?v=123' }
+			{ rel: 'icon', type: 'image/x-icon', href: '//static.aliyin.com/favicon.ico' }
 		]
 	},
 	/*
