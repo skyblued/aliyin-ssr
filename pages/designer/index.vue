@@ -18,7 +18,9 @@ export default {
 			this.$axios.post('/CopyTemplate', params)
 			.then(({data}) => {
 				let str = '/designer/' +  window.btoa(`DocumentNumber=${data}`)
+				// console.log(str)
 				this.$router.replace(str)
+				// window.location.replace(str)
 			})
 		} else {
 			this.$store.commit('login/toggleShow', true)
