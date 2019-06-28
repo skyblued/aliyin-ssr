@@ -86,7 +86,7 @@
                     </div>
                 </div>
 				<div class="template-center-item" v-for="(item,i) in templateList" :key="i">
-					<a :href="`/design?t=${item.TemplateNumber}`" target="_blank">
+					<a :href="`/designer?t=${item.TemplateNumber}`" target="_blank">
 						<div class="template-center-block">
 							<!-- @click="handleToDesign(item)" -->
 							<div class="block-img-wrap" >
@@ -504,13 +504,13 @@ export default {
             let config = {
                 headers:{'Content-Type': 'multipart/form-data'}
             }
-            var url = window.open('/design', '_blank')
+            var url = window.open('/designer', '_blank')
             this.$axios.post('/CopyTemplate', formData, config).then(res => {
                 if(res.data == '') return console.log('没有返回')
                 // console.log(res.data)
                 let str = 'DocumentNumber=' + res.data
 				str = window.btoa(str);
-				url.location.replace('/design/' + str)
+				url.location.replace('/designer/' + str)
             })
         },
 
@@ -541,7 +541,7 @@ export default {
                     }]
                 }
                 // console.log(obj, '创建参数')
-                var url = window.open('/design', '_blank')
+                var url = window.open('/designer', '_blank')
                 this.$axios.post(this.$store.state.port.TeamTemplate,obj).then(res =>{
                     if(res.data == 'NoAuthority') return this.$message('没有权限')
                     // console.log(JSON.parse(res.data))
@@ -549,7 +549,7 @@ export default {
                     let data = JSON.parse(res.data)
                     let str = 'DocumentNumber=' + data.DocumentNumber
 					str = window.btoa(str)
-                    url.location.replace('/design/' + str)
+                    url.location.replace('/designer/' + str)
                 })
             }else{
                 console.log('缺少必要参数')

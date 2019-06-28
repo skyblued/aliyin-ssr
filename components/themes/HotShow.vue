@@ -8,13 +8,13 @@
                     <img class="first" src="/img/themes/advertise_icon.png" alt="">
                 </div>
                 <div class="content-item" v-for="(item,i) in showList" :key="i">
-                    <a :href="`/design?t=${item.number}`" target="_blank">
+                    <a :href="`/designer?t=${item.number}`" target="_blank">
                         <div class="content-item-block">
                             <div class="block-image" :style="{'background-image': `url(${item.imgUrl})`}"></div>
                         </div>
                     </a>
                     <div class="content-item-bottom">
-                        <a :href="`/design?t=${item.number}`" target="_blank">
+                        <a :href="`/designer?t=${item.number}`" target="_blank">
                             <p :title="item.name">{{item.name}}</p>
                         </a>
                         <p>
@@ -85,13 +85,13 @@ export default {
             let config = {
                 headers:{'Content-Type': 'multipart/form-data'}
             }
-            var url = window.open('/design', '_blank')
+            var url = window.open('/designer', '_blank')
             this.$axios.post('/CopyTemplate', formData, config).then(res => {
                 if(res.data == '') return console.log('没有返回')
                 // console.log(res.data)
                 let str = 'DocumentNumber=' + res.data
                 str = window.btoa(str)
-                url.location = '/design/' + str
+                url.location = '/designer/' + str
             })
         }
     }
