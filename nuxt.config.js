@@ -6,6 +6,9 @@ module.exports = {
 	** Headers of the page
 	*/
 	head: {
+		htmlAttrs: {
+			lang: 'en',
+		},
 		title: '阿里印_在线设计印刷_免费设计_工厂直供_全国发货',//process.env.npm_package_name ||
 		meta: [
 			{ charset: 'utf-8' },

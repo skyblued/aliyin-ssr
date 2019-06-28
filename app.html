@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html {{ HTML_ATTRS }} lang="en">
+<html {{ HTML_ATTRS }}>
   <head {{ HEAD_ATTRS }}>
 	  {{ HEAD }}
 	  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
@@ -103,9 +103,6 @@
 		if (!!window.ActiveXObject || "ActiveXObject" in window){ 
 			document.getElementById('compatible-wrap').setAttribute('style', 'display:block')
 		} 
-		if (location.pathname.indexOf('designer/') > -1) {
-			document.querySelector('html').lang = 'zh-CN'
-		}
 		})();
 	</script>
 	<!-- built files will be auto injected -->
