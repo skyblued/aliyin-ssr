@@ -444,7 +444,7 @@ export default {
         .orderInfo-file{
             width: 248px;
             text-align: center;
-            .upload-file{
+            // .upload-file{
                 // border:1px solid rgba(254,108,35,1);
                 // border-radius:5px;
                 // text-align: center;
@@ -452,7 +452,7 @@ export default {
                 // height: 43px;
                 // line-height: 43px;
                 // cursor: pointer;
-            }
+            // }
             .fileName{
                 display: inline-block;
                 width: 180px;

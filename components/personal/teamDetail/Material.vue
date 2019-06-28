@@ -1,37 +1,6 @@
 <template>
     <div id="material">
         <div class="material">
-            <!-- <el-form :inline="true" class="form-inline">
-                <el-form-item label="产品分类: ">
-                    <el-select v-model="formInline.product" clearable class="select">
-                        <el-option v-for="(item,index) in productList" :key="index" :label="item.ClassName" :value="item.ClassNum"></el-option>
-                    </el-select>
-                </el-form-item>
-                <el-form-item label="上传时间: " class="form-item">
-                    <div class="block-date">
-                        <el-date-picker
-                            v-model="formInline.startTime"
-                            type="date"
-                            value-format="yyyy-MM-dd HH:mm:ss"
-                            placeholder="选择开始日期"
-                            :picker-options="pickerOptions0">
-                        </el-date-picker>
-                    </div>
-                    <span class="range">~</span>
-                    <div class="block-date">
-                        <el-date-picker
-                            v-model="formInline.endTime"
-                            type="date"
-                            value-format="yyyy-MM-dd HH:mm:ss"
-                            placeholder="选择结束日期"
-                            :picker-options="pickerOptions1">
-                        </el-date-picker>
-                    </div>
-                </el-form-item>
-                <el-form-item>
-                    <div class="screen" @click="getMaterialList">筛选</div>
-                </el-form-item>
-            </el-form> -->
             <div class="material-list">
                 <div class="material-item">
                     <div class="material-block add" @click="dialogMaterialVisible = true">
@@ -83,7 +52,7 @@
                     </div>
                 </el-dialog>
                 <div class="material-item" v-for="(item,i) in materialList" :key="i">
-                    <div class="material-block">
+                    <div class="material-block" @click="handleShow(i)">
                         <img class="image" :src="$store.state.port.imgBaseUrl+item.FilePath" alt="">
                         <div class="material-block-mask">
                             <div data-tip="删除" class="block-delete" @click="open(i)">
@@ -106,6 +75,15 @@
                 <div class="material-item" style="height: 0px;visibility: hidden;"></div>
                 <div class="material-item" style="height: 0px;visibility: hidden;"></div>
             </div>
+            <transition name="el-zoom-in-center">
+                <div v-show="show" class="transition-box-mark">
+                    <div class="transition-box">
+                        <img :src="bigImage && $store.state.port.imgBaseUrl + bigImage" alt="">
+                        <div class="close-btn" style="right: -55px;top: 8px;" @click="show = false"></div>
+                    </div>
+                </div>
+            </transition>
+
             <div class="pagination" v-if="TotalPages >= 2">
                 <HomePagination :Page="page" @getTempList="getMaterialList" />
             </div>
@@ -142,32 +120,17 @@ export default {
             TotalPages: null,
             logoFlag: false,
             logoUploadPercent: 0,
-            pickerOptions0: {
-                disabledDate: (time) => {
-                    if (this.formInline.endTime) {
-                        return time.getTime() > new Date(this.formInline.endTime).getTime();
-                    } else {
-                        return time.getTime() > Date.now();
-                    }
-                }
-            },
-            pickerOptions1: {
-                disabledDate: (time) => {
-                    if(this.formInline.startTime){
-                        return (
-                            time.getTime() > Date.now() ||
-                            time.getTime() < new Date(this.formInline.startTime).getTime()
-                        );
-                    }else{
-                        return time.getTime() > Date.now();
-                    }
-                }
-            },
             loading: false,
-            success: false
+            success: false,
+            bigImage: '',
+            show: false
         }
     },
     methods: {
+        handleShow(i) {
+            this.show = true
+            this.bigImage = this.materialList[i].FilePath
+        },
         beforeAvatarUpload(file) {  
             const isLt2M = file.size <  1024 * 1024 * 20;
             if (!isLt2M) {
@@ -307,7 +270,30 @@ export default {
     }
 }
 
-
+.transition-box-mark{
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1000;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.24);
+    .transition-box{
+        width: 630px;
+        height: 630px;
+        margin: 150px auto 0;
+        background: rgba(255,255,255,1);
+        border-radius: 10px;
+        padding: 10px;
+        position: relative;
+        img{
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+    }
+}
 
 
 .material-list{
