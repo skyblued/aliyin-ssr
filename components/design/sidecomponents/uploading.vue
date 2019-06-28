@@ -2,7 +2,8 @@
 	<div class="uploading" >
 		<div class="uploading-btn">
 			<el-upload 
-				:action=" $store.state.netServer + uploadUrl"
+				v-if="uploadUrl"
+				:action=" $store.state.port.netServer + uploadUrl"
 				:headers="headers"
 				multiple
 				accept="image/*"
@@ -74,26 +75,6 @@ export default {
     
 	props: ['copyBox', 'pageIndex'],
 	data() {
-		// 获取身份
-		// let identity = this.$route.params.t;
-		// identity = window.atob(identity).split('&')
-		// if (identity.length > 1) identity = true;
-		// else {
-		// 	identity = identity[0].split('=')[0] == 'TemplateNumber' ? true : false
-		// }
-		// let TeamNum = localStorage['teamNum'];
-		// let param;
-		// param = identity ? {
-		// 					TypeNum: 0,
-		// 					TypeCategoryNum: 0,
-		// 					KeyWords: ''		
-		// 				} 
-		// 				: {
-		// 					TeamNum,
-		// 					TypeNum: 0,
-		// 					TypeCategoryNum: 0,
-		// 					IsPublic: 0
-		// 				}
 		return {
 			loadingIcon: true, // 加载样式
 			baseLine: '', // 没有更多
