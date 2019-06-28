@@ -1,13 +1,9 @@
-export default function ({route, req, res, redirect}) {
-	let isClient = process.client;
-	let isServer = process.server;
-	if (isServer) {
-		let service_cookie = {};
-		req && req.headers.cookie && req.headers.cookie.split(';').forEach(function (val) {
-			let parts = val.split('=');
-			service_cookie[parts[0].trim()] = (parts[1] || '').trim();
-		});
-		console.log(service_cookie)
+export default async function ({app, $axios, route, store, req, res, redirect}) {
+	if (store.state.login.token) return ;
+	let token = app.$cookies.get('token');
+	if (!store.state.login.isLogin && token) {
+		let {data} =await $axios.post('/Login', 'token=' + token);
+		store.commit('login/addToKen', data.Token); // 添加token
+		store.commit('login/changeLogin', true);
 	}
-		// console.log(route, req.headers.cookie,isClient,isServer)
 }

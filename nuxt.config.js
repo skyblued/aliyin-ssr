@@ -34,6 +34,7 @@ module.exports = {
 	],
 	/* 添加新的路由 */
 	router: {
+		middleware: 'auth',
 		extendRoutes (routes, resolve) {
 		  routes.push({
 			name: 'notfound',
