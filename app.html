@@ -73,7 +73,7 @@
 			  transform: translate(-50%, -50%);
 			}
 		  
-		  </style>
+	  </style>
   </head>
   <body {{ BODY_ATTRS }}>
 	  {{ APP }}
@@ -103,6 +103,9 @@
 		if (!!window.ActiveXObject || "ActiveXObject" in window){ 
 			document.getElementById('compatible-wrap').setAttribute('style', 'display:block')
 		} 
+		if (location.pathname.indexOf('designer/') > -1) {
+			document.querySelector('html').lang = 'zh-CN'
+		}
 		})();
 	</script>
 	<!-- built files will be auto injected -->
