@@ -47,8 +47,8 @@
                                 <div v-if="item.FacePicture == ''" style="width: 100%;height: 165px;background: rgba(255,255,255,1);border-radius: 10px 10px 0 0;"></div>
                                 <img @load="waterfall" class="image" :src="$store.state.port.imgBaseUrl+item.FacePicture + '?v=' + new Date().getTime()" alt="">
                                 <div class="img-mask">
-                                    <span v-if="item.MasterDocument == '0'" class="item-set" @click.stop="handleCopy(i, '1')">设为通用模板</span>
-                                    <div class="tooltip" data-tip="复制" @click.stop="handleCopy(i, '0')">
+                                    <span v-if="item.MasterDocument == '0'" class="item-set" @click.stop="handleCopy(i, '1','0')">设为通用模板</span>
+                                    <div class="tooltip" data-tip="复制" @click.stop="handleCopy(i, '0','1')">
                                         <i class="copy-img"></i>
                                     </div>
                                 </div>
@@ -318,11 +318,12 @@ export default {
             });
         },
         // 复制模板/设为母版
-        handleCopy(i, msg) {
+        handleCopy(i, msg,index) {
             var formData = new FormData()
             formData.append('DocumentNumber', this.list[i].DocumentNumber);
             formData.append('TeamNum', localStorage['teamNum']);
-            formData.append('IsMaster', msg)
+            formData.append('IsMaster', msg);
+            formData.append('IsVisiable', index)
             let config = {
                 headers:{'Content-Type': 'multipart/form-data'}
             }
