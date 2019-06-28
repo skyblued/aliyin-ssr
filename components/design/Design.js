@@ -1259,8 +1259,10 @@ export default {
 		// 设计师通过上传psd渲染
 		uploadpsd(data) {
 			if (data.children.length < 1) return
-			this.handleCanvasInit();
-			this.addMasking();
+			if (!this.superAdmin) {
+				this.handleCanvasInit();
+				this.addMasking();
+			}
 			this.readerTemplate(data.children)
 		},
 		// 添加刀版
