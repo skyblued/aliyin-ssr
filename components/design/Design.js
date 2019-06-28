@@ -57,10 +57,7 @@ export default {
 		DownloadWait,
 		Psd,
 	},
-	asyncData({app, isDev, route, store, env, params, query, req, res, redirect, error}) {
-		// console.log(store.state.login.token,1232131, app)
-		if (!store.state.login.token) store.commit('login/toggleShow', true)
-	},
+	
 	data() {
 	
 		return {
