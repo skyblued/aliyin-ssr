@@ -240,7 +240,6 @@ export default {
         },
         // 取消设置团队母版
         handleCancelSetMaster(index) {
-            console.log(this.list[index].TemplateNumber)
             this.$confirm('是否取消该母版?', '提示', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
@@ -252,7 +251,7 @@ export default {
                 formData.append("TemplateNum", this.list[index].TemplateNumber);
                 this.$axios.delete('/TeamMaster',{data: formData})
                 .then(res => {
-                    console.log(res.data)
+                    // console.log(res.data)
                     if(res.data = 'Success') {
                         this.$message({type: 'success',message: '删除成功!'});
                         this.list.splice(index,1)
