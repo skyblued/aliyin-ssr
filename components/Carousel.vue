@@ -1,8 +1,8 @@
 <template>
     <div class="carousel">
         <el-carousel trigger="click">
-            <el-carousel-item v-for="(item,i) in nav" :key="i" :data-v="nav">
-                <a target="_blank" :href="item.NavigateUrl">
+            <el-carousel-item v-for="(item,i) in banner" :key="i">
+                <a target="_blank" :href="item.NavigateUrl.indexOf('www') > -1 ? item.NavigateUrl : 'javascript:;'">
                     <img :src="$store.state.port.imgBaseUrl+item.FileUrl" alt="" :title="item.AdvertisementName">
                 </a>
             </el-carousel-item>
@@ -17,21 +17,7 @@ export default {
         return {
             // banner: []
         }
-	},
-	computed: {
-		nav () {
-			let ban = JSON.parse(JSON.stringify(this.banner))
-			ban.forEach(item => {
-				let index = item.NavigateUrl.indexOf('.com')
-				if (index > -1) {
-					item.NavigateUrl = item.NavigateUrl.slice(index + 4)
-				} else {
-					item.NavigateUrl = 'javascript: void(0);'
-				}
-			})
-			return ban
-		}
-	},
+    },
     methods: {
         getData() {
             var url = "/Advertise?ID="+121;
