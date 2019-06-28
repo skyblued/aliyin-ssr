@@ -1104,7 +1104,7 @@ export default {
 						
 					})
 					.catch(err => {
-						console.log(err)
+						// console.log(err)
 						this.closeWindow()
 					})
 				})
@@ -1259,8 +1259,10 @@ export default {
 		// 设计师通过上传psd渲染
 		uploadpsd(data) {
 			if (data.children.length < 1) return
-			this.handleCanvasInit();
-			this.addMasking();
+			if (!this.superAdmin) {
+				this.handleCanvasInit();
+				this.addMasking();
+			}
 			this.readerTemplate(data.children)
 		},
 		// 添加刀版
@@ -4709,6 +4711,9 @@ export default {
 				this.downloadFile()
 			} else { // png
 				this.downPng()
+			}
+			if (this.templateInfo && this.templateInfo.DocumentNumber) {
+				this.$axios.post('DownloadRequest', `documentnumber=${this.templateInfo.DocumentNumber}&typeid=${this.templateInfo.TypeId}&filetype=${type == 1? 'pdf' : 'png'}`)
 			}
 		},
 		/* 吸附参考线 */

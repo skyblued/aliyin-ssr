@@ -8,9 +8,9 @@ export default {
 	head () {
 		return {
 			title: '阿里印-设计不求人-设计器',
-			meta: [
-				{ hid: 'description', name: 'description', content: '在线DIV div' }
-			]
+			htmlAttrs: {
+				lang: 'zh-CN',
+			}
 		}
 	},
 	mounted() {
