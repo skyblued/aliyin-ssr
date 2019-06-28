@@ -61,6 +61,8 @@
 							<el-button @click.stop="login">登 录</el-button>
 						</div>
 					</div>
+                    <Register v-if="$store.state.login.signType == 'register'"></Register>
+                    <ForgetPassword v-if="$store.state.login.signType == 'forget'"></ForgetPassword>
 					<div class="others">
 						<span class="sign-qq" @click="handleOpenQQ">QQ登录</span>
 					</div>
@@ -79,10 +81,14 @@
 
 <script>
 import BindWechat from '@/components/BindWechat'
+import Register from '@/components/Register'
+import ForgetPassword from '@/components/ForgetPassword'
 export default {
 	name: 'login',
 	components: {
-		BindWechat
+        BindWechat,
+        Register,
+        ForgetPassword
 	},
     data () {
         return {
@@ -136,7 +142,7 @@ export default {
             }
         },
         setDialogType(type) {
-            this.$store.commit('setDialogType', type)
+            this.$store.commit('login/toggleSign', type)
         },
         updataCode() {
             this.flage = new Date().getTime()
@@ -267,7 +273,7 @@ export default {
                         history.go(0)
                     })
                 }else{
-                    this.$store.commit('setDialogType', 'login')
+                    this.$store.commit('login/toggleSign', 'signpage')
                     this.$message.warning(res.data.Message)
                 }
             }).catch(error => {
