@@ -58,6 +58,7 @@ export default {
 			marginTop: 0
 		}
 	},
+	scrollToTop: true,
 	head() {
 		return {
 			title: '阿里印_在线设计印刷_免费设计_工厂直供_全国发货'

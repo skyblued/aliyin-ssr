@@ -1104,7 +1104,7 @@ export default {
 						
 					})
 					.catch(err => {
-						console.log(err)
+						// console.log(err)
 						this.closeWindow()
 					})
 				})
@@ -4709,6 +4709,9 @@ export default {
 				this.downloadFile()
 			} else { // png
 				this.downPng()
+			}
+			if (this.templateInfo && this.templateInfo.DocumentNumber) {
+				this.$axios.post('DownloadRequest', `documentnumber=${this.templateInfo.DocumentNumber}&typeid=${this.templateInfo.TypeId}&filetype=${type == 1? 'pdf' : 'png'}`)
 			}
 		},
 		/* 吸附参考线 */
