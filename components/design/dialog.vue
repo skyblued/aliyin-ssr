@@ -415,14 +415,14 @@ export default {
 						}).then(res => {
 						if (res) {
 							if (type) {
-								this.$router.push({name: 'submitorder', query: {t: 'order'}})
+								this.$router.push('/order/submitOrder?t=order')
 							} else {
 								this.$confirm('加入购物车成功, 是否去提交订单?', '提示', {
 								confirmButtonText: '确定',
 								cancelButtonText: '取消',
 								type: 'success'
 								}).then(() => {
-									this.$router.push('/cart')
+									this.$router.push('/order/shoppingCart')
 								}).catch(() => {         
 									this.close()
 								});
