@@ -237,7 +237,7 @@ export default {
             //console.log(item)
             let str = 'DocumentNumber=' + item.DocumentNumber
             str = window.btoa(str)
-            var url = this.$router.resolve('/design/'+ str)
+            var url = this.$router.resolve('/designer/'+ str)
             window.open(url.href,'_blank')
         },
 

@@ -368,7 +368,7 @@ export default {
             //console.log(row)
             let str = 'TemplateNumber=' + row.TemplateNumber
             str = window.btoa(str)
-            window.open('/design/'+ str)
+            window.open('/designer/'+ str)
         },
 
         getEnumsList(val) {

@@ -5,7 +5,7 @@
             <img src="/img/themes/shed_bule.png" alt="">
             <div class="service-content-list" v-if="list.length">
                 <div class="service-content-item" v-for="(item,i) in list" :key="i">
-                    <a :href="`/design?t=${item.number}`" target="_blank">
+                    <a :href="`/designer?t=${item.number}`" target="_blank">
                         <div class="service-content-block">
                             <div class="image-wrap" :style="{'background-image': `url(${item.imgUrl})`}"></div>
                         </div>
@@ -97,13 +97,13 @@ export default {
             let config = {
                 headers:{'Content-Type': 'multipart/form-data'}
             }
-            var url = window.open('/design', '_blank')
+            var url = window.open('/designer', '_blank')
             this.$axios.post('/CopyTemplate', formData, config).then(res => {
                 if(res.data == '') return console.log('没有返回')
                 // console.log(res.data)
                 let str = 'DocumentNumber=' + res.data
                 str = window.btoa(str)
-                url.location = '/design/' + str
+                url.location = '/designer/' + str
             })
         }
     }

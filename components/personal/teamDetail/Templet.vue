@@ -216,7 +216,7 @@ export default {
         handleModifyMaster(item) {
             let str = 'TemplateNumber=' + item.TemplateNumber
             str = window.btoa(str)
-            var url = this.$router.resolve('/design/' + str)
+            var url = this.$router.resolve('/designer/' + str)
             window.open(url.href,'_blank')
         },
         // 使用母版 跳转到设计器
@@ -229,13 +229,13 @@ export default {
             let config = {
                 headers:{'Content-Type': 'multipart/form-data'}
             }
-            var url = window.open('/design', '_blank')
+            var url = window.open('/designer', '_blank')
             this.$axios.post('/CopyTemplate', formData, config).then(res => {
                 if(res.data == '') return console.log('没有返回')
                 // console.log(res.data)
                 let str = 'DocumentNumber=' + res.data
                 str = window.btoa(str)
-                url.location = '/design/' + str
+                url.location = '/designer/' + str
             })
         },
         // 取消设置团队母版

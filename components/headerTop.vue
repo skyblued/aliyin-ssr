@@ -66,7 +66,7 @@ export default {
                 this.$axios.get('/ApplyDesigner').then(res => {
                     console.log(res.data)
                     if(res.data.code == '1'){
-                        this.$router.push('/designer')
+                        this.$router.push('/designercenter')
                         localStorage.setItem('isDesigner', '1')
                     }else if(res.data.code == "0"){
                         this.state = res.data.state

@@ -12,7 +12,7 @@
                 </ul>
                 <div class="self-template-list">
                     <div class="self-template-item" v-for="(tmp,index) in templateList" :key="index">
-                        <a :href="`/design?t=${tmp.TemplateNumber}`" target="_blank">
+                        <a :href="`/designer?t=${tmp.TemplateNumber}`" target="_blank">
                             <div class="self-template-block">
                                 <div class="image-wrap" :style="{'background-image': `url(${$store.state.port.imgBaseUrl + tmp.FacePicture + '!w280.src'})`}"></div>
                             </div>
@@ -24,7 +24,7 @@
                                     <img src="/img/home/user.png" alt="">
                                     <span>{{tmp.Visits}}人使用</span>
                                 </span>
-                                <a :href="`/design?t=${tmp.TemplateNumber}`" target="_blank">
+                                <a :href="`/designer?t=${tmp.TemplateNumber}`" target="_blank">
                                     <span class="design-btn">在线设计</span>
                                 </a>
                             </p>
@@ -60,13 +60,13 @@ export default {
             let config = {
                 headers:{'Content-Type': 'multipart/form-data'}
             }
-            var url = window.open('/design', '_blank')
+            var url = window.open('/designer', '_blank')
             this.$axios.post('/CopyTemplate', formData, config).then(res => {
                 if(res.data == '') return console.log('没有返回')
                 // console.log(res.data)
                 let str = 'DocumentNumber=' + res.data
                 str = window.btoa(str)
-                url.location = '/design/' + str
+                url.location = '/designer/' + str
             })
         },
         handleChoose(i) {

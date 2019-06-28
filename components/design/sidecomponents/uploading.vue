@@ -2,7 +2,8 @@
 	<div class="uploading" >
 		<div class="uploading-btn">
 			<el-upload 
-				:action=" $store.state.netServer + uploadUrl"
+				v-if="uploadUrl"
+				:action=" $store.state.port.netServer + uploadUrl"
 				:headers="headers"
 				multiple
 				accept="image/*"
@@ -74,44 +75,21 @@ export default {
     
 	props: ['copyBox', 'pageIndex'],
 	data() {
-		// 获取身份
-		let identity = this.$route.params.t;
-		identity = window.atob(identity).split('&')
-		if (identity.length > 1) identity = true;
-		else {
-			identity = identity[0].split('=')[0] == 'TemplateNumber' ? true : false
-		}
-		let TeamNum = localStorage['teamNum'];
-		let param;
-		param = identity ? {
-							TypeNum: 0,
-							TypeCategoryNum: 0,
-							KeyWords: ''		
-						} 
-						: {
-							TeamNum,
-							TypeNum: 0,
-							TypeCategoryNum: 0,
-							IsPublic: 0
-						}
 		return {
 			loadingIcon: true, // 加载样式
 			baseLine: '', // 没有更多
 			// 身份
-			identity,
+			identity: null, //身份
 			// 上传参数配置
-			param,
+			param: null,
 			pageParams: { // 分页参数
 				pageIndex: 0,
 				pageSize: 30
 			},
 			
-			uploadUrl: identity ? this.$store.state.port.DesignerMaterial
-										: this.$store.state.port.TeamMaterial,// 上传接口设置
-			getloadUrl: identity ? this.$store.state.port.DesignerMaterials + `?SubStatus=0&AudStatus&StarTime&EndTime&TypeNum&TypeCateNum&Keywords`
-										: this.$store.state.port.TeamMaterials + `?TeamNum=${TeamNum}&IsPublic=0`,// 获取数据接口设置
-			deleteUrl: identity ? this.$store.state.port.DesignerMaterial
-										: this.$store.state.port.TeamMaterial, // 删除素材接口
+			uploadUrl: null,
+			getloadUrl: null,
+			deleteUrl: null,
 
 			// 上传类型
 			uploadType: 'pc',
@@ -123,7 +101,7 @@ export default {
 			},
 			
 			// 团队编号
-			TeamNum, 
+			TeamNum: null, 
 			// 用户自己上传的列表
 			list: [],
 			waterfallList: [],
@@ -146,6 +124,34 @@ export default {
 		};
 	},
 	methods: {
+		createInfo() {
+			this.identity = this.$route.params.t;
+			this.identity = window.atob(this.identity).split('&')
+			if (this.identity.length > 1) this.identity = true;
+			else {
+				this.identity = this.identity[0].split('=')[0] == 'TemplateNumber' ? true : false
+			}
+			this.TeamNum = localStorage['teamNum'];
+			this.param = this.identity ? {
+							TypeNum: 0,
+							TypeCategoryNum: 0,
+							KeyWords: ''		
+						} 
+						: {
+							TeamNum: localStorage['teamNum'],
+							TypeNum: 0,
+							TypeCategoryNum: 0,
+							IsPublic: 0
+						}
+
+			this.uploadUrl = this.identity ? this.$store.state.port.DesignerMaterial
+										: this.$store.state.port.TeamMaterial,// 上传接口设置
+			this.getloadUrl = this.identity ? this.$store.state.port.DesignerMaterials + `?SubStatus=0&AudStatus&StarTime&EndTime&TypeNum&TypeCateNum&Keywords`
+										: this.$store.state.port.TeamMaterials + `?TeamNum=${this.TeamNum}&IsPublic=0`,// 获取数据接口设置
+			this.deleteUrl = this.identity ? this.$store.state.port.DesignerMaterial
+										: this.$store.state.port.TeamMaterial, // 删除素材接口
+			this.headers.token = localStorage['token'];
+		},
 		/**上传动画 */
 		setUploading (type) {
 			if (type) {
@@ -217,6 +223,7 @@ export default {
 					'token': localStorage['token']
 				},
 			}
+			console.log(this.uploadUrl)
 			this.$axios.post(this.uploadUrl, formdata, config)
 					.then( res =>{
 						this.setUploading(false)
@@ -256,6 +263,7 @@ export default {
 			
 		},
 		getData () {// 获取用户的上传列表
+			console.log(this.uploadUrl,1232132131)
 			this.getUserUpload().then(data => {
 				// console.log(data)
 				this.list = data.Data
@@ -414,6 +422,7 @@ export default {
 	},
 	mounted () {
 		// 获取用户上传素材列表
+		this.createInfo()
 		this.getData() 
 	},
 	computed: {

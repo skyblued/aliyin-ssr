@@ -238,13 +238,13 @@ export default {
             let config = {
                 headers:{'Content-Type': 'multipart/form-data'}
             }
-            var url = window.open('/design', '_blank')
+            var url = window.open('/designer', '_blank')
             this.$axios.post('/CopyTemplate', formData, config).then(res => {
                 if(res.data == '') return console.log('没有返回')
                 // console.log(res.data)
                 let str = 'DocumentNumber=' + res.data
 				str = window.btoa(str);
-				url.location.replace('/design/' + str)
+				url.location.replace('/designer/' + str)
             })
         },
     },
