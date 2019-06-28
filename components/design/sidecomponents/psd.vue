@@ -5,7 +5,7 @@
 			<button @click="handleupload">上传psd文件</button>
 			<p style="font-size: 12px; color: #ccc;">限制17MB</p>
 			<input ref="input" type="file" @change="uploadFile" style="opacity: 0">
-			<DownloadWait :width="300" v-if="uploadSuccess"></DownloadWait>
+			<DownloadWait :width="'100%'" v-if="uploadSuccess"></DownloadWait>
 			<div style="margin-top: 30px; " v-if="false">
 				<button style="font-size: 16px" @click="uploadPsd">测试按钮</button>
 				<!-- <span style="font-size: 12px; color: #ccc;">只支持psd格式</span> -->
