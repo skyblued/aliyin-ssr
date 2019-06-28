@@ -53,11 +53,11 @@
                         <div class="waterfall-item-title">
                             <div class="title">
                                 <!-- <div contenteditable="true" v-if="item.Name !== ''">{{item.Name}}</div> -->
-                                <span v-if="item.Name !== ''" :title="item.Name">{{item.Name}}</span>
+                                <span class="template-title" v-if="item.Name !== ''" :title="item.Name">{{item.Name}}</span>
                                 <span v-else>未定义</span>
                             </div>
                             <div class="tips">
-                                <span></span>
+                                <span>{{item.ProductTypeName}}</span>
                                 <span>{{item.AddTime.split('T',10)[0]}}</span>
                             </div>
                         </div>

@@ -149,6 +149,7 @@ export default {
         border-radius: 10px;
         background: rgba(255,255,255,1);
         margin-top: 48px;
+        font-size: 14px;
         color:rgba(51,51,51,1);
         .content-header{
             display: flex;
@@ -164,6 +165,19 @@ export default {
         }
         .orderInfo-list{
             background:rgba(244,244,244,1);
+            .orderInfo-item{
+                width: 100%;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 25px 30px;
+                border-top: 1px solid #f4f4f4;
+                .orderInfo-thumb{
+                    display: flex;
+                    align-items: center;
+                    min-width: 400px;
+                }
+            }
             .orderInfo-thumb-wrap{
                 display: inline-block;
                 width:90px;
