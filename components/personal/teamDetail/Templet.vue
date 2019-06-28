@@ -53,11 +53,11 @@
                         <div class="waterfall-item-title">
                             <div class="title">
                                 <!-- <div contenteditable="true" v-if="item.Name !== ''">{{item.Name}}</div> -->
-                                <span v-if="item.Name !== ''" :title="item.Name">{{item.Name}}</span>
+                                <span class="template-title" v-if="item.Name !== ''" :title="item.Name">{{item.Name}}</span>
                                 <span v-else>未定义</span>
                             </div>
                             <div class="tips">
-                                <span></span>
+                                <span>{{item.ProductTypeName}}</span>
                                 <span>{{item.AddTime.split('T',10)[0]}}</span>
                             </div>
                         </div>
@@ -240,7 +240,6 @@ export default {
         },
         // 取消设置团队母版
         handleCancelSetMaster(index) {
-            console.log(this.list[index].TemplateNumber)
             this.$confirm('是否取消该母版?', '提示', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
@@ -252,7 +251,7 @@ export default {
                 formData.append("TemplateNum", this.list[index].TemplateNumber);
                 this.$axios.delete('/TeamMaster',{data: formData})
                 .then(res => {
-                    console.log(res.data)
+                    // console.log(res.data)
                     if(res.data = 'Success') {
                         this.$message({type: 'success',message: '删除成功!'});
                         this.list.splice(index,1)

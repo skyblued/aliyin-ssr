@@ -140,8 +140,8 @@
                 </el-table-column>
             </el-table>
             <el-dialog title="提交模板" :visible.sync="dialogSubmit" :close-on-click-modal="false" :modal-append-to-body="false" :lock-scroll="false" top="10vh" :show-close="false">
-                <TempSubmit v-if="dialogSubmit" :tempInfo="tempInfo" :ProductTypeId="ProductTypeId" :TemplateNumber="TemplateNumber" :faceImg="faceImg" @getRecord="getData"></TempSubmit>
-                <div class="close-btn" style="right: -55px;top: 8px;" @click="toggleDialog"></div>
+                <TempSubmit v-if="dialogSubmit" :tempInfo="tempInfo" :ProductTypeId="ProductTypeId" :TemplateNumber="TemplateNumber" :faceImg="faceImg" @getRecord="getData" @toggleDialog="toggleDialog"></TempSubmit>
+                <div class="close-btn" style="right: -55px;top: 8px;" @click="dialogSubmit = false"></div>
             </el-dialog>
             <div class="block" v-if="tableData.length && page.totalRecords > 20">
                 <HomePagination :Page="page" @getTempList="getData" />

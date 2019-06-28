@@ -13,7 +13,7 @@
                         <p>订单号: <span>{{orderDeatil.OrderCode}}</span></p>
                         <div class="logistics-btn" v-if="orderDeatil.PaymentStatus == '0'">
                             <div class="payment" @click="handleToPay">去支付</div>
-                            <div class="cancel-order">取消订单</div>
+                            <div class="cancel-order" @click="handleCancel(orderDeatil.OrderCode)">取消订单</div>
                         </div>
                         <div v-else>支付完成</div>
                     </div>
@@ -99,11 +99,11 @@
                                     <span style="cursor: pointer;" title="点击可下载模板文件" @click="handleDown(scope.row)">{{scope.row.tempname}}</span>
                                 </div>
                                 <div class="order-file" v-if="!scope.row.tempname">
-                                    <div v-if="scope.row.fileName == ''" class="upload-file" @click="handleUpload(scope.row)">
-                                        <!-- <img src="/img/print/xqy_scwj_icon.png" alt="">
-                                        <span>上传文件</span> -->
-                                    </div>
-                                    <span class="download-name" v-else @click="handleDownload(scope.row)" title="点击可下载文件">
+                                    <!-- <div v-if="scope.row.fileName == ''" class="upload-file" @click="handleUpload(scope.row)">
+                                        <img src="/img/print/xqy_scwj_icon.png" alt="">
+                                        <span>上传文件</span>
+                                    </div> -->
+                                    <span class="download-name" @click="handleDownload(scope.row)" title="点击可下载文件">
                                         {{scope.row.fileName}}
                                         <!-- <img src="/img/print/xqy_refresh_icon.png" alt="" title="重新上传文件" @click.stop="handleUpload(scope.row)"> -->
                                     </span>
@@ -334,6 +334,28 @@ export default {
             let code = this.orderDeatil.OrderCode
             this.$router.push({path: '/order/cashier', query: {code}})
         },
+        handleCancel(code) {  // 取消订单
+            this.$confirm('是否取消该订单?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'success',
+                lockScroll: false
+            }).then(() => {
+                var formData = new FormData()
+                formData.append('OrderCode', code);
+                this.$axios.put('/Orders', formData)
+                .then(({data}) => {
+                    if(data.state == 'ok'){
+                        this.$message.success(data.msg)
+                        this.handleBack()
+                    }else{
+                        this.$message.error(data.msg)
+                    }
+                })
+            }).catch(() => {
+                this.$message.warning('取消选择')
+            })
+        },
 
         setcurrentDate() {  // 获取当前日期
             var date = new Date()
@@ -398,7 +420,12 @@ export default {
     padding: 45px 63px;
     user-select: none;
 }
-.order-detail .el-dialog{
+.order-detail /deep/ .inventory .el-table{
+    .cell{
+        text-align: center;
+    }
+}
+.order-detail /deep/ .el-dialog{
     width: 630px;
     border-radius: 10px;
     text-align: center;

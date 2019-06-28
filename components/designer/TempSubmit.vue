@@ -24,7 +24,7 @@
                 <div class="submit-info-item">
                     <div class="submit-info-title">关键词标签: </div>
                     <div class="submit-info-content keyword">
-                        <div style="text-align:left;">
+                        <div style="text-align:left;line-height: 24px;">
                             <span class="keyword-list" v-for="(item,i) in templateData.Keywords" :key="i">{{item}}<i class="el-icon-circle-close" @click="handleDelKeyword(i)"></i></span>
                         </div>
                         <input ref="keyInput" placeholder="关键词之间用“enter”隔开,最少五个" @keydown.enter="setKeyword" @blur="setKeyword">
@@ -417,8 +417,11 @@ export default {
     padding: 5px;
     .keyword-list{
         display: inline-block;
-        padding: 5px;
+        padding: 0 5px;
+        // height: 24px;
+        // line-height: 24px;
         margin: 5px 5px 5px 0;
+        font-size: 14px;
         background-color: #f0f2f5;
         color: #909399;
         border: 1px solid #dcdfe6;
@@ -431,7 +434,7 @@ export default {
     }
     input{
         width: 220px;
-        height: 30px;
+        height: 26px;
         border: 1px solid #dcdfe6;
 		border-radius: 4px;
         margin: 5px 5px 5px 0;
