@@ -2152,10 +2152,9 @@ export default {
 			})
 		},
         // 改变文字
-		changePath(obj, type = false) {
-			
+		changePath(obj, textElem) {
 			let zoom = this.draw.viewbox().zoom,
-				elem = this.textElem,
+				elem = textElem,
 				twoGroup = elem.first(),
 				parent = twoGroup.first(),
 				threeGroup = parent.last(),
@@ -2406,8 +2405,9 @@ export default {
 				return
 			}
 			this.elementChecked.data({obj: obj});
+			let textElem = this.elementChecked;
 			this.countText(obj).then(data => {
-				this.productPath(data).then(this.changePath)
+				this.productPath(data).then(res => this.changePath(res, textElem))
 			})
 			// this.svgParent.size(obj.width, obj.height).viewbox(0, 0,obj.width, obj.height)
 		},
@@ -2663,9 +2663,6 @@ export default {
 			this.textObj.family = item.FontCairoName;
 			obj.fontId = i 
 			this.elementChecked.data({obj})
-			// this.countText(obj).then(data => {
-			// 	this.productPath(data).then(this.changePath)
-			// })
 			if (!item.download) {
 				fetch(`https://aliyinsrc.oss-cn-shenzhen.aliyuncs.com/${item.FontPath}`)
 				.then(response => response.text())
@@ -2679,8 +2676,9 @@ export default {
 			let obj = this.elementChecked.data("obj");
 			obj[style] = this.textObj[style];
 			this.elementChecked.data({obj})
+			let textElem = this.elementChecked;
 			this.countText(obj).then(data => {
-				this.productPath(data).then(this.changePath)
+				this.productPath(data).then(res => this.changePath(res, textElem))
 			})
 		},
 		// 2.1 字体粗体
@@ -2690,8 +2688,9 @@ export default {
 			// console.log(val, val / 100 * 2)
 			obj.bold = val / 100 * 2
 			this.elementChecked.data({obj});
+			let textElem = this.elementChecked;
 			this.countText(obj).then(data => {
-				this.productPath(data).then(this.changePath)
+				this.productPath(data).then(res => this.changePath(res, textElem))
 			})
 		},
 		// 3.透明度设置
@@ -2756,11 +2755,12 @@ export default {
 			let obj = this.elementChecked.data('obj')
 			obj.align = align;
 			this.elementChecked.data({ obj: obj });
+			let textElem = this.elementChecked;
 			if (this.codeTypeTool == 'text') {
 				this.inputSetPath()
 			} else {
 				this.countText(obj).then(data => {
-					this.productPath(data).then(this.changePath)
+					this.productPath(data).then(res => this.changePath(res, textElem))
 				})
 			}
 			this.tool_box = ''
