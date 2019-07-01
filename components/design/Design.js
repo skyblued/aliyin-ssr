@@ -405,20 +405,7 @@ export default {
 		window.addEventListener('keyup', this.keycode)
 		window.addEventListener('keydown', this.keyDown)
 		window.addEventListener('mouseup', this.mouseUp)
-		window.addEventListener('paste', (e) => {
-			if(e.clipboardData) { // 监听window的剪贴板数据
-				let data = e.clipboardData.getData('text')
-				try {
-					data = JSON.parse(data)
-				}catch (err) {
-					data = ''
-				}
-				// this.clipboardData = data;
-				// this.copyElemArr = data;
-				// console.log(data)
-				// this.clone(data);
-			}
-		})
+		
 		window.onbeforeunload =  (e) => {
 			if (this.isSave) {
 				return false;
@@ -3602,23 +3589,20 @@ export default {
 					getElem.pagenum = this.pagenum;
 				this.copyElemArr.push(getElem);
 			}
-			if (this.copyElemArr.length > 0) {
-				var oInput = document.createElement('input');
-					oInput.value = JSON.stringify(this.copyElemArr);
-					document.body.appendChild(oInput);
-					oInput.select(); // 选择对象
-					document.execCommand("Copy")
-					document.body.removeChild(oInput)
-			}
+			localStorage['elesJsonForCopy'] = JSON.stringify(this.copyElemArr)
 		},
 		// 4.2复制中
-		clone(arr) {
-			if (arr) this.copyElemArr = arr;
+		clone() {
 			let zoom = this.draw.viewbox().zoom;
 			this.rightBtn.show = false;
-			if (!this.copyElemArr.length) return;
-			let elemArr = this.copyElemArr;
-			if (this.copyElemArr.length > 1) {
+			let elemArr ;
+			try{
+				elemArr = JSON.parse(localStorage['elesJsonForCopy']);
+			} catch(err) {
+				elemArr = []
+			}
+			if (!elemArr.length) return;
+			if (elemArr.length > 1) {
 				let set = this.draw.set(), groupId = [], newGroupId = {};
 				elemArr.forEach((item, i) => {
 					if (item.group) { // 如何是组合元素,复制时需要建立新的组合
