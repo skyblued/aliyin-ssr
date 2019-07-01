@@ -3406,8 +3406,6 @@ export default {
 				if (e.keyCode == 86) {
 					// e.preventDefault()
 					this.clone();
-					if (this.toolType == 'group' || this.elementChecked) 
-						this.cloneBefore(this.elementChecked)
 					this.moveMaking()
 				}
 				// ctrl + A 全选除了锁定状态
@@ -3597,10 +3595,11 @@ export default {
 			let elemArr ;
 			try{
 				elemArr = JSON.parse(localStorage['elesJsonForCopy']);
+				localStorage['elesJsonForCopy'] = ''
 			} catch(err) {
 				elemArr = []
 			}
-			console.log(elemArr)
+			// console.log(elemArr)
 			if (!elemArr.length) return;
 			if (elemArr.length > 1) {
 				let set = this.draw.set(), groupId = [], newGroupId = {};
@@ -3630,6 +3629,7 @@ export default {
 					this.handleActive(readerElem.id())
 				})
 			}
+		
 			this.setSaveTime();
 		},
 		// 4.3复制完成
