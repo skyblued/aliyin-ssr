@@ -3405,7 +3405,6 @@ export default {
 				// ctrl + v
 				if (e.keyCode == 86) {
 					// e.preventDefault()
-					if (!this.copyElemArr.length) return
 					this.clone();
 					if (this.toolType == 'group' || this.elementChecked) 
 						this.cloneBefore(this.elementChecked)
@@ -3601,6 +3600,7 @@ export default {
 			} catch(err) {
 				elemArr = []
 			}
+			console.log(elemArr)
 			if (!elemArr.length) return;
 			if (elemArr.length > 1) {
 				let set = this.draw.set(), groupId = [], newGroupId = {};
