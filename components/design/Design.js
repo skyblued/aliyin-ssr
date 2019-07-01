@@ -349,6 +349,7 @@ export default {
 			},
 			ctrlCopy: null, // ctrl 复制
 			copyElemArr: [], // 复制集合
+			clipboardData: '', // 剪贴板数据
 			elemIndex: null, // 选中元素按下
 			/* 吸附参考线 */
 			guide: {
@@ -404,7 +405,20 @@ export default {
 		window.addEventListener('keyup', this.keycode)
 		window.addEventListener('keydown', this.keyDown)
 		window.addEventListener('mouseup', this.mouseUp)
-
+		window.addEventListener('paste', (e) => {
+			if(e.clipboardData) { // 监听window的剪贴板数据
+				let data = e.clipboardData.getData('text')
+				try {
+					data = JSON.parse(data)
+				}catch (err) {
+					data = ''
+				}
+				// this.clipboardData = data;
+				// this.copyElemArr = data;
+				// console.log(data)
+				// this.clone(data);
+			}
+		})
 		window.onbeforeunload =  (e) => {
 			if (this.isSave) {
 				return false;
@@ -3588,10 +3602,18 @@ export default {
 					getElem.pagenum = this.pagenum;
 				this.copyElemArr.push(getElem);
 			}
-			
+			if (this.copyElemArr.length > 0) {
+				var oInput = document.createElement('input');
+					oInput.value = JSON.stringify(this.copyElemArr);
+					document.body.appendChild(oInput);
+					oInput.select(); // 选择对象
+					document.execCommand("Copy")
+					document.body.removeChild(oInput)
+			}
 		},
 		// 4.2复制中
-		clone() {
+		clone(arr) {
+			if (arr) this.copyElemArr = arr;
 			let zoom = this.draw.viewbox().zoom;
 			this.rightBtn.show = false;
 			if (!this.copyElemArr.length) return;
@@ -3599,10 +3621,10 @@ export default {
 			if (this.copyElemArr.length > 1) {
 				let set = this.draw.set(), groupId = [], newGroupId = {};
 				elemArr.forEach((item, i) => {
-					if (item.group) {
+					if (item.group) { // 如何是组合元素,复制时需要建立新的组合
 						if (groupId.indexOf(item.group.groupId) > -1) {
-							item.group.groupId = newGroupId[item.group.groupId]
-						} else {
+							item.group.groupId = newGroupId[item.group.groupId] // 如果新的组合没有已有组合的id加入newGrouId
+						} else { //创建新的组合ID覆盖复制的组合ID
 							groupId.push(item.group.groupId);
 							let date = 'group_' + new Date().getTime();
 							newGroupId[item.group.groupId] =  date;
