@@ -408,9 +408,7 @@ export default {
 					this.printprice.DocumentNum = data.msg;
 					// console.log(this.printprice, '添加参数')
 					new Promise((resolve,reject) => {
-						this.$store.commit('addShopingCar', this.printprice)
-						let cook = this.$myParseCookie(this.$store.state.productionObj)
-						this.$cookies.set('myCar', cook, {path: '/'}) 
+						this.$addCart(this.printprice);
 						resolve(true)
 						}).then(res => {
 						if (res) {

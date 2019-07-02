@@ -386,18 +386,16 @@ export default {
                 .then(res =>{
                     if(res.data.STATUS == "SUCCESS") {
                         if(this.$route.query.t == 'order') {
-                            this.$store.commit('delShopingCar', {i:0,num:1})
+															this.$deleteCart({i:0,num:1})
                             this.orderParam.ShoppingCartItem = []
                         }else{
                             this.orderParam.ShoppingCartItem.forEach((item,index) => {
                                 if(item.Selected == 1){
-                                    this.$store.commit('delShopingCar', {i: index, num: this.orderParam.ShoppingCartItem.length})
+																		this.$deleteCart({i:index,num:this.orderParam.ShoppingCartItem.length})
                                 }
                             })
                             this.orderParam.ShoppingCartItem = this.$store.getters.getProductionObj
-                        }
-                        let cook = this.$myParseCookie(this.$store.state.productionObj)
-                        this.$cookies.set('myCar', cook, {path: '/'}) 
+                        } 
                         this.ordercode = res.data.data.OrderCode
                         var formData = new FormData()
                         formData.append('ordercode', res.data.data.OrderCode);
@@ -530,16 +528,13 @@ export default {
     },
     mounted() {
         this.setOrderParam()
-        // this.getAddress()
-        // this.getInvoice()
-        //this.getOrderPrice()
         var url = this.$route.query.t
         var my_car;
         if(url == 'order') {
-            my_car = this.$store.getters.getProductionObj[0]
-            this.orderParam.ShoppingCartItem.push(my_car)
+            my_car = this.$getCart();
+            this.orderParam.ShoppingCartItem.push(my_car[0])
         }else{
-            my_car = this.$store.getters.getProductionObj
+            my_car = this.$getCart();
             my_car.forEach((item, index) => {
                 if(item.Selected == 1) {
                     this.orderParam.ShoppingCartItem.push(item)

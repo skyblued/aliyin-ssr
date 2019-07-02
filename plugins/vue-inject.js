@@ -1,17 +1,54 @@
 import Vue from 'vue'
 
-Vue.prototype.$myParseCookie = myParseCookie
+Vue.prototype.$addCart = addCart;
+Vue.prototype.$getCart = getCart;
+Vue.prototype.$deleteCart = deleteCart;
+Vue.prototype.$putCart = putCart;
 
-function myParseCookie(arr) { // 加入购物车
-	let str = '';
-	arr.forEach((item, index) => {
-		for (let key in item) {
-			str += `${key}:${item[key] || ''}&`
-		}
-		str = str.slice(0, -1)
-		str += '___'
-	})
-	str = str.slice(0,-3)
-	console.log(str)
-	return str
+
+function addCart(obj) { // 添加
+	let car = localStorage['shopingCar'], list;
+	try {	
+		list = JSON.parse(car)
+	} catch (error) {
+		list = []
+	}
+	list.unshift(obj)
+	localStorage['shopingCar'] = JSON.stringify(list)
+}
+
+function getCart() { // 获取
+	let car = localStorage['shopingCar'], list;
+	try {	
+		list = JSON.parse(car)
+	} catch (error) {
+		list = []
+	}
+	return list;
+}
+
+function deleteCart(obj) { // 删除
+	let car = localStorage['shopingCar'], list;
+	try {	
+		list = JSON.parse(car)
+	} catch (error) {
+		list = []
+	}
+	if (list.length) {
+		list.splice(obj.i, obj.num)
+	}
+	localStorage['shopingCar'] = JSON.stringify(list)
+}
+
+function putCart(obj) { // 修改
+	let car = localStorage['shopingCar'], list;
+	try {	
+		list = JSON.parse(car)
+	} catch (error) {
+		list = []
+	}
+	if (list.length) {
+		list[obj.i].Selected = obj.type;
+	}
+	localStorage['shopingCar'] = JSON.stringify(list)
 }

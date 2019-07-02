@@ -115,7 +115,7 @@ export default {
 							let arr = keyword.split(' ')
 							arr.forEach(key => {
 								key && this.templateData.Keywords.push(key)
-							})
+							})  
 						}
             this.$refs.keyInput.value = ''
         },
