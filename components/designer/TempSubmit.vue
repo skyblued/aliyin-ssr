@@ -110,8 +110,11 @@ export default {
 		},
         // 输入关键词
         setKeyword() {
-            let keyword = this.$refs.keyInput.value
-            keyword && this.templateData.Keywords.push(keyword)
+						let keyword = this.$refs.keyInput.value
+						if (keyword) {
+							let arr = keyword.split(' ')
+							arr.forEach(key => this.templateData.Keywords.push(key))
+						}
             this.$refs.keyInput.value = ''
         },
         handleDelKeyword(i) {  // 删除关键词

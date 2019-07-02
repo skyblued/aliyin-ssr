@@ -261,7 +261,10 @@ export default {
 		},
 		addKeywords() { // 添加关键词
 			let keyword = this.$refs.keyInput.value;
-			keyword && this.templateData.Keywords.push(keyword)
+			if (keyword) {
+				let arr = keyword.split(' ')
+				arr.forEach(key => this.templateData.Keywords.push(key))
+			}
 			this.$refs.keyInput.value = ''
 		},
 		uploadFacePicture() { // 上传封面
