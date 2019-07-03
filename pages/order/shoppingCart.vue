@@ -135,7 +135,7 @@ export default {
                 this.totalPrice = this.totalPrice - this.tableData[i].subtotal
                 if(this.totalPrice <= 0) this.totalPrice = 0
             } else {
-								this.$putCart({i:i,type: 1})
+				this.$putCart({i:i,type: 1})
                 this.totalPrice += this.tableData[i].subtotal
             }
             this.checkedList = []
