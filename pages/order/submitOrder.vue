@@ -394,7 +394,7 @@ export default {
 									this.$deleteCart({i:index,num:this.orderParam.ShoppingCartItem.length})
                                 }
                             })
-                            this.orderParam.ShoppingCartItem = this.$store.getters.getProductionObj
+                            this.orderParam.ShoppingCartItem = this.$getCart()
                         } 
                         this.ordercode = res.data.data.OrderCode
                         var formData = new FormData()
