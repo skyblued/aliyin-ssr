@@ -53,7 +53,7 @@
                         <div class="waterfall-item-title">
                             <div class="title">
                                 <!-- <div contenteditable="true" v-if="item.Name !== ''">{{item.Name}}</div> -->
-                                <span class="template-title" v-if="item.Name !== ''" :title="item.Name">{{item.Name}}</span>
+                                <span style="width: 150px;min-width: 150px;overflow: hidden;text-overflow:ellipsis;white-space: nowrap;" v-if="item.Name !== ''" :title="item.Name">{{item.Name}}</span>
                                 <span v-else>未定义</span>
                             </div>
                             <div class="tips">
