@@ -625,7 +625,7 @@ export default {
 
                 }
                 if(this.printprice.FilePath) {
-                   this.$addCart(this.printprice);
+                    this.$addCart(this.printprice);
                     this.$router.push({path: '/order/submitOrder', query: {t: 'order'}})
                 }
                 if(this.tempNum) {
@@ -643,7 +643,8 @@ export default {
                     }) 
                 }
             }else{
-               this.$addCart(this.printprice); 
+                console.log(this.printprice)
+                this.$addCart(this.printprice); 
                 this.$confirm('加入购物车成功, 是否去提交订单?', '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',

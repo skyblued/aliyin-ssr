@@ -117,14 +117,14 @@ export default {
                     this.totalPrice = this.shopList.Amount
                     this.goodsitem = this.tableData.length
                     this.disabled = false
-                    this.$putCart({i:i,type: 1})
+                    this.$putCart({i:index,type: 1})
                 } else {
                     item.Selected = 0
                     this.checkedList = []
                     this.disabled = true
                     this.totalPrice = 0
                     this.goodsitem = 0
-										this.$putCart({i:i,type: 0})
+					this.$putCart({i:index,type: 0})
                 }
             })
         },
