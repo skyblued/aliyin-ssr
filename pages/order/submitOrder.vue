@@ -386,12 +386,12 @@ export default {
                 .then(res =>{
                     if(res.data.STATUS == "SUCCESS") {
                         if(this.$route.query.t == 'order') {
-															this.$deleteCart({i:0,num:1})
+							this.$deleteCart({i:0,num:1})
                             this.orderParam.ShoppingCartItem = []
                         }else{
                             this.orderParam.ShoppingCartItem.forEach((item,index) => {
                                 if(item.Selected == 1){
-																		this.$deleteCart({i:index,num:this.orderParam.ShoppingCartItem.length})
+									this.$deleteCart({i:index,num:this.orderParam.ShoppingCartItem.length})
                                 }
                             })
                             this.orderParam.ShoppingCartItem = this.$store.getters.getProductionObj
