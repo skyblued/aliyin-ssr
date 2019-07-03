@@ -184,62 +184,63 @@ export default {
         },
 
         getData() {
-            if(this.$store.getters.getProductionObj){
-								this.myCar.ShoppingCartItem = this.$getCart();
-								if(this.myCar.ShoppingCartItem.length == 0) this.empty = false;
-                let formData = this.myCar
-                let config = {
-                    headers:{'Content-Type': 'application/json'}
-                }
-                this.$axios.post('/ShoppingCar', formData, config).then(res => {
-                    console.log(res.data)
-                    this.shopList = res.data
-                    this.goods = res.data.ShoppingCartItem.length 
-                    var list = []
-                    for(var i=0;i<res.data.ShoppingCartItem.length;i++) {
-                        var obj = {}
-                        // obj.unitprice = res.data.ShoppingCartItem[i].PerPrice
-                        obj.fileName = res.data.ShoppingCartItem[i].FileName
-                        obj.filePath = res.data.ShoppingCartItem[i].FilePath
-                        obj.number = res.data.ShoppingCartItem[i].Quantitys[0].Number + res.data.ShoppingCartItem[i].ProductType.Unit
-                        obj.subtotal = res.data.ShoppingCartItem[i].TotalPrice
-                        obj.name = res.data.ShoppingCartItem[i].PriceSheet.Name
-                        if(res.data.ShoppingCartItem[i].OrderType == '1') {
-                            obj.thumb = res.data.ShoppingCartItem[i].ProductType.ImageUrl
-                        }else{
-                            obj.thumb = res.data.ShoppingCartItem[i].Thumb
-                        }
-                        obj.size = res.data.ShoppingCartItem[i].Sizes[0].ProductWidth + '*' + res.data.ShoppingCartItem[i].Sizes[0].ProductHeight + res.data.ShoppingCartItem[i].Sizes[0].Unit
-                        if(res.data.ShoppingCartItem[i].CraftList.length > 0){
-                            obj.technology = res.data.ShoppingCartItem[i].CraftList
-                        }else{
-                            obj.technology = ''
-                        }
-                        obj.spec = res.data.ShoppingCartItem[i].AttributeList
-                        obj.id = i
-                        obj.Selected = formData.ShoppingCartItem[i].Selected
-                        obj.ordertype = res.data.ShoppingCartItem[i].OrderType
-                        obj.page = res.data.ShoppingCartItem[i].Pages[0].Quantity
-                        obj.urgent = res.data.ShoppingCartItem[i].Urgent
-                        list[i] = obj
-                    }
-                    this.tableData = list
-                    //console.log(this.tableData)
-                    this.totalPrice = 0
-                    this.tableData.forEach((item,index) => {
-                        if (item.Selected == 1) {
-                            this.totalPrice += item.subtotal
-                            this.disabled = false
-                            this.goodsitem = this.checkedList.length
-                        }
-                    })
-                    if (this.checkedList.length === this.tableData.length) {
-                        this.checkAll = true
-                    } else {
-                        this.checkAll = false
-                    }
-                })
-            }
+					this.myCar.ShoppingCartItem = this.$getCart();
+					if(this.myCar.ShoppingCartItem.length == 0) {
+						this.empty = false;
+						return
+					}
+					let formData = this.myCar
+					let config = {
+							headers:{'Content-Type': 'application/json'}
+					}
+					this.$axios.post('/ShoppingCar', formData, config).then(res => {
+						console.log(res.data)
+						this.shopList = res.data
+						this.goods = res.data.ShoppingCartItem.length 
+						var list = []
+						for(var i=0;i<res.data.ShoppingCartItem.length;i++) {
+								var obj = {}
+								// obj.unitprice = res.data.ShoppingCartItem[i].PerPrice
+								obj.fileName = res.data.ShoppingCartItem[i].FileName
+								obj.filePath = res.data.ShoppingCartItem[i].FilePath
+								obj.number = res.data.ShoppingCartItem[i].Quantitys[0].Number + res.data.ShoppingCartItem[i].ProductType.Unit
+								obj.subtotal = res.data.ShoppingCartItem[i].TotalPrice
+								obj.name = res.data.ShoppingCartItem[i].PriceSheet.Name
+								if(res.data.ShoppingCartItem[i].OrderType == '1') {
+										obj.thumb = res.data.ShoppingCartItem[i].ProductType.ImageUrl
+								}else{
+										obj.thumb = res.data.ShoppingCartItem[i].Thumb
+								}
+								obj.size = res.data.ShoppingCartItem[i].Sizes[0].ProductWidth + '*' + res.data.ShoppingCartItem[i].Sizes[0].ProductHeight + res.data.ShoppingCartItem[i].Sizes[0].Unit
+								if(res.data.ShoppingCartItem[i].CraftList.length > 0){
+										obj.technology = res.data.ShoppingCartItem[i].CraftList
+								}else{
+										obj.technology = ''
+								}
+								obj.spec = res.data.ShoppingCartItem[i].AttributeList
+								obj.id = i
+								obj.Selected = formData.ShoppingCartItem[i].Selected
+								obj.ordertype = res.data.ShoppingCartItem[i].OrderType
+								obj.page = res.data.ShoppingCartItem[i].Pages[0].Quantity
+								obj.urgent = res.data.ShoppingCartItem[i].Urgent
+								list[i] = obj
+						}
+						this.tableData = list
+						//console.log(this.tableData)
+						this.totalPrice = 0
+						this.tableData.forEach((item,index) => {
+								if (item.Selected == 1) {
+										this.totalPrice += item.subtotal
+										this.disabled = false
+										this.goodsitem = this.checkedList.length
+								}
+						})
+						if (this.checkedList.length === this.tableData.length) {
+								this.checkAll = true
+						} else {
+								this.checkAll = false
+						}
+					})
         },
         // 删除
         handleDelete (i) {
