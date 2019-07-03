@@ -1,6 +1,6 @@
 <template>
     <div id="shopping">
-        <div class="shopping" v-if="tableData.length && lg == true">
+        <div class="shopping" v-if="empty && lg == true">
             <div class="shopping-list">
                 <div class="shopping-list-header">
                     <div class="check-wrap">
@@ -81,7 +81,9 @@ import UploadFile from '@/components/share/UploadFile.vue'
 export default {
     data () {
         return {
-            tableData: [],
+						tableData: [],
+						empty: true, // 是否为空的购物车
+						lg: false, // 是否登录
             checkAll: false,
             checkedList: [],
 
@@ -115,31 +117,27 @@ export default {
                     this.totalPrice = this.shopList.Amount
                     this.goodsitem = this.tableData.length
                     this.disabled = false
-                    this.$store.commit('setShopingState', {i:index,type: 1})
+                    this.$putCart({i:i,type: 1})
                 } else {
                     item.Selected = 0
                     this.checkedList = []
                     this.disabled = true
                     this.totalPrice = 0
                     this.goodsitem = 0
-                    this.$store.commit('setShopingState', {i:index,type: 0})
+										this.$putCart({i:i,type: 0})
                 }
             })
-            let cook = this.$myParseCookie(this.$store.state.productionObj)
-            this.$cookies.set('myCar', cook, {path: '/'})
         },
         handleSelectedChange(i) {  // 单选
             this.tableData[i].Selected = !this.tableData[i].Selected
             if (this.tableData[i].Selected == 0) {
-                this.$store.commit('setShopingState', {i:i,type: 0})
+                this.$putCart({i:i,type: 0})
                 this.totalPrice = this.totalPrice - this.tableData[i].subtotal
                 if(this.totalPrice <= 0) this.totalPrice = 0
             } else {
-                this.$store.commit('setShopingState', {i:i,type: 1})
+								this.$putCart({i:i,type: 1})
                 this.totalPrice += this.tableData[i].subtotal
             }
-            let cook = this.$myParseCookie(this.$store.state.productionObj)
-            this.$cookies.set('myCar', cook, {path: '/'}) 
             this.checkedList = []
             this.tableData.forEach((item,index) => {
                 if(item.Selected == 1) {
@@ -187,8 +185,8 @@ export default {
 
         getData() {
             if(this.$store.getters.getProductionObj){
-                // let formData = JSON.parse(Cookies.get('mycar'))
-                this.myCar.ShoppingCartItem = this.$store.getters.getProductionObj
+								this.myCar.ShoppingCartItem = this.$getCart();
+								if(this.myCar.ShoppingCartItem.length == 0) this.empty = false;
                 let formData = this.myCar
                 let config = {
                     headers:{'Content-Type': 'application/json'}
@@ -251,10 +249,8 @@ export default {
                 type: 'warning',
                 lockScroll: false
             }).then(() => {
-                this.$store.commit('delShopingCar', {i : i, num: 1})
+								this.$deleteCart({i, num: 1})
                 this.checkedList.splice(i,1)
-                let cook = this.$myParseCookie(this.$store.state.productionObj)
-                this.$cookies.set('myCar', cook, {path: '/'}) 
                 this.getData()
             }).catch(() => {
                 this.$message({
@@ -263,22 +259,16 @@ export default {
                 });          
             });
         }
-    }, 
-    computed: {
-        lg() {
-            if(!localStorage['token']){
-                return false
-            }else{
-                return true
-            }
-        }
-    },
-    created() {
-        this.getData()
     },
     mounted() {
-        if(this.$store.getters.getProductionObj){
-            var mycar = this.$store.getters.getProductionObj
+				this.getData();
+				if(!localStorage['token']){
+						this.lg = false
+				}else{
+						this.lg = true
+				}
+        if(this.myCar.ShoppingCartItem.length){
+						var mycar = this.myCar.ShoppingCartItem;
             mycar.forEach((item,index) => {
                 if(item.Selected == 1) {
                     this.checkedList.push(index)

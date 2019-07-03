@@ -3,7 +3,7 @@
       <div class="tools-item-wrap">
           <div class="tools-item cart">
             <nuxt-link to="/order/shoppingCart">
-              <el-badge :value="$store.getters.getProductionObj.length" class="item">
+              <el-badge :value="this.num" class="item">
                 <span class="icon"></span>
               </el-badge>
               <span class="text">购物车</span>
@@ -38,6 +38,11 @@
 
 <script>
 export default {
+		data() {
+			return {
+				num: 0,
+			}
+		},
     methods: {
         handleTop() {
             this.timer = setInterval(() => {
@@ -65,6 +70,7 @@ export default {
         }
     },
     mounted() {
+			this.num = this.$getCart().length;
         window.addEventListener('scroll', this.scrollToTop)
     },
     destroyed () {

@@ -23,7 +23,7 @@
 						<!-- -->
 						<div v-if="filter.isSelected" style="padding:5px 5px 5px 0;">
 							<span v-if="filter.DisplayMode == 0">{{filter.Name}}</span>
-							<img v-else :src="$store.state.ossPath + filter.ImageUrl" alt="">
+							<img v-else :src="$store.state.port.ossPath + filter.ImageUrl" alt="">
 						</div>
 					</div>
 				</td>
@@ -81,7 +81,7 @@
 									:value="filter.ValueId">
 									<img
 										v-if="filter.DisplayMode == 1" 
-										:src="$store.state.ossPath + filter.ImageUrl" alt="">
+										:src="$store.state.port.ossPath + filter.ImageUrl" alt="">
 									</el-option>
 								</el-select>
 							</div>
@@ -120,7 +120,7 @@
 							<img title="点击预览"
 							@load="uploadProgress = 0"
 							@click="previewImg = true" style="width: 100%;cursor:pointer;" 
-							:src="$store.state.ossPath + templateData.FacePicture">
+							:src="$store.state.port.ossPath + templateData.FacePicture">
 							<div v-if="uploadProgress" style="position: absolute;bottom: 0;width: 100%;height: 26px;line-height: 26px;text-align: center">{{uploadProgress}}%</div>
 							<div v-if="uploadProgress" class="upload-progress" :style="`width: ${uploadProgress}%`"></div>
 							<div v-else class="submit-btn" style="width: 90px;padding: 5px;" @click="uploadFacePicture">上传封面</div>
@@ -261,7 +261,12 @@ export default {
 		},
 		addKeywords() { // 添加关键词
 			let keyword = this.$refs.keyInput.value;
-			keyword && this.templateData.Keywords.push(keyword)
+			if (keyword) {
+				let arr = keyword.split(' ')
+				arr.forEach(key => {
+					key && this.templateData.Keywords.push(key)
+				})
+			}
 			this.$refs.keyInput.value = ''
 		},
 		uploadFacePicture() { // 上传封面
@@ -279,7 +284,7 @@ export default {
 						clearInterval(timer)
 					}
 				}, 100)
-				this.$axios.post(this.$store.state.netServer + '/UploadToOSS', formData)
+				this.$axios.post(this.$store.state.port.netServer + '/UploadToOSS', formData)
 				.then(({data}) => {
 					input = null;
 					if (data.status == 'ok') {
@@ -315,7 +320,7 @@ export default {
 				}
 			}
 			this.isSubmit = false;
-			this.$axios.put(this.$store.state.netServer + '/DesignerSubmitTemplate', formData)
+			this.$axios.put(this.$store.state.port.netServer + '/DesignerSubmitTemplate', formData)
 			.then(({data}) => {
 				this.isSubmit = true;
 				this.position.show = false;
