@@ -71,6 +71,7 @@ export default {
             disabled: true,
             image: '/img/rectangle_icon.png',
             register: false,
+            next: false
         }
     },
     created () {
@@ -112,7 +113,7 @@ export default {
         },
         // 获取手机验证码
         getCode() {
-            if(this.passing && this.form.usernameormobile == -1){
+            if(!this.passing && this.form.usernameormobile == -1){
                 this.sendCode = false
                 this.authTime = 60
                 var timer = setInterval(() => {
@@ -148,17 +149,18 @@ export default {
             this.$axios.put(url,formData,config).then(res => {
                 // console.log(res)
                 if(res.data == 'Success') {
-                    //this.next = true
+                    this.next = true
                     //this.retrievenext = true
                 }
             })
         },
         confirm() {   // 验证密码格式
+            if(!this.next) return 
             if(!/^[0-9A-Za-z]{6,20}$/.test(this.password)){
                 this.confirmerr = '密码为6-16位数字或字母组成'
             }else{
                 this.disabled = false
-                this.backgroundColor = 'rgba(0,131,233,1)'
+                this.backgroundColor = '#745bff'
                 this.confirmerr = ''
                 this.image = '/img/rectangle_icon_hl.png'
             }
