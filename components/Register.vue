@@ -35,7 +35,7 @@
                     </div>
                     <el-button type="text" class="submit-btn" :disabled="disabled" :style="{background: backgroundColor}" @click="submitRegister">提交注册</el-button>
                     <div class="register-tips">
-                        <img :src="image" alt="">
+                        <img src="/img/personal/choose_icon.png" alt="">
                         <p>我已阅读并同意<span style="color: #745bff;cursor: pointer;">用户协议</span>和<span style="color: #745bff;cursor: pointer;">隐私政策</span></p>
                     </div>
                 </div>
@@ -69,7 +69,7 @@ export default {
             picCode: '',  // 图形验证码错误提示信息
             confirmerr: '',  // 密码格式错误提示信息
             disabled: true,
-            image: '/img/rectangle_icon.png',
+            // image: '/img/home/rectangle_icon.png',
             register: false,
             next: false
         }
@@ -162,7 +162,7 @@ export default {
                 this.disabled = false
                 this.backgroundColor = '#745bff'
                 this.confirmerr = ''
-                this.image = '/img/rectangle_icon_hl.png'
+                // this.image = '/img/rectangle_icon_hl.png'
             }
         },
         // 提交注册
@@ -390,7 +390,7 @@ export default {
     font-family:MicrosoftYaHei;
     font-weight:400;
     color:rgba(153,153,153,1);
-    margin-left: 9px;
+    // margin-left: 9px;
 }
 .phone-code{
     width: 100%;
