@@ -65,7 +65,7 @@ export default {
     methods: {
         // 失去焦点验证手机号
         handlePhoneBlur() {
-            if(!/^((1[3,5,8][0-9])|(14[5,7])|(17[0,6,7,8])|(19[7]))\d{8}$/.test(this.phone) ) {
+            if(!/^1[3-9][0-9]\d{8}$/.test(this.phone) ) {
                 this.error = '请输入正确的手机号'
             }else{
                 this.error = ''

@@ -14,28 +14,10 @@
             </div>
             <div class="coupon-list" v-if="couponList.length">
                 <div class="coupon-item" v-for="(item,i) in couponList" :key="i">
-                    <!-- <div class="box1" :style="{'background-image': `url(${$store.state.port.imgBaseUrl+item.ImageUrl})`}">
-                        <p><span>{{item.Amount}}</span></p>
-                        <p>
-                            <span>满{{item.LimitPrice}}元使用</span>
-                            <span>点击领取</span>
-                        </p>
-                    </div> -->
-                    <img class="box1" :src="$store.state.port.imgBaseUrl+item.ImageUrl" alt="" @click="handleOpen(item)">
+                    <img class="box1" :src="$store.state.port.imgBaseUrl+item.Coupon.ImageUrl" alt="" @click="handleOpen(item)">
                     <div class="box2">
-                        <p>消费满{{item.LimitPrice}}元减{{item.Amount}}元，可使用一张</p>
-                        <p>有效期: {{item.EffectiveDays + '天后过期'}}</p>
-                        <!-- <el-collapse-transition>
-                            <div v-if="!item.IsEnable">
-                                <div class="transition-box">
-                                    <p>{{item.Name}}</p>
-                                    <p>使用条件：消费满{{item.LimitPrice}}元减{{item.Amount}}元，可使用一张</p>
-                                    <p v-if="item.ExpireMode == '2'">有效期：{{item.EffectiveDays + '天后过期'}}</p>
-                                    <p v-else>{{item.StartTime && item.StartTime.split('T')[0] + '至' + item.EndTime && item.EndTime.split('T')[0]}}</p>
-                                    <p>不参与其他优惠活动</p>
-                                </div>
-                            </div>
-                        </el-collapse-transition> -->
+                        <p>消费满{{item.Coupon.LimitPrice}}元减{{item.Coupon.Amount}}元，可使用一张</p>
+                        <p>有效期: {{item.Coupon.EffectiveDays + '天后过期'}}</p>
                     </div>
                 </div>
                 <div class="coupon-item" style="height: 0px;margin-bottom: 0;visibility: hidden;"></div>
@@ -74,23 +56,11 @@ export default {
                 console.log(res.data)
                 if(res.data == null) return this.couponList = []
                 if(res.data.length > 0) this.show = false
-                this.couponList = res.data
+                this.couponList = res.data.filter(item => {if(item.Coupon) return item})
             })
         },
         handleOpen(item) {
             item.IsEnable = !item.IsEnable
-            // this.startDate = item.CreateTime
-            // this.valueTime = item.EffectiveDays
-            // var date = new Date(this.startDate)
-            // var newDate = new Date(date.getFullYear(),date.getMonth(),date.getDate()+this.valueTime)
-            // var year1 = date.getFullYear();
-            // var month1 = date.getMonth()+1;
-            // var day1 = date.getDate();
-            // var year2 = newDate.getFullYear();
-            // var month2 = newDate.getMonth()+1;
-            // var day2 = newDate.getDate();
-            // newDate = year1 + '.' + month1 + '.' + day1 + '~' + year2 + '.' + month2 + '.' + day2
-            // this.endTime = newDate
         },
     },
     mounted() {

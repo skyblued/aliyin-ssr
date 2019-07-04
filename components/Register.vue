@@ -35,7 +35,7 @@
                     </div>
                     <el-button type="text" class="submit-btn" :disabled="disabled" :style="{background: backgroundColor}" @click="submitRegister">提交注册</el-button>
                     <div class="register-tips">
-                        <img :src="image" alt="">
+                        <img src="/img/personal/choose_icon.png" alt="">
                         <p>我已阅读并同意<span style="color: #745bff;cursor: pointer;">用户协议</span>和<span style="color: #745bff;cursor: pointer;">隐私政策</span></p>
                     </div>
                 </div>
@@ -69,8 +69,9 @@ export default {
             picCode: '',  // 图形验证码错误提示信息
             confirmerr: '',  // 密码格式错误提示信息
             disabled: true,
-            image: '/img/rectangle_icon.png',
+            // image: '/img/home/rectangle_icon.png',
             register: false,
+            next: false
         }
     },
     created () {
@@ -89,7 +90,7 @@ export default {
         },
         // 失去焦点验证手机号
         detection() {
-            if(!/^((1[3,5,8][0-9])|(14[5,7])|(17[0,6,7,8])|(19[7]))\d{8}$/.test(this.phone)) {
+            if(!/^1[3-9][0-9]\d{8}$/.test(this.phone)) {
                 this.error = '请输入正确的手机号'
             }else{
                 this.error = ''
@@ -148,19 +149,20 @@ export default {
             this.$axios.put(url,formData,config).then(res => {
                 // console.log(res)
                 if(res.data == 'Success') {
-                    //this.next = true
+                    this.next = true
                     //this.retrievenext = true
                 }
             })
         },
         confirm() {   // 验证密码格式
+            if(!this.next) return 
             if(!/^[0-9A-Za-z]{6,20}$/.test(this.password)){
                 this.confirmerr = '密码为6-16位数字或字母组成'
             }else{
                 this.disabled = false
-                this.backgroundColor = 'rgba(0,131,233,1)'
+                this.backgroundColor = '#745bff'
                 this.confirmerr = ''
-                this.image = '/img/rectangle_icon_hl.png'
+                // this.image = '/img/rectangle_icon_hl.png'
             }
         },
         // 提交注册
@@ -246,7 +248,7 @@ export default {
     watch: {
         // 验证手机号
         phone() {
-            if(/^((1[3,5,8][0-9])|(14[5,7])|(17[0,6,7,8])|(19[7]))\d{8}$/.test(this.phone)) { 
+            if(/^1[3-9][0-9]\d{8}$/.test(this.phone)) { 
                 this.form.usernameormobile = -1
                 // 验证手机号是否存在
                 this.$axios.get('/ForgetPassword?mobile='+this.phone).then(res => {
@@ -388,7 +390,7 @@ export default {
     font-family:MicrosoftYaHei;
     font-weight:400;
     color:rgba(153,153,153,1);
-    margin-left: 9px;
+    // margin-left: 9px;
 }
 .phone-code{
     width: 100%;
