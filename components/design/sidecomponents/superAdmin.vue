@@ -43,7 +43,7 @@
 		<!-- 修改模板信息 -->
 		<transition name="el-zoom-in-top">
 			<div class="put-template"
-				v-show="position.show"
+				v-if="position.show"
 				ref="putTemplate"
 			>
 				<div style="position: relative; text-align: center;font-size: 16px;padding: 10px 0;background: #909399;color: #fff; cursor: move;"
@@ -340,10 +340,10 @@ export default {
 			return arr.join(',');
 		},
 		parsing(data) { // 解析
-			let arr = [], filterVlaue = data.SubTemplate.FilterValues;
+			let arr = [], filterVlaue = data.SubTemplate.FilterValues.split(',');
 			data.StrFilters.forEach(item => {
 				item.FilterValues.forEach((filter, j) => {
-					if (filterVlaue.indexOf(filter.ValueId) > -1) {
+					if (filterVlaue.indexOf(String(filter.ValueId)) > -1) {
 						filter.isSelected = true;
 					} else {
 						filter.isSelected = false;
@@ -359,6 +359,7 @@ export default {
 			data.forEach((item, i) => {
 				this.FilterVaules.push([])
 				item.FilterValues.forEach(filter => {
+					// console.log(filter)
 					if (filter.isSelected) {
 						arr.push(filter.ValueId)
 						this.FilterVaules[i].push(filter.ValueId)
