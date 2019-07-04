@@ -113,7 +113,7 @@ export default {
         },
         // 获取手机验证码
         getCode() {
-            if(!this.passing && this.form.usernameormobile == -1){
+            if(this.passing && this.form.usernameormobile == -1){
                 this.sendCode = false
                 this.authTime = 60
                 var timer = setInterval(() => {
