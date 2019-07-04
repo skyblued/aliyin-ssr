@@ -43,14 +43,6 @@
 </template>
 
 <script>
-// import DesignTemplate from '@/components/admin/DesignTemplate.vue'
-// import TemplateAudit from '@/components/admin/TemplateAudit.vue'
-// import MaterialAudit from '@/components/admin/MaterialAudit.vue'
-// import TemplateUpperShelf from '@/components/admin/TemplateUpperShelf.vue'
-// import MaterialUpperShelf from '@/components/admin/MaterialUpperShelf.vue'
-// import OrderManage from '@/components/admin/OrderManage.vue'
-// import DesignAllTemplate from '@/components/admin/DesignAllTemplate.vue'
-// import MasterTemplate from '@/components/admin/MasterTemplate.vue'
 export default {
     data () {
         return {
@@ -76,16 +68,6 @@ export default {
             this.$message.warning('你不是管理员')
             this.$router.push('/')
         }
-    },
-    components: {
-        // DesignTemplate,
-        // TemplateAudit,
-        // MaterialAudit,
-        // TemplateUpperShelf,
-        // MaterialUpperShelf,
-        // OrderManage,
-        // DesignAllTemplate,
-        // MasterTemplate
     }
 }
 </script>
