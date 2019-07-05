@@ -90,7 +90,7 @@
 						<div class="template-center-block">
 							<!-- @click="handleToDesign(item)" -->
 							<div class="block-img-wrap" >
-								<img @load="waterfall" class="image" :src="$store.state.port.imgBaseUrl+item.FacePicture + '!w280.src'" alt="">
+								<img @load="waterfall" class="image" :src="$store.state.port.imgBaseUrl+item.FacePicture + '!w280.src?v=' + new Date().getTime()" alt="">
 								<div class="block-img-mask">
 									<div class="tooltip" :data-tip="item.IsFavorite == true ? '取消' : '收藏'" @click.stop="handleCollect(i)">
 										<img class="likeTemplate" :src="$store.state.port.staticPath + (item.IsFavorite == true ? collectImage : image)" alt="">

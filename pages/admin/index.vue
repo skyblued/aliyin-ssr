@@ -57,11 +57,7 @@
             <div class="search-btn" @click="getTemplateList">搜索</div>
         </div>
         <div id="loading" v-if="loading">
-            <div class="loader-inner ball-beat">
-                <div></div>
-                <div></div>
-                <div></div>
-            </div>
+            <div class="loader-inner ball-beat"></div>
         </div>
         <div class="audit-content" v-if="tableData.length">
             <el-table

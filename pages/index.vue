@@ -38,7 +38,10 @@ export default {
 		ToolsBar
 	},
 	async asyncData({app, $axios, route, store, query, req, redirect, error}) {
-		
+		if(req) {
+			let t = /Android|webOS|iPhone|iPod|BlackBerry/i.test(req.headers['user-agent'])
+			t ? redirect("http://m.aliyin.com") : '';
+		}
 		let [AllTemplate, Carousel, Steps, TempCommend, FooterCode, FooterArticle] = await Promise.all([
 			$axios.get(store.state.port.AllTemplate),
 			$axios.get(store.state.port.Advertise + '?ID=131'),
