@@ -104,6 +104,7 @@ export default {
         }
     },
     mounted() {  
+				alert('')
         this.t = this.$route.query.t
         this.c = this.$route.query.c || this.$route.query.OrderCode
         this.n = this.$route.query.n
