@@ -214,7 +214,7 @@ export default {
                                     this.$store.commit('login/toggleShow', false)
                                     this.$cookies.set('token', result.data.token, {maxAge: 604800, path: '/'}) 
                                     clearInterval(this.timer)
-                                    // history.go(0)
+                                    history.go(0)
                                 })
                             }else{
                                 // this.$message('登录失败')  
