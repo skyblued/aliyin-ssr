@@ -64,7 +64,7 @@
                                 </span>
                             </div>
                             <div class="orderInfo-number" style="width: 110px;">{{items.Quantity}}{{items.Unit}}</div>
-                            <div style="color: rgba(255, 1, 1, 1);width: 60px">￥{{item.Amount}}</div>
+                            <div style="color: rgba(255, 1, 1, 1);width: 60px">￥{{items.Amount}}</div>
                             <div class="orderInfo-state" v-if="items.PrintStatus == 0">等待印刷</div>
                             <div class="orderInfo-state" v-if="items.PrintStatus == 1">印刷完成</div>
                             <div class="orderInfo-state" v-if="items.PrintStatus == 2">印刷完成</div>
