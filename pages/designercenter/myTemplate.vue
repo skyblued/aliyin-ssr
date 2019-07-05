@@ -134,7 +134,7 @@
                     <template slot-scope="scope">
                         <el-button size="mini" v-if="scope.row.state == -1" @click="handleEdit(scope.row)">编辑</el-button>
                         <el-button size="mini" type="success" v-if="scope.row.state == -1" @click.stop="handleSubmit(scope.row)">提交</el-button>
-                        <el-button size="mini" type="danger" v-if="scope.row.state == -1 || scope.row.state == 0" @click="handleDelete(scope.row.TemplateNumber,scope.$index)">删除</el-button>
+                        <el-button size="mini" type="danger" v-if="scope.row.state == -1" @click="handleDelete(scope.row.TemplateNumber,scope.$index)">删除</el-button>
                         <el-button size="mini" type="primary" v-if="scope.row.state == 2">下架</el-button>
                     </template>
                 </el-table-column>
