@@ -21,8 +21,8 @@ export default {
         console.log(ua)
         //判断是不是微信
         if ( ua.match(/MicroMessenger/i) == 'micromessenger' ) { 
-            // this.$router.push({path: '/wechatPay', query: {t: this.teamNum, c: this.orderCode, u: this.userId, n: this.num, a: this.active, type: 'wxnativepay'}}) 
-            this.$router.push(`/wechatPay?t=${this.teamNum}&c=${this.orderCode}&u=${this.userId}&n=${this.num}&a=${this.active}& type=wxnativepay`) 
+            // this.$router.push({path: '/wechat', query: {t: this.teamNum, c: this.orderCode, u: this.userId, n: this.num, a: this.active, type: 'wxnativepay'}}) 
+            this.$router.push(`/wechat?t=${this.teamNum}&c=${this.orderCode}&u=${this.userId}&n=${this.num}&a=${this.active}& type=wxnativepay`) 
             return "wxnativepay"; 
         } else if (ua.match(/AlipayClient/i) == 'alipayclient') {  //判断是不是支付宝
             this.$router.push({path: '/alipay', query: {t: this.teamNum, c: this.orderCode, u: this.userId, n: this.num, a: this.active, type: 'alipaydirect'}})
