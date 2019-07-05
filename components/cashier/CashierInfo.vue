@@ -88,7 +88,7 @@ export default {
         },
         getCode() {
             var str = window.location.host
-            var link = 'http://' + str + '/pay/'
+            var link = 'http://' + str + '/pay?'
             var url = '/pay?Url=' + link + '&Action=' + 'PrintShop' + '&TeamNum=' + this.teamNum + '&Num=' + '' + '&OrderCode=' + this.ordercode
             this.$axios.get(url).then(res =>{
                 console.log(res)
