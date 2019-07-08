@@ -2352,10 +2352,25 @@ export default {
 			svgGroup.svg(item.str||item._html)//.attr('transform', item.reverse);
 			return firstGroup;
 		},
+		handleDeleteText(e) {
+			console.log(e.target)
+			if (!e.target.innerText.length) {
+				console.log('没有了')
+				e.target.innerHTML = '<div></div>'
+			}
+		},
 		inputSubmit(e) {// 显示文字输入框
 			this.codeTypeTool = 'text';
 			this.elementChecked.style('display', 'none');
 			let box = this.$refs.box;
+
+			this.$nextTick(()=>{
+				if (getSelection()) {
+					let selection = getSelection()
+					selection.selectAllChildren(this.$refs.textHeight)
+				}
+				this.$refs.textHeight.focus();
+			})
 			this.observer = new MutationObserver(() => {
 				let textHeight = this.$refs.textHeight;
 				if (!textHeight) {
@@ -2750,7 +2765,7 @@ export default {
 		// 8. 获取选中的文字
 		textSelect() {
 			let text = window.getSelection ? window.getSelection() : document.selection.createRange().text;
-			// console.log(text)
+			console.log(text)
 		},
 		// 9. 文字对齐方式
 		handleTextAlign(align) {

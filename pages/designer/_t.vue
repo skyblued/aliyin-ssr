@@ -722,9 +722,11 @@
 						<div v-if="codeTypeTool == 'text'" class="text-editor" ref="textEditor">
 							<div ref="textHeight" 
 							@mouseup="textSelect" 
+							@keyup.delete="handleDeleteText"
 							class="editor-text" 
 							contentEditable="true"
 							textedit="true" 
+							autofocus
 							autocorrect="off" autocomplete="off" spellcheck="off" 
 							:style="textStyle">
 								<div v-for="(item,i) in textObj.arrList" :key="i">{{item}}</div>
@@ -3024,7 +3026,6 @@
 		}
 	}
 }
-
 
   /*动画 start*/
 
