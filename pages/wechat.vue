@@ -100,8 +100,8 @@ export default {
             this.$axios.get(url).then(({data}) =>{
                 if(data == '') return alert('没有返回')
 								this.msg = data
-								this.init()
 								alert(data)
+								this.init()
 						})
 						.catch(err => {
 							let s = `url: ${url}, 这是出错了`
@@ -122,7 +122,8 @@ export default {
 				}
     },
     mounted() { 
-			// let q = JSON.stringify(this.$route.query) ;
+			let q = JSON.stringify(this.$route.query) ;
+			alert(q)
         this.t = this.$route.query.t
         this.c = this.$route.query.c || this.$route.query.OrderCode
         this.n = this.$route.query.n
