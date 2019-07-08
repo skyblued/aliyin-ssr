@@ -1353,15 +1353,15 @@ export default {
 			this.CurrentTemplateData[pagenum].SvgContent = str;
 			
 			clearTimeout(this.timer);
+			if (this.svgHistory[this.svgHistory.length - 1] !== list) {
+				// console.log(list)
+				this.svgHistory.push(list)
+			}
 			if (!this.autosave) return;
 			if (btn || togglePage) {
 				this.handleSave({ pagenum, str, list, btn, down })
 			} else {
 				this.timer = setTimeout(() => this.handleSave({ pagenum, str, list }), 2000);
-			}
-			if (this.svgHistory[this.svgHistory.length - 1] !== list) {
-				// console.log(list)
-				this.svgHistory.push(list)
 			}
 		},
 		// 撤销回退
@@ -2162,8 +2162,9 @@ export default {
 				rotate = twoGroup.data('rotate'),
 				box = this.$refs.box,
 				data = elem.data('obj'),
-				width = parent.width();
-				// console.log(obj, width)
+				// width = this.codeBox.width();
+				width = obj.width * zoom;
+				console.log(obj.width, width)
 				threeGroup.clear()
 				let fourGroup = threeGroup.group();
 				fourGroup.svg(obj.svg);
@@ -2188,7 +2189,7 @@ export default {
 			let ratio = height / width;
 			parent.data({ratio: ratio});
 			twoGroup.attr('transform', `rotate(${rotate},${width / 2},${height / 2})`)
-			parent.size(this.codeBox.width / zoom, height).viewbox(0, 0, this.codeBox.width / zoom, height);
+			parent.size(width / zoom, height).viewbox(0, 0, width / zoom, height);
 			this.codeBox.height = height * zoom;
 			data.scale = data.size / height;
 			elem.data({obj: data})
