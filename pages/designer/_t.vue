@@ -722,6 +722,7 @@
 						<div v-if="codeTypeTool == 'text'" class="text-editor" ref="textEditor">
 							<div ref="textHeight" 
 							@mouseup="textSelect" 
+							@keydown.stop
 							@keyup.delete="handleDeleteText"
 							class="editor-text" 
 							contentEditable="true"
