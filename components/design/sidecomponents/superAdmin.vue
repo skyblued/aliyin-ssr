@@ -41,17 +41,17 @@
 			<el-button @click="position.show = !position.show">修改提交信息</el-button>
 		</div>
 		<!-- 修改模板信息 -->
-		<transition name="el-zoom-in-top">
+		<transition name="animation-scale">
 			<div class="put-template"
 				v-if="position.show"
 				ref="putTemplate"
 			>
-				<div style="position: relative; text-align: center;font-size: 16px;padding: 10px 0;background: #909399;color: #fff; cursor: move;"
+				<div style="position: relative; text-align: center;font-size: 18px;padding: 10px 0;background: #909399;color: #fff; cursor: move;"
 					@mousedown.stop="handledown"
 					title="按下拖拽"
 				>
 					<span>修改提交信息</span>
-					<div title="关闭" class="close-btn" @mousedown.stop @click="position.show = false"></div>
+					<div title="关闭" class="close-btn" style="top: 0" @mousedown.stop @click="position.show = false"></div>
 					
 				</div>
 				<div class="template-content">
@@ -436,7 +436,7 @@ export default {
 
 .put-template {
 	position: fixed;
-	left: 180px;
+	left: 400px;
 	top: 100px;
 	width: 650px;
 	overflow: hidden;
@@ -446,40 +446,7 @@ export default {
 	border-radius: 10px;
 	z-index: 2019;
 }
-.close-btn {
-	position: absolute;
-    right: 20px;
-    top: 15px;
-    width: 20px;
-    height: 20px;
-    transform: rotate(45deg);
-    cursor: pointer;
-	&::before {
-		content: '';
-		position: absolute;
-		left: 0;
-		top:0;
-		width: 100%;
-		height: 3px;
-		border-radius: 3px;
-		background: #fff;
-		transform: rotate(90deg);
-	}
-	&::after {
-		content: '';
-		position: absolute;
-		left: 0;
-		top:0;
-		width: 100%;
-		height: 3px;
-		border-radius: 3px;
-		background: #fff;
-	}
-	&:hover::before,
-	&:hover::after {
-		background: $color;
-	}
-}
+
 .template-content {
 	display: flex;
 	.info {

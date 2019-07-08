@@ -702,8 +702,8 @@
 						:style="codeBoxComputed" 
 						@dblclick="handledblclick"
 					>
-					<div  v-if="textProduction" style="position: absolute;top: 50%;left: 50%;transform: translate(-50%,-50%);width: 50%;height: 50%;">
-						<img style="width: 100%;height: 100%;position: absolute;opacity: .7" src="/img/loadingSvg.svg">
+					<div  v-if="textProduction" style="position: absolute;top: 50%;left: 50%;transform: translate(-50%,-50%);width: 50%;height: 15px;">
+						<img style="width: 100%;height: 100%;position: absolute;" src="/img/loadingSvg.svg">
 					</div>
 						<div>
 							<!-- toolType == 'group' ? false : -->

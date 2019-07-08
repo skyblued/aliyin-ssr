@@ -888,7 +888,7 @@ export default {
 
 		
 		handledblclick() { // 展示框codebox 双击触发效果
-			if (this.toolType == 'group') return;
+			if (this.toolType == 'group' || this.textProduction) return;
 			let type = this.elementChecked.data("type");
 			if (type == "text") { // 选中文字时
 				this.copyElemArr = [];
@@ -1221,7 +1221,12 @@ export default {
 						firstGroup.on("mousedown", () => this.elemDown(item.eleid))
 					};
 	
-					if (item.className == "hoveMove" && item.group == '') firstGroup.draggable().on('dragend', () => this.setSaveTime())
+					if (item.className == "hoveMove" && item.group == '') {
+
+						firstGroup.draggable()
+						.on('dragstart', () => this.handleBeforeRecord())
+						.on('dragend', () => this.setSaveTime())
+					}
 					else firstGroup.draggable(false)
 					twoGroup.data({
 						rotate: item.rotate
@@ -1347,6 +1352,15 @@ export default {
 			
 
 		},
+		handleBeforeRecord(obj) { // 开始记录
+			if (!obj) {
+				let	{list} = this.productionData();
+				obj = list;
+			}
+			if (this.svgHistory[this.svgHistory.length - 1] !== obj) {
+				this.svgHistory.push(obj)
+			}
+		},
 		/**
          * 保存模板
          * @param {boolean} btn 点击保存按钮 
@@ -1360,10 +1374,7 @@ export default {
 			this.CurrentTemplateData[pagenum].SvgContent = str;
 			
 			clearTimeout(this.timer);
-			if (this.svgHistory[this.svgHistory.length - 1] !== list) {
-				// console.log(list)
-				this.svgHistory.push(list)
-			}
+			this.handleBeforeRecord(list);
 			if (!this.autosave) return;
 			if (btn || togglePage) {
 				this.handleSave({ pagenum, str, list, btn, down })
@@ -2114,7 +2125,10 @@ export default {
                 .then(res => {
                     this.textProduction = false;
                     resolve(res.data);
-                }).catch(err => reject(err))
+                }).catch(err => {
+									this.textProduction = false;
+									reject(err)
+								})
 			})
 		},
 		countText(obj) { // 计算文字的个数
@@ -2209,10 +2223,11 @@ export default {
 			this.codeBox.height = height * zoom;
 			data.scale = data.size / height;
 			elem.data({obj: data})
-			this.textElem && this.textElem.style('display', 'block')
-			this.clearRectSelect()
-			this.codeBox.isShow = false
-			this.codeTypeTool = '';
+			this.$nextTick(() => {
+				this.textElem && this.textElem.style('display', 'block');
+				this.codeTypeTool = '';
+				this.clearRectSelect()
+			})
 			// setTimeout(() => this.handleActive(elem.id()), 100)
 			this.setSaveTime()
 		},
@@ -2424,10 +2439,11 @@ export default {
 			obj.arrList = textArr;
 
 			if (oldObj == JSON.stringify(obj)) {
-				this.codeBox.isShow = false
-				this.codeTypeTool = '';
-				this.textElem && this.textElem.style('display', 'block')
-				this.clearRectSelect()
+				this.$nextTick(() => {
+					this.textElem && this.textElem.style('display', 'block');
+					this.codeTypeTool = '';
+					this.clearRectSelect()
+				})
 				return
 			}
 			this.elementChecked.data({obj: obj});
@@ -2674,6 +2690,13 @@ export default {
 			switch (type) {
 				case 'size':
 				case 'spacing':
+					this.$nextTick(()=>{
+						if (getSelection() && this.$refs.textHeight) {
+							let selection = getSelection()
+							selection.selectAllChildren(this.$refs.textHeight)
+							this.$refs.textHeight.focus();
+						}
+					})
 					this.inputSubmit()
 				break;
 			}
@@ -3709,7 +3732,7 @@ export default {
 			this.toolShow.father = false;
 			this.rightBtn.show = false;
 			this.toolShow.show = "";
-			if (this.codeTypeTool == 'text') return
+			if (this.codeTypeTool == 'text' || this.textProduction) return;
 			if (this.isClipImage) this.closeClip()
 			this.codeTypeTool = '';
 			this.tool_box = ''
@@ -4904,6 +4927,7 @@ export default {
 		},
 		// 吸附参考线的位置
 		setGuide() {
+			if (this.textProduction) return this.guide.off = false;
 			let drbox = this.draw.rbox(), 
 				drawrbox = this.draw.rbox(this.draw);
 			let grbox, gbbox, x1, x2, y1, y2, cx, cy, 
