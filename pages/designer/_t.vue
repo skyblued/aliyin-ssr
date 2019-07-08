@@ -823,7 +823,7 @@
 		<transition name="el-fade-in-linear">
 			<div id="dialogcontent" class="burst-making"  v-show="dialog.off" style="background:rgba(0,0,0,.2);position: fixed;top: 0;left: 0;right: 0;bottom: 0;z-index: 2019;display: flex;justify-content: center;align-items: center;">
 				
-				<transition name="burstout">
+				<transition name="animation-scale">
 					<Dialog v-if="dialog.off" 
 					:info="templateInfo"  
 					:Thumb="CurrentTemplateData"
