@@ -51,7 +51,7 @@ export default {
         }, 
         init() {
             if (typeof WeixinJSBridge == "undefined"){
-							alert('没有这个')
+							// alert('没有这个')
                 if( document.addEventListener ){
                     document.addEventListener('WeixinJSBridgeReady', this.onBridgeReady, false);
                 }else if (document.attachEvent){
@@ -100,7 +100,7 @@ export default {
             this.$axios.get(url).then(({data}) =>{
                 if(data == '') return alert('没有返回')
 								this.msg = data
-								alert(data)
+								if (data.indexOf('return') > -1) alert(data);
 								this.init()
 						})
 						.catch(err => {
@@ -122,8 +122,8 @@ export default {
 				}
     },
     mounted() { 
-			let q = JSON.stringify(this.$route.query) ;
-			alert(q)
+			// let q = JSON.stringify(this.$route.query) ;
+			// alert(q)
         this.t = this.$route.query.t
         this.c = this.$route.query.c || this.$route.query.OrderCode
         this.n = this.$route.query.n
