@@ -2162,9 +2162,9 @@ export default {
 				rotate = twoGroup.data('rotate'),
 				box = this.$refs.box,
 				data = elem.data('obj'),
-				// width = this.codeBox.width();
-				width = obj.width * zoom;
-				console.log(obj.width, width)
+				width = parent.width();
+				// width = obj.width * zoom;
+				// console.log(obj.width, width)
 				threeGroup.clear()
 				let fourGroup = threeGroup.group();
 				fourGroup.svg(obj.svg);
@@ -2189,7 +2189,7 @@ export default {
 			let ratio = height / width;
 			parent.data({ratio: ratio});
 			twoGroup.attr('transform', `rotate(${rotate},${width / 2},${height / 2})`)
-			parent.size(width / zoom, height).viewbox(0, 0, width / zoom, height);
+			parent.size(this.codeBox.width / zoom, height).viewbox(0, 0, this.codeBox.width / zoom, height);
 			this.codeBox.height = height * zoom;
 			data.scale = data.size / height;
 			elem.data({obj: data})
