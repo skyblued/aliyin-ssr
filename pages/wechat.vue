@@ -97,10 +97,11 @@ export default {
         getWxPay() {
 					// let m = `c:${this.c},code: ${this.code}, state: ${this.state}`;
             var url = '/WxPay?OrderCode=' + this.c + '&code=' + this.code + '&state=' + this.state
-            this.$axios.get(url).then(res =>{
-                if(res.data == '') return alert('没有返回')
-								this.msg = res.data
-                this.init()
+            this.$axios.get(url).then(({data}) =>{
+                if(data == '') return alert('没有返回')
+								this.msg = data
+								this.init()
+								alert(data)
 						})
 						.catch(err => {
 							let s = `url: ${url}, 这是出错了`
