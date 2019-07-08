@@ -2164,7 +2164,7 @@ export default {
 					obj.arrList = arr;
 					resolve(obj)
 				})
-				console.log(arr)
+				// console.log(arr)
 				document.body.removeChild(span)
 			})
 		},
@@ -2178,8 +2178,8 @@ export default {
 				rotate = twoGroup.data('rotate'),
 				box = this.$refs.box,
 				data = elem.data('obj'),
-				width = parent.width();
-				// width = obj.width * zoom;
+				// width = parent.width();
+				width = obj.width * zoom;
 				// console.log(obj.width, width)
 				threeGroup.clear()
 				let fourGroup = threeGroup.group();
@@ -2190,22 +2190,22 @@ export default {
 				fourGroup.y(-resbox.y)
 				resgroup.remove();
 				fourGroup.children().forEach(group => {
-					let transform = group.transform()
+					// let transform = group.transform()
 					switch (data.align) {
 						case 'left':
 						break;
 						case 'center':
-							group.x(transform.transformedX + (width - obj.width)/2)
+							// group.x(transform.transformedX + ( obj.width)/2)
 						break;
 						case 'right':
-							group.x(transform.transformedX + (width - obj.width))
+							// group.x(transform.transformedX + ( obj.width))
 						break;
 					}
 				})
 			let ratio = height / width;
 			parent.data({ratio: ratio});
 			twoGroup.attr('transform', `rotate(${rotate},${width / 2},${height / 2})`)
-			parent.size(this.codeBox.width / zoom, height).viewbox(0, 0, this.codeBox.width / zoom, height);
+			parent.size(width / zoom, height).viewbox(0, 0, width / zoom, height);
 			this.codeBox.height = height * zoom;
 			data.scale = data.size / height;
 			elem.data({obj: data})
@@ -2384,6 +2384,9 @@ export default {
 					return
 				};
 				let height = textHeight.offsetHeight;
+				if (this.textObj && this.textObj.size && this.textObj.size <= 12 ) {
+					height *= (this.textObj.size / 12);
+				}
 				box['style']['height'] = height + 'px'
 			})
 			this.observer.observe(box, {
@@ -3292,7 +3295,7 @@ export default {
 					this.fontStyle.line = (this.textObj.line - 1) * 1000;
 					this.fontColorSelect = this.threeGroup.attr("fill") || "#000";
 					this.textDefault = this.getFontThumb(this.textObj.family).FontThumb; 
-					console.log(this.getFontThumb(this.textObj.family))
+					// console.log(this.getFontThumb(this.textObj.family))
 					this.codeTypeTool = '';
 					break;
 				case 'adsorb':
@@ -5129,7 +5132,10 @@ export default {
 					letter-spacing: ${obj.spacing}em;
 					word-break: break-all;
 					font-size:${obj.size}px;margin:0;padding:0;`;
-					console.log(obj.family)
+					if (obj.size <=12) {
+						let s = obj.size/12; // 缩放比
+						style += `transform:scale(${s}, ${s});transform-origin: 0px 0px;width:${this.codeBox.width / s}px`
+					}
 			return style
 		},
 		headerParams() {
