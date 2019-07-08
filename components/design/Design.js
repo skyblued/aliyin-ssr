@@ -891,8 +891,15 @@ export default {
 			if (this.toolType == 'group') return;
 			let type = this.elementChecked.data("type");
 			if (type == "text") { // 选中文字时
-				this.copyElemArr = []
+				this.copyElemArr = [];
 				this.inputSubmit();
+				this.$nextTick(()=>{
+					if (getSelection() && this.$refs.textHeight) {
+						let selection = getSelection()
+						selection.selectAllChildren(this.$refs.textHeight)
+						this.$refs.textHeight.focus();
+					}
+				})
 			}
 		},
         handleEnter(e) {
@@ -2125,10 +2132,11 @@ export default {
 			span.style.lineHeight = obj.line;
 			span.style.padding = 0;
 			span.margin = 0;
+			let newArr = []
 			return new Promise((resolve, reject) => {
 				obj.arrList.forEach(text => {
 					let str = '', totalW = 0;
-					span.innerHTML = ''
+					span.innerHTML = '';
 					Array.from(text).forEach(s => {
 						if (s == ' ') {
 							span.innerHTML += '&#32;'//'&ensp;'  
@@ -2138,9 +2146,16 @@ export default {
 						let w = span.offsetWidth
 						// console.log(w, totalWidth)
 						if (w > totalWidth) {
-							arr.push(str)
-							str = s;
-							span.innerText = s
+							if(/[,.!\u3002\uff0c]/.test(s)) {
+								let newstr = str.slice(0, str.length - 1);
+								arr.push(newstr);
+								str = str[str.length -1] + s;
+								span.innerText = str;
+							} else {
+								arr.push(str)
+								str = s;
+								span.innerText = s
+							}
 						} else {
 							str += s
 						}
@@ -2149,6 +2164,7 @@ export default {
 					obj.arrList = arr;
 					resolve(obj)
 				})
+				console.log(arr)
 				document.body.removeChild(span)
 			})
 		},
@@ -2353,24 +2369,14 @@ export default {
 			return firstGroup;
 		},
 		handleDeleteText(e) {
-			console.log(e.target)
 			if (!e.target.innerText.length) {
-				console.log('没有了')
-				e.target.innerHTML = '<div></div>'
+				e.target.innerHTML = '<div><br></div>'
 			}
 		},
 		inputSubmit(e) {// 显示文字输入框
 			this.codeTypeTool = 'text';
 			this.elementChecked.style('display', 'none');
 			let box = this.$refs.box;
-
-			this.$nextTick(()=>{
-				if (getSelection()) {
-					let selection = getSelection()
-					selection.selectAllChildren(this.$refs.textHeight)
-				}
-				this.$refs.textHeight.focus();
-			})
 			this.observer = new MutationObserver(() => {
 				let textHeight = this.$refs.textHeight;
 				if (!textHeight) {
@@ -2765,7 +2771,9 @@ export default {
 		// 8. 获取选中的文字
 		textSelect() {
 			let text = window.getSelection ? window.getSelection() : document.selection.createRange().text;
-			console.log(text)
+			// console.log(text)
+			let baseNode = text.baseNode;
+			let focusNode = text.focusNode;
 		},
 		// 9. 文字对齐方式
 		handleTextAlign(align) {
