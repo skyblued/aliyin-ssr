@@ -3268,7 +3268,7 @@ export default {
 					this.fontStyle.line = (this.textObj.line - 1) * 1000;
 					this.fontColorSelect = this.threeGroup.attr("fill") || "#000";
 					this.textDefault = this.getFontThumb(this.textObj.family).FontThumb; 
-					// console.log(this.getFontThumb(this.textObj.family))
+					console.log(this.getFontThumb(this.textObj.family))
 					this.codeTypeTool = '';
 					break;
 				case 'adsorb':
@@ -5105,6 +5105,7 @@ export default {
 					letter-spacing: ${obj.spacing}em;
 					word-break: break-all;
 					font-size:${obj.size}px;margin:0;padding:0;`;
+					console.log(obj.family)
 			return style
 		},
 		headerParams() {
