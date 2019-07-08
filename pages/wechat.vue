@@ -105,7 +105,7 @@ export default {
 						})
 						.catch(err => {
 							let s = `url: ${url}, 这是出错了`
-							alert(s)
+							// alert(s)
 						})
 				},
 				getOrderState() { //获取订单支付状态
