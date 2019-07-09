@@ -116,6 +116,9 @@ export default {
 
         },
     },
+    mounted() {
+        console.log(this.floorList)
+    }
 }
 </script>
 
