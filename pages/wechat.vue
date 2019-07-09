@@ -51,12 +51,14 @@ export default {
         }, 
         init() {
             if (typeof WeixinJSBridge == "undefined"){
+							// alert('没有这个')
                 if( document.addEventListener ){
                     document.addEventListener('WeixinJSBridgeReady', this.onBridgeReady, false);
                 }else if (document.attachEvent){
                     document.attachEvent('WeixinJSBridgeReady', this.onBridgeReady); 
                     document.attachEvent('onWeixinJSBridgeReady', this.onBridgeReady);
-                }
+								}
+								this.onBridgeReady();
             }else{
                 this.onBridgeReady();
             }
@@ -75,7 +77,6 @@ export default {
         },
 
         getPayLink() {
-            if(this.code) return
             var formData = new FormData()
             formData.append('PayType', this.type);
             formData.append('UserID', this.u);
@@ -94,16 +95,35 @@ export default {
             })
         },
         getWxPay() {
-            if(this.code == undefined) return
+					// let m = `c:${this.c},code: ${this.code}, state: ${this.state}`;
             var url = '/WxPay?OrderCode=' + this.c + '&code=' + this.code + '&state=' + this.state
-            this.$axios.get(url).then(res =>{
-                if(res.data == '') return alert('没有返回')
-                this.msg = res.data
-                this.init()
-            })
-        }
+            this.$axios.get(url).then(({data}) =>{
+                if(data == '') return alert('没有返回')
+								this.msg = data
+								if (data.indexOf('return') > -1) alert(data);
+								this.init()
+						})
+						.catch(err => {
+							let s = `url: ${url}, 这是出错了`
+							// alert(s)
+						})
+				},
+				getOrderState() { //获取订单支付状态
+						this.$axios.get('/CheckPay?OrderCode=' + this.c +'&Action=PrintShop')
+						.then(({data}) => {
+							if (data == 'Success') {
+								alert('支付成功')
+							} else {
+								this.getWxPay();
+							}
+						})
+						.catch(err => {
+						})
+				}
     },
-    mounted() {  
+    mounted() { 
+			// let q = JSON.stringify(this.$route.query) ;
+			// alert(q)
         this.t = this.$route.query.t
         this.c = this.$route.query.c || this.$route.query.OrderCode
         this.n = this.$route.query.n
@@ -111,10 +131,10 @@ export default {
         this.u = this.$route.query.u
         this.type = this.$route.query.type
         this.code = this.$route.query.code
-        this.state = this.$route.query.state
-        this.getPayLink()
-        this.getOrder()
-        this.getWxPay()
+				this.state = this.$route.query.state
+				this.getOrder();
+        if(!this.$route.query.code) this.getPayLink()
+				else this.getOrderState()
         
     }
 }

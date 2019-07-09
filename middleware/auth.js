@@ -1,5 +1,5 @@
 export default async function ({app, $axios, route, store, req, res, redirect}) {
-	if (store.state.login.token) return ;
+	// if (store.state.login.token) return ;
 	let token = app.$cookies.get('token');
 	if (!store.state.login.isLogin && token) {
 		let {data} =await $axios.post('/Login', 'token=' + token);

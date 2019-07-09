@@ -702,8 +702,8 @@
 						:style="codeBoxComputed" 
 						@dblclick="handledblclick"
 					>
-					<div  v-if="textProduction" style="position: absolute;top: 50%;left: 50%;transform: translate(-50%,-50%);width: 50%;height: 50%;">
-						<img style="width: 100%;height: 100%;position: absolute;opacity: .7" src="/img/loadingSvg.svg">
+					<div  v-if="textProduction" style="position: absolute;top: 50%;left: 50%;transform: translate(-50%,-50%);width: 50%;height: 15px;">
+						<img style="width: 100%;height: 100%;position: absolute;" src="/img/loadingSvg.svg">
 					</div>
 						<div>
 							<!-- toolType == 'group' ? false : -->
@@ -722,9 +722,12 @@
 						<div v-if="codeTypeTool == 'text'" class="text-editor" ref="textEditor">
 							<div ref="textHeight" 
 							@mouseup="textSelect" 
+							@keydown.stop
+							@keyup.delete="handleDeleteText"
 							class="editor-text" 
 							contentEditable="true"
 							textedit="true" 
+							autofocus
 							autocorrect="off" autocomplete="off" spellcheck="off" 
 							:style="textStyle">
 								<div v-for="(item,i) in textObj.arrList" :key="i">{{item}}</div>
@@ -820,7 +823,7 @@
 		<transition name="el-fade-in-linear">
 			<div id="dialogcontent" class="burst-making"  v-show="dialog.off" style="background:rgba(0,0,0,.2);position: fixed;top: 0;left: 0;right: 0;bottom: 0;z-index: 2019;display: flex;justify-content: center;align-items: center;">
 				
-				<transition name="burstout">
+				<transition name="animation-scale">
 					<Dialog v-if="dialog.off" 
 					:info="templateInfo"  
 					:Thumb="CurrentTemplateData"
@@ -3024,7 +3027,6 @@
 		}
 	}
 }
-
 
   /*动画 start*/
 

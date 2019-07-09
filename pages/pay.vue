@@ -21,6 +21,7 @@ export default {
         console.log(ua)
         //判断是不是微信
         if ( ua.match(/MicroMessenger/i) == 'micromessenger' ) { 
+					alert('即将打开微信支付')
             this.$router.push({path: '/wechat', query: {t: this.teamNum, c: this.orderCode, u: this.userId, n: this.num, a: this.active, type: 'wxnativepay'}}) 
             // this.$router.push(`/wechat?t=${this.teamNum}&c=${this.orderCode}&u=${this.userId}&n=${this.num}&a=${this.active}&type=wxnativepay`) 
             return "wxnativepay"; 

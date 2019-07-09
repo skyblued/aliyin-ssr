@@ -1,6 +1,7 @@
 <template>
 	<div class="dialog">
 		<div class="close-btn" @click="close"></div>
+		<!--  -->
 			<div v-if="dialog.success">
 				<!-- 切换按钮 -->
 				<div class="dialog-btn">
@@ -171,9 +172,7 @@
 			</div>
 			<!-- 下载中 -->
 			<div v-else style="width:100%;height: 100%;display: flex;justify-content: center;align-items: center;">
-				<div style="margin-top: -30px;">
-					<DownloadWait></DownloadWait>
-				</div>
+					<DownloadWait width="100%"></DownloadWait>
 			</div>
 	</div>
 </template>
@@ -464,7 +463,6 @@ export default {
 .dialog {
 	position: absolute;
 	width: 830px;
-	height: 670px;
 	font-size: 16px;
 	background: #fff;
 	border-radius: 5px;
@@ -554,7 +552,7 @@ export default {
 			}
 			& .understand {
 				display: inline-block;
-				margin-left: 30px;
+				// margin-left: 30px;
 				font-size: 13px;
 				&:hover {
 					text-decoration: underline;

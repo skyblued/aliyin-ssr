@@ -888,11 +888,18 @@ export default {
 
 		
 		handledblclick() { // 展示框codebox 双击触发效果
-			if (this.toolType == 'group') return;
+			if (this.toolType == 'group' || this.textProduction) return;
 			let type = this.elementChecked.data("type");
 			if (type == "text") { // 选中文字时
-				this.copyElemArr = []
+				this.copyElemArr = [];
 				this.inputSubmit();
+				this.$nextTick(()=>{
+					if (getSelection() && this.$refs.textHeight) {
+						let selection = getSelection()
+						selection.selectAllChildren(this.$refs.textHeight)
+						this.$refs.textHeight.focus();
+					}
+				})
 			}
 		},
         handleEnter(e) {
@@ -1214,7 +1221,12 @@ export default {
 						firstGroup.on("mousedown", () => this.elemDown(item.eleid))
 					};
 	
-					if (item.className == "hoveMove" && item.group == '') firstGroup.draggable().on('dragend', () => this.setSaveTime())
+					if (item.className == "hoveMove" && item.group == '') {
+
+						firstGroup.draggable()
+						.on('dragstart', () => this.handleBeforeRecord())
+						.on('dragend', () => this.setSaveTime())
+					}
 					else firstGroup.draggable(false)
 					twoGroup.data({
 						rotate: item.rotate
@@ -1340,6 +1352,15 @@ export default {
 			
 
 		},
+		handleBeforeRecord(obj) { // 开始记录
+			if (!obj) {
+				let	{list} = this.productionData();
+				obj = list;
+			}
+			if (this.svgHistory[this.svgHistory.length - 1] !== obj) {
+				this.svgHistory.push(obj)
+			}
+		},
 		/**
          * 保存模板
          * @param {boolean} btn 点击保存按钮 
@@ -1353,15 +1374,12 @@ export default {
 			this.CurrentTemplateData[pagenum].SvgContent = str;
 			
 			clearTimeout(this.timer);
+			this.handleBeforeRecord(list);
 			if (!this.autosave) return;
 			if (btn || togglePage) {
 				this.handleSave({ pagenum, str, list, btn, down })
 			} else {
 				this.timer = setTimeout(() => this.handleSave({ pagenum, str, list }), 2000);
-			}
-			if (this.svgHistory[this.svgHistory.length - 1] !== list) {
-				// console.log(list)
-				this.svgHistory.push(list)
 			}
 		},
 		// 撤销回退
@@ -2107,7 +2125,10 @@ export default {
                 .then(res => {
                     this.textProduction = false;
                     resolve(res.data);
-                }).catch(err => reject(err))
+                }).catch(err => {
+									this.textProduction = false;
+									reject(err)
+								})
 			})
 		},
 		countText(obj) { // 计算文字的个数
@@ -2125,10 +2146,11 @@ export default {
 			span.style.lineHeight = obj.line;
 			span.style.padding = 0;
 			span.margin = 0;
+			let newArr = []
 			return new Promise((resolve, reject) => {
 				obj.arrList.forEach(text => {
 					let str = '', totalW = 0;
-					span.innerHTML = ''
+					span.innerHTML = '';
 					Array.from(text).forEach(s => {
 						if (s == ' ') {
 							span.innerHTML += '&#32;'//'&ensp;'  
@@ -2138,9 +2160,16 @@ export default {
 						let w = span.offsetWidth
 						// console.log(w, totalWidth)
 						if (w > totalWidth) {
-							arr.push(str)
-							str = s;
-							span.innerText = s
+							if(/[,.!\u3002\uff0c]/.test(s)) {
+								let newstr = str.slice(0, str.length - 1);
+								arr.push(newstr);
+								str = str[str.length -1] + s;
+								span.innerText = str;
+							} else {
+								arr.push(str)
+								str = s;
+								span.innerText = s
+							}
 						} else {
 							str += s
 						}
@@ -2149,6 +2178,7 @@ export default {
 					obj.arrList = arr;
 					resolve(obj)
 				})
+				// console.log(arr)
 				document.body.removeChild(span)
 			})
 		},
@@ -2162,8 +2192,9 @@ export default {
 				rotate = twoGroup.data('rotate'),
 				box = this.$refs.box,
 				data = elem.data('obj'),
-				width = parent.width();
-				// console.log(obj, width)
+				// width = parent.width();
+				width = obj.width * zoom;
+				// console.log(obj.width, width)
 				threeGroup.clear()
 				let fourGroup = threeGroup.group();
 				fourGroup.svg(obj.svg);
@@ -2173,29 +2204,30 @@ export default {
 				fourGroup.y(-resbox.y)
 				resgroup.remove();
 				fourGroup.children().forEach(group => {
-					let transform = group.transform()
+					// let transform = group.transform()
 					switch (data.align) {
 						case 'left':
 						break;
 						case 'center':
-							group.x(transform.transformedX + (width - obj.width)/2)
+							// group.x(transform.transformedX + ( obj.width)/2)
 						break;
 						case 'right':
-							group.x(transform.transformedX + (width - obj.width))
+							// group.x(transform.transformedX + ( obj.width))
 						break;
 					}
 				})
 			let ratio = height / width;
 			parent.data({ratio: ratio});
 			twoGroup.attr('transform', `rotate(${rotate},${width / 2},${height / 2})`)
-			parent.size(this.codeBox.width / zoom, height).viewbox(0, 0, this.codeBox.width / zoom, height);
+			parent.size(width / zoom, height).viewbox(0, 0, width / zoom, height);
 			this.codeBox.height = height * zoom;
 			data.scale = data.size / height;
 			elem.data({obj: data})
-			this.textElem && this.textElem.style('display', 'block')
-			this.clearRectSelect()
-			this.codeBox.isShow = false
-			this.codeTypeTool = '';
+			this.$nextTick(() => {
+				this.textElem && this.textElem.style('display', 'block');
+				this.codeTypeTool = '';
+				this.clearRectSelect()
+			})
 			// setTimeout(() => this.handleActive(elem.id()), 100)
 			this.setSaveTime()
 		},
@@ -2351,6 +2383,11 @@ export default {
 			svgGroup.svg(item.str||item._html)//.attr('transform', item.reverse);
 			return firstGroup;
 		},
+		handleDeleteText(e) {
+			if (!e.target.innerText.length) {
+				e.target.innerHTML = '<div><br></div>'
+			}
+		},
 		inputSubmit(e) {// 显示文字输入框
 			this.codeTypeTool = 'text';
 			this.elementChecked.style('display', 'none');
@@ -2362,6 +2399,9 @@ export default {
 					return
 				};
 				let height = textHeight.offsetHeight;
+				if (this.textObj && this.textObj.size && this.textObj.size <= 12 ) {
+					height *= (this.textObj.size / 12);
+				}
 				box['style']['height'] = height + 'px'
 			})
 			this.observer.observe(box, {
@@ -2399,10 +2439,11 @@ export default {
 			obj.arrList = textArr;
 
 			if (oldObj == JSON.stringify(obj)) {
-				this.codeBox.isShow = false
-				this.codeTypeTool = '';
-				this.textElem && this.textElem.style('display', 'block')
-				this.clearRectSelect()
+				this.$nextTick(() => {
+					this.textElem && this.textElem.style('display', 'block');
+					this.codeTypeTool = '';
+					this.clearRectSelect()
+				})
 				return
 			}
 			this.elementChecked.data({obj: obj});
@@ -2649,6 +2690,13 @@ export default {
 			switch (type) {
 				case 'size':
 				case 'spacing':
+					this.$nextTick(()=>{
+						if (getSelection() && this.$refs.textHeight) {
+							let selection = getSelection()
+							selection.selectAllChildren(this.$refs.textHeight)
+							this.$refs.textHeight.focus();
+						}
+					})
 					this.inputSubmit()
 				break;
 			}
@@ -2750,6 +2798,8 @@ export default {
 		textSelect() {
 			let text = window.getSelection ? window.getSelection() : document.selection.createRange().text;
 			// console.log(text)
+			let baseNode = text.baseNode;
+			let focusNode = text.focusNode;
 		},
 		// 9. 文字对齐方式
 		handleTextAlign(align) {
@@ -3682,7 +3732,7 @@ export default {
 			this.toolShow.father = false;
 			this.rightBtn.show = false;
 			this.toolShow.show = "";
-			if (this.codeTypeTool == 'text') return
+			if (this.codeTypeTool == 'text' || this.textProduction) return;
 			if (this.isClipImage) this.closeClip()
 			this.codeTypeTool = '';
 			this.tool_box = ''
@@ -4877,6 +4927,7 @@ export default {
 		},
 		// 吸附参考线的位置
 		setGuide() {
+			if (this.textProduction) return this.guide.off = false;
 			let drbox = this.draw.rbox(), 
 				drawrbox = this.draw.rbox(this.draw);
 			let grbox, gbbox, x1, x2, y1, y2, cx, cy, 
@@ -5105,6 +5156,10 @@ export default {
 					letter-spacing: ${obj.spacing}em;
 					word-break: break-all;
 					font-size:${obj.size}px;margin:0;padding:0;`;
+					if (obj.size <=12) {
+						let s = obj.size/12; // 缩放比
+						style += `transform:scale(${s}, ${s});transform-origin: 0px 0px;width:${this.codeBox.width / s}px`
+					}
 			return style
 		},
 		headerParams() {
