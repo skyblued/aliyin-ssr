@@ -198,7 +198,7 @@ export default {
 		handledragend (e) {
 			e.preventDefault();
 			let file = e.dataTransfer.files[0]
-			const size = file.size / 1024 / 1024 < 20
+			'const size = file.size / 1024 / 1024 < 20'
 			if (!size) {
 				 this.$message.error('上传图片大小不能超过 20MB!')
 				return size

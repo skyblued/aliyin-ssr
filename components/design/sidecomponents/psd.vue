@@ -72,19 +72,21 @@ export default {
 		uploadFile(e) {
 			let file = e.target.files[0], size = 0;
 			size = file.size / 1024 / 1024;
-			if (size > 17) {
-				this.$message('上传文件大于17MB')
+			if (size > 60) {
+				this.$message('上传文件大于60MB')
+				// this.$message('上传大小' + size +'MB')
 				return
 			}
 			let formdata = new FormData();
 			formdata.append('psd', file);
 			this.uploadSuccess = true;
-			// this.$store.state.nodeUrl 'http://localhost:5050'
+			// this.$store.state.nodeUrl 'http://localhost:5050' 'http://service.aliyin.com'
 
-			this.$axios.post('http://service.aliyin.com' + '/psd', formdata, {timeout: 1000 * 60})
+			this.$axios.post('http://localhost:5050' + '/psd', formdata)
 			.then(({data}) => {
 				this.uploadSuccess = false;
-				e.target.value = ''
+				e.target.value = '';
+				if (data == '') return this.$message('服务器繁忙, 请稍后再试...')
 				this.$emit('uploadpsd', data)
 			})
 			.catch(err => {

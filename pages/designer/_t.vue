@@ -2636,6 +2636,7 @@
 		height: 13px;
 		border: 1px solid #fff;
 		background-color: #000;
+		box-sizing: content-box;
 	}
 
 	&:after {
@@ -2646,6 +2647,7 @@
 		width: 10px;
 		border: 1px solid #fff;
 		background-color: #000;
+		box-sizing: content-box;
 	}
 	}
 
