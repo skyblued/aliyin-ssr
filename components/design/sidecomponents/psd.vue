@@ -82,7 +82,7 @@ export default {
 			this.uploadSuccess = true;
 			// this.$store.state.nodeUrl 'http://localhost:5050' 'http://service.aliyin.com'
 
-			this.$axios.post('http://localhost:5050' + '/psd', formdata)
+			this.$axios.post('http://service.aliyin.com' + '/psd', formdata)
 			.then(({data}) => {
 				this.uploadSuccess = false;
 				e.target.value = '';
