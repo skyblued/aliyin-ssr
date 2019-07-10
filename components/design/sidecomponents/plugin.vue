@@ -93,7 +93,7 @@ export default {
 		//点击生成二维码
 		handleSelect () {
 			this.msg = '正在生成 50%'
-			let content = this.select + this.www
+			let content = this.select + this.www + '?v=123'
 			this.handleGet (content)
 			.then(url => {
 				// 二维码加载出来生成图片
