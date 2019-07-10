@@ -1,5 +1,6 @@
 <template>
-	<div class="model-dialog"  @click="$store.commit('login/toggleShow', false)">
+    <!-- @click="$store.commit('login/toggleShow', false)" -->
+	<div class="model-dialog">
 		<div class="logreg-wrapper" @click.stop>
 			<div class="close-btn" style="top: 0px;right: -50px;" @click="handleClose"></div>
 			<div class="comp">
