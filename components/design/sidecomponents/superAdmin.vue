@@ -139,7 +139,7 @@
 		</transition>
 		<transition name="scale">
 			<div class="img-preivew animation-img" v-if="previewImg" @click="previewImg = false" title="点击收起">
-				<img :src="$store.state.ossPath + templateData.FacePicture" alt="">
+				<img :src="$store.state.port.ossPath + templateData.FacePicture" alt="">
 			</div>
 		</transition>
 		<div style="margin-top: 30px;">
