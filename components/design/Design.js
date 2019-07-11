@@ -1029,6 +1029,11 @@ export default {
 			})
 			this.svgLock = false
 		},
+		dingchangDasan() { // 一键打散
+			this.draw.children().forEach(group => {
+				group.data({group: ''})
+			})
+		},
 		//画布跟随窗口大小设置
 		setCanvasResize() {
 			if (this.toolType == 'text') {
@@ -2120,8 +2125,8 @@ export default {
 			// this.wsServer && this.wsServer.send(JSON.stringify(obj))
 			// webserver
 			return new Promise((resolve, reject) => {
-				// this.$store.state.nodeUrl/text2path/pro
-				this.$axios.post( this.$store.state.port.nodeUrl + "/textToPath/pro", obj)
+				//    ,  'http://localhost:5050'
+				this.$axios.post( this.$store.state.port.nodeUrl  + "/textToPath/pro", obj)
                 .then(res => {
                     this.textProduction = false;
                     resolve(res.data);

@@ -146,6 +146,7 @@
 			<!-- <el-button type="danger" @click="superBtn">全选</el-button> -->
 			<!-- <el-button type="success" @click="dingchang">丁唱</el-button> -->
 			<el-button type="success" @click="dingchang2">一键解锁</el-button>
+			<el-button type="success" @click="dingchangDasan">一键打散</el-button>
 			<!-- <div style="width:100px;">
 				<el-input type="number" min='1' resize="both" v-model="size"></el-input>
 			</div> -->
@@ -231,6 +232,9 @@ export default {
 		},
 		dingchang2() {
 			this.$emit('dingchang2')
+		},
+		dingchangDasan() {
+			this.$emit('dingchangDasan')
 		},
 		handledown(e) {
 			let ele = this.$refs.putTemplate;

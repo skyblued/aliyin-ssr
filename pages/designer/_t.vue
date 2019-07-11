@@ -109,6 +109,7 @@
 							@superBtn="superBtn"
 							@dingchang="dingchang"
 							@dingchang2="dingchang2"
+							@dingchangDasan="dingchangDasan"
 						></SuperAdmin>
 					</div>
 					<div class="left-slide-show" key="8" v-if="sideTitle == 'psd'">
