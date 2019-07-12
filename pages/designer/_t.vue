@@ -2607,7 +2607,7 @@
   .img-clip {
     position: fixed;
     z-index: 2;
-    background: #fff;
+    background: rgba(255, 255, 255, .7);
 
     img {
       position: absolute;

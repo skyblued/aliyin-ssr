@@ -35,6 +35,7 @@
 			<!-- v-if="superAdmin"  -->
 			<div class="des-header-right-btn">
 				<span @click="handleSave" class="right-save">保存</span>
+				<span @click="toDoA" class="right-save" v-if="headerParams.DocumentNumber">再做一个</span>
 				<span v-if="headerParams.identity && !superAdmin" @click="toggleDialog(true)" class="right-save">提交</span>
 				<span 
 					@click="againFile"
@@ -113,7 +114,48 @@ export default {
 		},
 		keydown(e) {
 			if (e.ctrlKey) this.$emit('clearClone')
-		}
+		},
+		toDoA() { // 再做一个
+			let teamNum = localStorage['teamNum'];
+			var formData = new FormData();
+			formData.append('DocumentNumber', this.headerParams.DocumentNumber);
+			formData.append('TeamNum', teamNum);
+			formData.append('IsMaster', 0);
+			formData.append('IsVisiable', 1);
+			const loading = this.$loading({
+          lock: true,
+          text: '正在复制...',
+          spinner: 'el-icon-loading',
+          background: 'rgba(0, 0, 0, 0.7)'
+        });
+			this.$axios.post('/CopyDocument', formData)
+			.then(({data}) => {
+				loading.close();
+				try {
+					data = JSON.parse(data);
+				} catch (error) {
+					data = ''
+				}
+				if (data) {
+					// console.log(data, )
+					let url = "http://" + location.host + "/designer/" + window.btoa("DocumentNumber=" + data.DocumentNumber)
+					let a = document.createElement('a');
+					a.target = "_blank"
+					a.href = url;
+					document.body.appendChild(a)
+					a.click();
+					document.body.removeChild(a)
+				} else {
+					this.$message.closeAll();
+					this.$message('复制出错了,刷新再试')
+				}
+			})
+			.catch(err=> {
+				loading.close();
+				this.$message.closeAll();
+				this.$message('复制出错了,刷新再试')
+			})
+	}
 	},
 	mounted() {
 		// console.log(this.headerParams)

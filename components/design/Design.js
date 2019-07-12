@@ -5174,7 +5174,8 @@ export default {
 				tempNum: this.templateInfo != null ? this.templateInfo.TemplateNumber : '',
 				productId: this.templateInfo != null ? this.templateInfo.Size.TypeID : '',
 				OnlinePrint_Status: this.templateInfo != null ? this.templateInfo.ProductType.OnlinePrint_Status : '',
-				design_title: this.design_title
+				design_title: this.design_title,
+				DocumentNumber: this.templateInfo != null ? this.templateInfo.DocumentNumber : ''
 			}
 		},
 
