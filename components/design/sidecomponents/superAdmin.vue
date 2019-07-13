@@ -43,8 +43,10 @@
 		</div>
 		<!-- 提交模板信息 -->
 		<transition name="animation-scale">
-			<div v-if="submitShow" class="model-dialog" style="background:rgba(0,0,0,.5)">
-				<div style="background: #fff;min-width: 850px;border-radius: 10px;padding: 10px;position: relative">
+			<div v-if="submitShow" class="model-dialog">
+				<div style="background: #fff;min-width: 850px;border-radius: 10px;padding: 10px;position: absolute;left: 200px;top: 100px;box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .6);" 
+				ref="submitTemplate" 
+				@mousedown.stop="handledown">
 					<div class="close-btn" style="top:0;right: -55px;" @click="submitShow = false"></div>
 					<TempSubmit
 						:faceImg="templateData.FacePicture"
@@ -260,7 +262,7 @@ export default {
 			this.$emit('dingchangDasan')
 		},
 		handledown(e) {
-			let ele = this.$refs.putTemplate;
+			let ele = this.$refs.putTemplate || this.$refs.submitTemplate;
 			this.position.move = true;
 			this.position.x = e.clientX;
 			this.position.y = e.clientY;
