@@ -118,6 +118,7 @@
 						<p>模板封面</p>
 						<div style="position: relative;">
 							<img title="点击预览"
+							v-if="templateData.FacePicture"
 							@load="uploadProgress = 0"
 							@click="previewImg = true" style="width: 100%;cursor:pointer;" 
 							:src="$store.state.port.ossPath + templateData.FacePicture">
@@ -139,7 +140,7 @@
 		</transition>
 		<transition name="scale">
 			<div class="img-preivew animation-img" v-if="previewImg" @click="previewImg = false" title="点击收起">
-				<img :src="$store.state.port.ossPath + templateData.FacePicture" alt="">
+				<img v-if="templateData.FacePicture" :src="$store.state.port.ossPath + templateData.FacePicture" alt="">
 			</div>
 		</transition>
 		<div style="margin-top: 30px;">
@@ -338,10 +339,13 @@ export default {
 		},
 		getValue(data) {
 			let arr = [];
-			data.forEach(item => {
-				arr.push(item.FilterValue)
-			})
-			return arr.join(',');
+			if (data) {
+				data.forEach(item => {
+					arr.push(item.FilterValue)
+				})
+				return arr.join(',');
+			}
+			return '';
 		},
 		parsing(data) { // 解析
 			let arr = [], filterVlaue = data.SubTemplate.FilterValues.split(',');
@@ -375,9 +379,15 @@ export default {
 		}
 	},
 	mounted() {
-		let data= JSON.parse(JSON.stringify(this.templateInfo));
-		// console.log(data)
-		if (data.IsPublic) {
+		let data;
+		try {
+			data = JSON.parse(JSON.stringify(this.templateInfo));
+		} catch (error) {
+			data = ''
+		}
+		if (!data) return;
+		console.log(data)
+		if (data.IsPublic || !data.SubTemplate) {
 			data.SubTemplate = {FilterValues: this.getValue(data.TempBind)}
 			this.templateData.ID = '';
 			this.templateData.TemplateName = data.Name;
@@ -385,7 +395,7 @@ export default {
 			this.templateData.FacePicture = data.FacePicture || '';
 			this.templateData.StrThematic = data.StrThematic || '';
 			this.templateData.Content = data.Content || '';
-			this.templateData.Keywords = data.Keywords.split(',');
+			this.templateData.Keywords = data.Keywords && data.Keywords.split(',') || [];
 			this.templateData.filters = this.parsing(data);
 			this.templateData.FilterVaules = this.reparsing(this.templateData.filters);
 		} else {

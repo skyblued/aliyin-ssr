@@ -209,18 +209,7 @@ export default {
 	},
 	mounted() {
 		this.getMarkings();
-		// var CancelToken = this.$axios.CancelToken;
-		// var source = CancelToken.source();
-		// console.log(CancelToken, source)
-		// this.$axios.get('http://localhost:5050/test', { cancelToken: source.token
-		// }).catch(function(thrown) { if (this.$axios.isCancel(thrown)) { console.log('Request canceled', thrown.message);
-		// } else { // 处理错误
-		// }
-		// });// 取消请求（message 参数是可选的）
-		// setTimeout(() =>{
-		// 	source.cancel('Operation canceled by the user.')
-
-		// }, 3000)
+		console.log(psd)
 
 	},
 	watch: {
