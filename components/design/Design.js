@@ -1516,6 +1516,7 @@ export default {
 				height = size.Height * dpi;
 			let _html = `<svg width="${200}" height="${200 * (size.Height / size.Width)}" 
 				viewBox="0 0 ${width} ${height}"
+				${this.templateInfo.TypeId != 23 ? 'style="background:#fff"' : ''}
 				xmlns="http://www.w3.org/2000/svg" 
 				version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink">`
 			obj.forEach(json => {
