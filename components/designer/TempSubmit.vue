@@ -4,13 +4,13 @@
             <div class="submit-info">
                 <div class="submit-info-item">
                     <div class="submit-info-title">模板名称: </div>
-                    <div class="submit-info-content">
+                    <div class="submit-info-content"  @mousedown.stop>
                         <el-input v-model="templateData.TemplateName" maxlength="20" placeholder="不得超过20个字符"></el-input>
                     </div>
                 </div>
                 <div class="submit-info-item" v-for="(item,i) in templateData.filters" :key="i">
                     <div class="submit-info-title">{{item.Name}}: </div>
-                    <div class="submit-info-content">
+                    <div class="submit-info-content" @mousedown.stop>
                         <el-select 
                             v-model="FilterVaules[i]"
                             :multiple-limit="3"
@@ -23,7 +23,7 @@
                 </div>
                 <div class="submit-info-item">
                     <div class="submit-info-title">关键词标签: </div>
-                    <div class="submit-info-content keyword">
+                    <div class="submit-info-content keyword"  @mousedown.stop>
                         <div style="text-align:left;line-height: 24px;">
                             <span class="keyword-list" v-for="(item,i) in templateData.Keywords" :key="i">{{item}}<i class="el-icon-circle-close" @click="handleDelKeyword(i)"></i></span>
                         </div>
@@ -32,7 +32,7 @@
                 </div>
                 <div class="submit-info-item">
                     <div class="submit-info-title">模板介绍: </div>
-                    <div class="submit-info-content">
+                    <div class="submit-info-content" @mousedown.stop>
                         <el-input type="textarea" :rows="5" maxlength="150" v-model="templateData.Content" placeholder="请简要概述"></el-input>
                     </div>
                 </div>
