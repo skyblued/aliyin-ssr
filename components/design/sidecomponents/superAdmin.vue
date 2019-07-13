@@ -38,8 +38,24 @@
 			</tr>
 		</table>
 		<div>
-			<el-button @click="position.show = !position.show">修改提交信息</el-button>
+			<el-button v-if="isSubmitState" @click="position.show = !position.show">修改提交信息</el-button>
+			<el-button v-else @click="submitShow = !submitShow">提交模板</el-button>
 		</div>
+		<!-- 提交模板信息 -->
+		<transition name="animation-scale">
+			<div v-if="submitShow" class="model-dialog" style="background:rgba(0,0,0,.5)">
+				<div style="background: #fff;min-width: 850px;border-radius: 10px;padding: 10px;position: relative">
+					<div class="close-btn" style="top:0;right: -55px;" @click="submitShow = false"></div>
+					<TempSubmit
+						:faceImg="templateData.FacePicture"
+						@toggleDialog="submitShow = false" 
+						:ProductTypeId="templateInfo.ProductType.TypeId" 
+						:TemplateNumber="templateInfo.TemplateNumber" 
+						:tempName="templateInfo.Name"></TempSubmit>
+				</div>
+			</div>
+		</transition>
+		
 		<!-- 修改模板信息 -->
 		<transition name="animation-scale">
 			<div class="put-template"
@@ -157,8 +173,12 @@
 </template>
 
 <script>
+import TempSubmit from '@/components/designer/TempSubmit.vue'
 export default {
 	name: 'super-admin',
+	components: {
+		TempSubmit
+	},
 	props: {
 		templateInfo: {
 			type: Object
@@ -179,6 +199,8 @@ export default {
 			isSucces: false, // 是否通过
 			isPutaway: true, // 是否上架
 			size: 15.4, // 比例
+			isSubmitState: true, // 是否提交过
+			submitShow: false, // 提交组件的显示
 			position: { // 移动记录时间
 				show: false,
 				move: false,
@@ -348,7 +370,7 @@ export default {
 			return '';
 		},
 		parsing(data) { // 解析
-			let arr = [], filterVlaue = data.SubTemplate.FilterValues.split(',');
+			let arr = [], filterVlaue = data.SubTemplate.FilterValues && data.SubTemplate.FilterValues.split(',') || [];
 			data.StrFilters.forEach(item => {
 				item.FilterValues.forEach((filter, j) => {
 					if (filterVlaue.indexOf(String(filter.ValueId)) > -1) {
@@ -376,7 +398,7 @@ export default {
 			})
 			// console.log(this.FilterVaules)
 			return arr
-		}
+		},
 	},
 	mounted() {
 		let data;
@@ -385,14 +407,17 @@ export default {
 		} catch (error) {
 			data = ''
 		}
+		console.log(data,data.SubTemplate)
 		if (!data) return;
-		console.log(data)
+		if(!data.SubTemplate) {
+			this.isSubmitState = false;
+		}
 		if (data.IsPublic || !data.SubTemplate) {
 			data.SubTemplate = {FilterValues: this.getValue(data.TempBind)}
 			this.templateData.ID = '';
 			this.templateData.TemplateName = data.Name;
 			this.templateData.TemplateNumber = data.TemplateNumber;
-			this.templateData.FacePicture = data.FacePicture || '';
+			this.templateData.FacePicture = data.FacePicture || data.TemplatePages[0].Thumb;
 			this.templateData.StrThematic = data.StrThematic || '';
 			this.templateData.Content = data.Content || '';
 			this.templateData.Keywords = data.Keywords && data.Keywords.split(',') || [];
@@ -409,6 +434,7 @@ export default {
 			this.templateData.filters = this.parsing(data);
 			this.templateData.FilterVaules = this.reparsing(this.templateData.filters);
 		}
+		
 		
 		// console.log(this.FilterVaules)
 		
