@@ -26,7 +26,7 @@
     "svg.draggable.js": "^2.2.1",
     "svg.filter.js": "^2.0.2",
     "svg.js": "^2.7.1",
-    "three": "^0.103.0",
+    "three": "^0.137.0",
     "three-obj-mtl-loader": "^1.0.3",
     "three-orbitcontrols": "^2.102.1"
   },
